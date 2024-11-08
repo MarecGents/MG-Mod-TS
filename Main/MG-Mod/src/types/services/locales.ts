@@ -1,6 +1,6 @@
 import {DatabaseServer} from "@spt/servers/DatabaseServer";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
-import {GeneralInfo, ItemsInfo, TraderInfo, QuestInfo} from "../models/eft/locales/GlobalInfo";
+import {GeneralInfo, ItemsInfo, TraderInfo, QuestInfo} from "../models/mg/locales/GlobalInfo";
 
 export class Locales {
 
