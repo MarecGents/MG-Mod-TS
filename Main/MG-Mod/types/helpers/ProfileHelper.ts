@@ -1,6 +1,6 @@
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
-import { BanType, Common, CounterKeyValue, Stats } from "@spt/models/eft/common/tables/IBotBase";
+import { BanType, Common, ICounterKeyValue, IStats } from "@spt/models/eft/common/tables/IBotBase";
 import { ISptProfile } from "@spt/models/eft/profile/ISptProfile";
 import { IValidateNicknameRequestData } from "@spt/models/eft/profile/IValidateNicknameRequestData";
 import { AccountTypes } from "@spt/models/enums/AccountTypes";
@@ -14,7 +14,6 @@ import { ConfigServer } from "@spt/servers/ConfigServer";
 import { SaveServer } from "@spt/servers/SaveServer";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { LocalisationService } from "@spt/services/LocalisationService";
-import { ProfileSnapshotService } from "@spt/services/ProfileSnapshotService";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
 import { Watermark } from "@spt/utils/Watermark";
@@ -33,7 +32,6 @@ export class ProfileHelper {
         @inject("SaveServer") protected saveServer: SaveServer,
         @inject("DatabaseService") protected databaseService: DatabaseService,
         @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("ProfileSnapshotService") protected profileSnapshotService: ProfileSnapshotService,
         @inject("LocalisationService") protected localisationService: LocalisationService,
         @inject("ConfigServer") protected configServer: ConfigServer,
         @inject("PrimaryCloner") protected cloner: ICloner,
@@ -80,59 +78,28 @@ export class ProfileHelper {
             return output;
         }
 
-        const fullProfile = this.getFullProfile(sessionId);
+        const fullProfileClone = this.cloner.clone(this.getFullProfile(sessionId));
 
-        // Edge-case, true post raid
-        if (this.profileSnapshotService.hasProfileSnapshot(sessionId)) {
-            return this.postRaidXpWorkaroundFix(
-                sessionId,
-                fullProfile.characters.pmc,
-                fullProfile.characters.scav,
-                output,
-            );
-        }
+        // Sanitize any data the client can not receive
+        this.sanitizeProfileForClient(fullProfileClone);
 
         // PMC must be at array index 0, scav at 1
-        output.push(fullProfile.characters.pmc);
-        output.push(fullProfile.characters.scav);
+        output.push(fullProfileClone.characters.pmc);
+        output.push(fullProfileClone.characters.scav);
 
         return output;
     }
 
     /**
-     * Fix xp doubling on post-raid xp reward screen by sending a 'dummy' profile to the post-raid screen
-     * Server saves the post-raid changes prior to the xp screen getting the profile, this results in the xp screen using
-     * the now updated profile values as a base, meaning it shows x2 xp gained
-     * Instead, clone the post-raid profile (so we dont alter its values), apply the pre-raid xp values to the cloned objects and return
-     * Delete snapshot of pre-raid profile prior to returning profile data
-     * @param sessionId Session id
-     * @param output pmc and scav profiles array
-     * @param pmcProfile post-raid pmc profile
-     * @param scavProfile post-raid scav profile
-     * @returns Updated profile array
+     * Sanitize any information from the profile that the client does not expect to receive
+     * @param clonedProfile A clone of the full player profile
      */
-    protected postRaidXpWorkaroundFix(
-        sessionId: string,
-        pmcProfile: IPmcData,
-        scavProfile: IPmcData,
-        output: IPmcData[],
-    ): IPmcData[] {
-        const clonedPmc = this.cloner.clone(pmcProfile);
-        const clonedScav = this.cloner.clone(scavProfile);
-
-        const profileSnapshot = this.profileSnapshotService.getProfileSnapshot(sessionId);
-        clonedPmc.Info.Level = profileSnapshot.characters.pmc.Info.Level;
-        clonedPmc.Info.Experience = profileSnapshot.characters.pmc.Info.Experience;
-
-        clonedScav.Info.Level = profileSnapshot.characters.scav.Info.Level;
-        clonedScav.Info.Experience = profileSnapshot.characters.scav.Info.Experience;
-
-        this.profileSnapshotService.clearProfileSnapshot(sessionId);
-
-        output.push(clonedPmc);
-        output.push(clonedScav);
-
-        return output;
+    protected sanitizeProfileForClient(clonedProfile: ISptProfile) {
+        // Remove `loyaltyLevel` from `TradersInfo`, as otherwise it causes the client to not
+        // properly calculate the player's `loyaltyLevel`
+        for (const traderInfo of Object.values(clonedProfile.characters.pmc.TradersInfo)) {
+            traderInfo.loyaltyLevel = undefined;
+        }
     }
 
     /**
@@ -264,11 +231,11 @@ export class ProfileHelper {
      * Get baseline counter values for a fresh profile
      * @returns Default profile Stats object
      */
-    public getDefaultCounters(): Stats {
+    public getDefaultCounters(): IStats {
         return {
             Eft: {
                 CarriedQuestItems: [],
-                DamageHistory: { LethalDamagePart: "Head", LethalDamage: undefined!, BodyParts: <any>[] },
+                DamageHistory: { LethalDamagePart: "Head", LethalDamage: undefined, BodyParts: <any>[] },
                 DroppedItems: [],
                 ExperienceBonusMult: 0,
                 FoundInRaidItems: [],
@@ -376,7 +343,7 @@ export class ProfileHelper {
      * @param counters Counters to search for key
      * @param keyToIncrement Key
      */
-    public incrementStatCounter(counters: CounterKeyValue[], keyToIncrement: string): void {
+    public incrementStatCounter(counters: ICounterKeyValue[], keyToIncrement: string): void {
         const stat = counters.find((x) => x.Key.includes(keyToIncrement));
         if (stat) {
             stat.Value++;
@@ -533,5 +500,27 @@ export class ProfileHelper {
 
     public hasAccessToRepeatableFreeRefreshSystem(pmcProfile: IPmcData): boolean {
         return [GameEditions.EDGE_OF_DARKNESS, GameEditions.UNHEARD].includes(<any>pmcProfile.Info?.GameVersion);
+    }
+
+    /**
+     * Find a profiles "Pockets" item and replace its tpl with passed in value
+     * @param pmcProfile Player profile
+     * @param newPocketTpl New tpl to set profiles Pockets to
+     */
+    public replaceProfilePocketTpl(pmcProfile: IPmcData, newPocketTpl: string): void {
+        // Find all pockets in profile, may be multiple as they could have equipment stand
+        // (1 pocket for each upgrade level of equipment stand)
+        const pockets = pmcProfile.Inventory.items.filter((item) => item.slotId === "Pockets");
+        if (pockets.length === 0) {
+            this.logger.error(
+                `Unable to replace profile: ${pmcProfile._id} pocket tpl with: ${newPocketTpl} as Pocket item could not be found.`,
+            );
+
+            return;
+        }
+
+        for (const pocket of pockets) {
+            pocket._tpl = newPocketTpl;
+        }
     }
 }

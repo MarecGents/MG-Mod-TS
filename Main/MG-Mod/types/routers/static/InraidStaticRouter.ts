@@ -8,15 +8,9 @@ export class InraidStaticRouter extends StaticRouter {
     constructor(@inject("InraidCallbacks") protected inraidCallbacks: InraidCallbacks) {
         super([
             new RouteAction(
-                "/raid/profile/save",
+                "/raid/profile/scavsave",
                 async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
                     return this.inraidCallbacks.saveProgress(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
-                "/singleplayer/settings/raid/endstate",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.inraidCallbacks.getRaidEndState();
                 },
             ),
             new RouteAction(
@@ -26,33 +20,9 @@ export class InraidStaticRouter extends StaticRouter {
                 },
             ),
             new RouteAction(
-                "/singleplayer/airdrop/config",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.inraidCallbacks.getAirdropConfig();
-                },
-            ),
-            new RouteAction(
-                "/singleplayer/btr/config",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.inraidCallbacks.getBTRConfig();
-                },
-            ),
-            new RouteAction(
-                "/singleplayer/traderServices/itemDelivery",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
-                    return this.inraidCallbacks.itemDelivery(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
                 "/singleplayer/scav/traitorscavhostile",
                 async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.inraidCallbacks.getTraitorScavHostileChance(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
-                "/singleplayer/sandbox/maxpatrol",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.inraidCallbacks.getSandboxMaxPatrolValue(url, info, sessionID);
                 },
             ),
             new RouteAction(

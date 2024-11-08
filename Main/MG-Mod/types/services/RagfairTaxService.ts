@@ -1,7 +1,7 @@
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { ProfileHelper } from "@spt/helpers/ProfileHelper";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
-import { Item } from "@spt/models/eft/common/tables/IItem";
+import { IItem } from "@spt/models/eft/common/tables/IItem";
 import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
 import { IStorePlayerOfferTaxAmountRequestData } from "@spt/models/eft/ragfair/IStorePlayerOfferTaxAmountRequestData";
 import { BonusType } from "@spt/models/enums/BonusType";
@@ -47,7 +47,7 @@ export class RagfairTaxService {
      * @returns Tax in roubles
      */
     public calculateTax(
-        item: Item,
+        item: IItem,
         pmcData: IPmcData,
         requirementsValue: number,
         offerItemCount: number,
@@ -110,7 +110,7 @@ export class RagfairTaxService {
     // This method is trying to replicate the item worth calculation method found in the client code.
     // Any inefficiencies or style issues are intentional and should not be fixed, to preserve the client-side code mirroring.
     protected calculateItemWorth(
-        item: Item,
+        item: IItem,
         itemTemplate: ITemplateItem,
         itemCount: number,
         pmcData: IPmcData,

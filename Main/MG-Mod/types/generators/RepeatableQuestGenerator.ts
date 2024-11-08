@@ -1,8 +1,8 @@
 import { RepeatableQuestRewardGenerator } from "@spt/generators/RepeatableQuestRewardGenerator";
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { RepeatableQuestHelper } from "@spt/helpers/RepeatableQuestHelper";
-import { Exit } from "@spt/models/eft/common/ILocationBase";
-import { TraderInfo } from "@spt/models/eft/common/tables/IBotBase";
+import { IExit } from "@spt/models/eft/common/ILocationBase";
+import { ITraderInfo } from "@spt/models/eft/common/tables/IBotBase";
 import { IQuestCondition, IQuestConditionCounterCondition } from "@spt/models/eft/common/tables/IQuest";
 import { IRepeatableQuest } from "@spt/models/eft/common/tables/IRepeatableQuests";
 import { BaseClasses } from "@spt/models/enums/BaseClasses";
@@ -58,7 +58,7 @@ export class RepeatableQuestGenerator {
      */
     public generateRepeatableQuest(
         pmcLevel: number,
-        pmcTraderInfo: Record<string, TraderInfo>,
+        pmcTraderInfo: Record<string, ITraderInfo>,
         questTypePool: IQuestTypePool,
         repeatableConfig: IRepeatableQuestConfig,
     ): IRepeatableQuest {
@@ -449,8 +449,6 @@ export class RepeatableQuestGenerator {
         const levelsConfig = repeatableConfig.rewardScaling.levels;
         const roublesConfig = repeatableConfig.rewardScaling.roubles;
 
-        const distinctItemsToRetrieveCount = this.randomUtil.getInt(1, completionConfig.uniqueItemCount);
-
         const quest = this.generateRepeatableTemplate("Completion", traderId, repeatableConfig.side);
 
         // Filter the items.json items to items the player must retrieve to complete quest: shouldn't be a quest item or "non-existant"
@@ -519,6 +517,8 @@ export class RepeatableQuestGenerator {
         let isAmmo = 0;
 
         // Store the indexes of items we are asking player to provide
+        const distinctItemsToRetrieveCount = this.randomUtil.getInt(1, completionConfig.uniqueItemCount);
+        const chosenRequirementItemsTpls = [];
         const usedItemIndexes = new Set();
         for (let i = 0; i < distinctItemsToRetrieveCount; i++) {
             let chosenItemIndex = this.randomUtil.randInt(itemSelection.length);
@@ -573,6 +573,7 @@ export class RepeatableQuestGenerator {
             roublesBudget -= value * itemUnitPrice;
 
             // Push a CompletionCondition with the item and the amount of the item
+            chosenRequirementItemsTpls.push(itemSelected[0]);
             quest.conditions.AvailableForFinish.push(this.generateCompletionAvailableForFinish(itemSelected[0], value));
 
             if (roublesBudget > 0) {
@@ -594,6 +595,7 @@ export class RepeatableQuestGenerator {
             traderId,
             repeatableConfig,
             completionConfig,
+            chosenRequirementItemsTpls,
         );
 
         return quest;
@@ -748,7 +750,7 @@ export class RepeatableQuestGenerator {
      * @param playerSide Scav/Pmc
      * @returns Array of Exit objects
      */
-    protected getLocationExitsForSide(locationKey: string, playerSide: string): Exit[] {
+    protected getLocationExitsForSide(locationKey: string, playerSide: string): IExit[] {
         const mapExtracts = this.databaseService.getLocation(locationKey.toLocaleLowerCase()).allExtracts;
 
         return mapExtracts.filter((exit) => exit.Side === playerSide);
@@ -816,7 +818,7 @@ export class RepeatableQuestGenerator {
      * @param   {string}        exit                The exit name to generate the condition for
      * @returns {object}                            Exit condition
      */
-    protected generateExplorationExitCondition(exit: Exit): IQuestConditionCounterCondition {
+    protected generateExplorationExitCondition(exit: IExit): IQuestConditionCounterCondition {
         return { conditionType: "ExitName", exitName: exit.Name, id: this.objectId.generate(), dynamicLocale: true };
     }
 

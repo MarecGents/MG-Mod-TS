@@ -1,6 +1,8 @@
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
-import { IWishlistActionData } from "@spt/models/eft/wishlist/IWishlistActionData";
+import { IAddToWishlistRequest } from "@spt/models/eft/wishlist/IAddToWishlistRequest";
+import { IChangeWishlistItemCategoryRequest } from "@spt/models/eft/wishlist/IChangeWishlistItemCategoryRequest";
+import { IRemoveFromWishlistRequest } from "@spt/models/eft/wishlist/IRemoveFromWishlistRequest";
 import { EventOutputHolder } from "@spt/routers/EventOutputHolder";
 import { inject, injectable } from "tsyringe";
 
@@ -9,30 +11,38 @@ export class WishlistController {
     constructor(@inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder) {}
 
     /** Handle AddToWishList */
-    public addToWishList(pmcData: IPmcData, body: IWishlistActionData, sessionID: string): IItemEventRouterResponse {
-        for (const item in pmcData.WishList) {
-            // Don't add the item
-            if (pmcData.WishList[item] === body.templateId) {
-                return this.eventOutputHolder.getOutput(sessionID);
-            }
+    public addToWishList(
+        pmcData: IPmcData,
+        request: IAddToWishlistRequest,
+        sessionID: string,
+    ): IItemEventRouterResponse {
+        for (const itemId of Object.keys(request.items)) {
+            pmcData.WishList[itemId] = request.items[itemId];
         }
 
-        // add the item to the wishlist
-        pmcData.WishList.push(body.templateId);
         return this.eventOutputHolder.getOutput(sessionID);
     }
 
     /** Handle RemoveFromWishList event */
     public removeFromWishList(
         pmcData: IPmcData,
-        body: IWishlistActionData,
+        request: IRemoveFromWishlistRequest,
         sessionID: string,
     ): IItemEventRouterResponse {
-        for (let i = 0; i < pmcData.WishList.length; i++) {
-            if (pmcData.WishList[i] === body.templateId) {
-                pmcData.WishList.splice(i, 1);
-            }
+        for (const itemId of request.items) {
+            delete pmcData.WishList[itemId];
         }
+
+        return this.eventOutputHolder.getOutput(sessionID);
+    }
+
+    /** Handle changeWishlistItemCategory event */
+    public changeWishlistItemCategory(
+        pmcData: IPmcData,
+        request: IChangeWishlistItemCategoryRequest,
+        sessionID: string,
+    ): IItemEventRouterResponse {
+        pmcData.WishList[request.item] = request.category;
 
         return this.eventOutputHolder.getOutput(sessionID);
     }

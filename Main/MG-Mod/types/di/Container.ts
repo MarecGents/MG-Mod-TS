@@ -67,7 +67,7 @@ import { BotLevelGenerator } from "@spt/generators/BotLevelGenerator";
 import { BotLootGenerator } from "@spt/generators/BotLootGenerator";
 import { BotWeaponGenerator } from "@spt/generators/BotWeaponGenerator";
 import { FenceBaseAssortGenerator } from "@spt/generators/FenceBaseAssortGenerator";
-import { LocationGenerator } from "@spt/generators/LocationGenerator";
+import { LocationLootGenerator } from "@spt/generators/LocationLootGenerator";
 import { LootGenerator } from "@spt/generators/LootGenerator";
 import { PMCLootGenerator } from "@spt/generators/PMCLootGenerator";
 import { PlayerScavGenerator } from "@spt/generators/PlayerScavGenerator";
@@ -123,6 +123,7 @@ import { TradeHelper } from "@spt/helpers/TradeHelper";
 import { TraderAssortHelper } from "@spt/helpers/TraderAssortHelper";
 import { TraderHelper } from "@spt/helpers/TraderHelper";
 import { UtilityHelper } from "@spt/helpers/UtilityHelper";
+import { WeatherHelper } from "@spt/helpers/WeatherHelper";
 import { WeightedRandomHelper } from "@spt/helpers/WeightedRandomHelper";
 import { BundleLoader } from "@spt/loaders/BundleLoader";
 import { ModLoadOrder } from "@spt/loaders/ModLoadOrder";
@@ -196,20 +197,25 @@ import { IWebSocketConnectionHandler } from "@spt/servers/ws/IWebSocketConnectio
 import { SptWebSocketConnectionHandler } from "@spt/servers/ws/SptWebSocketConnectionHandler";
 import { DefaultSptWebSocketMessageHandler } from "@spt/servers/ws/message/DefaultSptWebSocketMessageHandler";
 import { ISptWebSocketMessageHandler } from "@spt/servers/ws/message/ISptWebSocketMessageHandler";
+import { AirdropService } from "@spt/services/AirdropService";
 import { BotEquipmentFilterService } from "@spt/services/BotEquipmentFilterService";
 import { BotEquipmentModPoolService } from "@spt/services/BotEquipmentModPoolService";
 import { BotGenerationCacheService } from "@spt/services/BotGenerationCacheService";
 import { BotLootCacheService } from "@spt/services/BotLootCacheService";
+import { BotNameService } from "@spt/services/BotNameService";
 import { BotWeaponModLimitService } from "@spt/services/BotWeaponModLimitService";
+import { CircleOfCultistService } from "@spt/services/CircleOfCultistService";
 import { CustomLocationWaveService } from "@spt/services/CustomLocationWaveService";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { FenceService } from "@spt/services/FenceService";
 import { GiftService } from "@spt/services/GiftService";
+import { InMemoryCacheService } from "@spt/services/InMemoryCacheService";
 import { InsuranceService } from "@spt/services/InsuranceService";
 import { ItemBaseClassService } from "@spt/services/ItemBaseClassService";
 import { ItemFilterService } from "@spt/services/ItemFilterService";
 import { LocaleService } from "@spt/services/LocaleService";
 import { LocalisationService } from "@spt/services/LocalisationService";
+import { LocationLifecycleService } from "@spt/services/LocationLifecycleService";
 import { MailSendService } from "@spt/services/MailSendService";
 import { MapMarkerService } from "@spt/services/MapMarkerService";
 import { MatchBotDetailsCacheService } from "@spt/services/MatchBotDetailsCacheService";
@@ -220,9 +226,9 @@ import { OpenZoneService } from "@spt/services/OpenZoneService";
 import { PaymentService } from "@spt/services/PaymentService";
 import { PlayerService } from "@spt/services/PlayerService";
 import { PmcChatResponseService } from "@spt/services/PmcChatResponseService";
+import { PostDbLoadService } from "@spt/services/PostDbLoadService";
 import { ProfileActivityService } from "@spt/services/ProfileActivityService";
 import { ProfileFixerService } from "@spt/services/ProfileFixerService";
-import { ProfileSnapshotService } from "@spt/services/ProfileSnapshotService";
 import { RagfairCategoriesService } from "@spt/services/RagfairCategoriesService";
 import { RagfairLinkedItemService } from "@spt/services/RagfairLinkedItemService";
 import { RagfairOfferService } from "@spt/services/RagfairOfferService";
@@ -230,11 +236,11 @@ import { RagfairPriceService } from "@spt/services/RagfairPriceService";
 import { RagfairRequiredItemsService } from "@spt/services/RagfairRequiredItemsService";
 import { RagfairTaxService } from "@spt/services/RagfairTaxService";
 import { RaidTimeAdjustmentService } from "@spt/services/RaidTimeAdjustmentService";
+import { RaidWeatherService } from "@spt/services/RaidWeatherService";
 import { RepairService } from "@spt/services/RepairService";
 import { SeasonalEventService } from "@spt/services/SeasonalEventService";
 import { TraderAssortService } from "@spt/services/TraderAssortService";
 import { TraderPurchasePersisterService } from "@spt/services/TraderPurchasePersisterService";
-import { TraderServicesService } from "@spt/services/TraderServicesService";
 import { BundleHashCacheService } from "@spt/services/cache/BundleHashCacheService";
 import { ModHashCacheService } from "@spt/services/cache/ModHashCacheService";
 import { CustomItemService } from "@spt/services/mod/CustomItemService";
@@ -271,6 +277,7 @@ import { DependencyContainer, Lifecycle } from "tsyringe";
 /**
  * Handle the registration of classes to be used by the Dependency Injection code
  */
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class Container {
     public static registerPostLoadTypes(container: DependencyContainer, childContainer: DependencyContainer): void {
         container.register<SptHttpListener>("SptHttpListener", SptHttpListener, { lifecycle: Lifecycle.Singleton });
@@ -534,7 +541,7 @@ export class Container {
         depContainer.register<BotWeaponGenerator>("BotWeaponGenerator", BotWeaponGenerator);
         depContainer.register<BotLootGenerator>("BotLootGenerator", BotLootGenerator);
         depContainer.register<BotInventoryGenerator>("BotInventoryGenerator", BotInventoryGenerator);
-        depContainer.register<LocationGenerator>("LocationGenerator", { useClass: LocationGenerator });
+        depContainer.register<LocationLootGenerator>("LocationLootGenerator", { useClass: LocationLootGenerator });
         depContainer.register<PMCLootGenerator>("PMCLootGenerator", PMCLootGenerator, {
             lifecycle: Lifecycle.Singleton,
         });
@@ -613,6 +620,7 @@ export class Container {
         depContainer.register<NotificationSendHelper>("NotificationSendHelper", { useClass: NotificationSendHelper });
         depContainer.register<SecureContainerHelper>("SecureContainerHelper", { useClass: SecureContainerHelper });
         depContainer.register<ProbabilityHelper>("ProbabilityHelper", { useClass: ProbabilityHelper });
+        depContainer.register<WeatherHelper>("WeatherHelper", { useClass: WeatherHelper });
         depContainer.register<BotWeaponGeneratorHelper>("BotWeaponGeneratorHelper", {
             useClass: BotWeaponGeneratorHelper,
         });
@@ -701,10 +709,6 @@ export class Container {
         depContainer.register<TraderAssortService>("TraderAssortService", TraderAssortService, {
             lifecycle: Lifecycle.Singleton,
         });
-        depContainer.register<TraderServicesService>("TraderServicesService", TraderServicesService, {
-            lifecycle: Lifecycle.Singleton,
-        });
-
         depContainer.register<RagfairPriceService>("RagfairPriceService", RagfairPriceService, {
             lifecycle: Lifecycle.Singleton,
         });
@@ -742,7 +746,7 @@ export class Container {
         });
         depContainer.register<CustomItemService>("CustomItemService", CustomItemService);
         depContainer.register<BotEquipmentFilterService>("BotEquipmentFilterService", BotEquipmentFilterService);
-        depContainer.register<ProfileSnapshotService>("ProfileSnapshotService", ProfileSnapshotService, {
+        depContainer.register<InMemoryCacheService>("InMemoryCacheService", InMemoryCacheService, {
             lifecycle: Lifecycle.Singleton,
         });
         depContainer.register<ItemFilterService>("ItemFilterService", ItemFilterService, {
@@ -787,6 +791,24 @@ export class Container {
         depContainer.register<MapMarkerService>("MapMarkerService", MapMarkerService);
 
         depContainer.register<ProfileActivityService>("ProfileActivityService", ProfileActivityService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<AirdropService>("AirdropService", AirdropService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<LocationLifecycleService>("LocationLifecycleService", LocationLifecycleService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<CircleOfCultistService>("CircleOfCultistService", CircleOfCultistService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<BotNameService>("BotNameService", BotNameService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<RaidWeatherService>("RaidWeatherService", RaidWeatherService, {
+            lifecycle: Lifecycle.Singleton,
+        });
+        depContainer.register<PostDbLoadService>("PostDbLoadService", PostDbLoadService, {
             lifecycle: Lifecycle.Singleton,
         });
     }

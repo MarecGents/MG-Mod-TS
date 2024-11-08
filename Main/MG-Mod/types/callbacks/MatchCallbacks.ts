@@ -1,8 +1,9 @@
 import { MatchController } from "@spt/controllers/MatchController";
 import { IEmptyRequestData } from "@spt/models/eft/common/IEmptyRequestData";
+import { IMetrics } from "@spt/models/eft/common/tables/IMatch";
 import { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
 import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
-import { IEndOfflineRaidRequestData } from "@spt/models/eft/match/IEndOfflineRaidRequestData";
+import { IEndLocalRaidRequestData } from "@spt/models/eft/match/IEndLocalRaidRequestData";
 import { IGetRaidConfigurationRequestData } from "@spt/models/eft/match/IGetRaidConfigurationRequestData";
 import { IGroupCharacter } from "@spt/models/eft/match/IGroupCharacter";
 import { IMatchGroupCurrentResponse } from "@spt/models/eft/match/IMatchGroupCurrentResponse";
@@ -15,6 +16,8 @@ import { IMatchGroupTransferRequest } from "@spt/models/eft/match/IMatchGroupTra
 import { IProfileStatusResponse } from "@spt/models/eft/match/IProfileStatusResponse";
 import { IPutMetricsRequestData } from "@spt/models/eft/match/IPutMetricsRequestData";
 import { IRequestIdRequest } from "@spt/models/eft/match/IRequestIdRequest";
+import { IStartLocalRaidRequestData } from "@spt/models/eft/match/IStartLocalRaidRequestData";
+import { IStartLocalRaidResponseData } from "@spt/models/eft/match/IStartLocalRaidResponseData";
 import { IUpdatePingRequestData } from "@spt/models/eft/match/IUpdatePingRequestData";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
@@ -110,8 +113,11 @@ export class MatchCallbacks {
         return this.httpResponse.getBody(true);
     }
 
-    /** @deprecated - not called on raid start/end or game start/exit */
-    public putMetrics(url: string, info: IPutMetricsRequestData, sessionId: string): INullResponseData {
+    public putMetrics(url: string, request: IPutMetricsRequestData, sessionId: string): INullResponseData {
+        return this.httpResponse.nullResponse();
+    }
+
+    public eventDisconnect(url: string, request: IPutMetricsRequestData, sessionId: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
@@ -132,8 +138,8 @@ export class MatchCallbacks {
     }
 
     /** Handle client/getMetricsConfig */
-    public getMetrics(url: string, info: any, sessionID: string): IGetBodyResponseData<string> {
-        return this.httpResponse.getBody(this.jsonUtil.serialize(this.databaseService.getMatch().metrics));
+    public getMetrics(url: string, info: any, sessionID: string): IGetBodyResponseData<IMetrics> {
+        return this.httpResponse.getBody(this.databaseService.getMatch().metrics);
     }
 
     /**
@@ -169,9 +175,18 @@ export class MatchCallbacks {
         return this.httpResponse.getBody(true);
     }
 
-    /** Handle client/match/offline/end */
-    public endOfflineRaid(url: string, info: IEndOfflineRaidRequestData, sessionID: string): INullResponseData {
-        this.matchController.endOfflineRaid(info, sessionID);
+    /** Handle client/match/local/start */
+    public startLocalRaid(
+        url: string,
+        info: IStartLocalRaidRequestData,
+        sessionID: string,
+    ): IGetBodyResponseData<IStartLocalRaidResponseData> {
+        return this.httpResponse.getBody(this.matchController.startLocalRaid(sessionID, info));
+    }
+
+    /** Handle client/match/local/end */
+    public endLocalRaid(url: string, info: IEndLocalRaidRequestData, sessionID: string): INullResponseData {
+        this.matchController.endLocalRaid(sessionID, info);
         return this.httpResponse.nullResponse();
     }
 
@@ -181,7 +196,7 @@ export class MatchCallbacks {
         info: IGetRaidConfigurationRequestData,
         sessionID: string,
     ): INullResponseData {
-        this.matchController.startOfflineRaid(info, sessionID);
+        this.matchController.configureOfflineRaid(info, sessionID);
         return this.httpResponse.nullResponse();
     }
 

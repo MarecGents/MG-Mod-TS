@@ -2,9 +2,9 @@ import { InventoryHelper } from "@spt/helpers/InventoryHelper";
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { ProfileHelper } from "@spt/helpers/ProfileHelper";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
-import { HideoutArea, IHideoutImprovement, Production, Productive } from "@spt/models/eft/common/tables/IBotBase";
-import { Item, Upd } from "@spt/models/eft/common/tables/IItem";
-import { StageBonus } from "@spt/models/eft/hideout/IHideoutArea";
+import { IBotHideoutArea, IHideoutImprovement, IProduction, IProductive } from "@spt/models/eft/common/tables/IBotBase";
+import { IItem, IUpd } from "@spt/models/eft/common/tables/IItem";
+import { IHideoutArea, IStageBonus } from "@spt/models/eft/hideout/IHideoutArea";
 import { IHideoutContinuousProductionStartRequestData } from "@spt/models/eft/hideout/IHideoutContinuousProductionStartRequestData";
 import { IHideoutProduction } from "@spt/models/eft/hideout/IHideoutProduction";
 import { IHideoutSingleProductionStartRequestData } from "@spt/models/eft/hideout/IHideoutSingleProductionStartRequestData";
@@ -32,6 +32,7 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class HideoutHelper {
     public static bitcoinFarm = "5d5c205bd582a50d042a3c0e";
+    public static cultistCircleCraftId = "66827062405f392b203a44cf";
     public static bitcoinProductionId = "5d5c205bd582a50d042a3c0e";
     public static waterCollector = "5d5589c1f934db045e6c5492";
     public static maxSkillPoint = 5000;
@@ -70,7 +71,7 @@ export class HideoutHelper {
     ): IItemEventRouterResponse {
         const recipe = this.databaseService
             .getHideout()
-            .production.find((production) => production._id === body.recipeId);
+            .production.recipes.find((production) => production._id === body.recipeId);
         if (!recipe) {
             this.logger.error(this.localisationService.getText("hideout-missing_recipe_in_db", body.recipeId));
 
@@ -120,12 +121,16 @@ export class HideoutHelper {
      * This convenience function initializes new Production Object
      * with all the constants.
      */
-    public initProduction(recipeId: string, productionTime: number, needFuelForAllProductionTime: boolean): Production {
+    public initProduction(
+        recipeId: string,
+        productionTime: number,
+        needFuelForAllProductionTime: boolean,
+    ): IProduction {
         return {
             Progress: 0,
             inProgress: true,
             RecipeId: recipeId,
-            StartTimestamp: this.timeUtil.getTimestamp(),
+            StartTimestamp: this.timeUtil.getTimestamp().toString(),
             ProductionTime: productionTime,
             Products: [],
             GivenItemsInStart: [],
@@ -141,8 +146,8 @@ export class HideoutHelper {
      * @param productive
      * @returns
      */
-    public isProductionType(productive: Productive): productive is Production {
-        return (productive as Production).Progress !== undefined || (productive as Production).RecipeId !== undefined;
+    public isProductionType(productive: IProductive): productive is IProduction {
+        return (productive as IProduction).Progress !== undefined || (productive as IProduction).RecipeId !== undefined;
     }
 
     /**
@@ -150,7 +155,7 @@ export class HideoutHelper {
      * @param pmcData Profile to add bonus to
      * @param bonus Bonus to add to profile
      */
-    public applyPlayerUpgradesBonuses(pmcData: IPmcData, bonus: StageBonus): void {
+    public applyPlayerUpgradesBonuses(pmcData: IPmcData, bonus: IStageBonus): void {
         // Handle additional changes some bonuses need before being added
         switch (bonus.type) {
             case BonusType.STASH_SIZE: {
@@ -224,7 +229,7 @@ export class HideoutHelper {
         return hideoutProperties;
     }
 
-    protected doesWaterCollectorHaveFilter(waterCollector: HideoutArea): boolean {
+    protected doesWaterCollectorHaveFilter(waterCollector: IBotHideoutArea): boolean {
         // Can put filters in from L3
         if (waterCollector.level === 3) {
             // Has filter in at least one slot
@@ -246,7 +251,7 @@ export class HideoutHelper {
     ): void {
         const recipes = this.databaseService.getHideout().production;
 
-        // Check each production
+        // Check each production and handle edge cases if necessary
         for (const prodId in pmcData.Hideout.Production) {
             const craft = pmcData.Hideout.Production[prodId];
             if (!craft) {
@@ -263,34 +268,45 @@ export class HideoutHelper {
                 craft.Progress = 0;
             }
 
-            // Craft complete, skip processing (Don't skip continious crafts like bitcoin farm)
-            if (craft.Progress >= craft.ProductionTime && prodId !== HideoutHelper.bitcoinFarm) {
+            // Skip processing (Don't skip continious crafts like bitcoin farm or cultist circle)
+            if (this.isCraftComplete(craft)) {
                 continue;
             }
 
-            if (craft.sptIsScavCase) {
+            // Special handling required
+            if (this.isCraftOfType(craft, HideoutAreas.SCAV_CASE)) {
                 this.updateScavCaseProductionTimer(pmcData, prodId);
 
                 continue;
             }
 
-            if (prodId === HideoutHelper.waterCollector) {
+            if (this.isCraftOfType(craft, HideoutAreas.WATER_COLLECTOR)) {
                 this.updateWaterCollectorProductionTimer(pmcData, prodId, hideoutProperties);
 
                 continue;
             }
 
-            if (prodId === HideoutHelper.bitcoinFarm) {
-                pmcData.Hideout.Production[prodId] = this.updateBitcoinFarm(
+            // Continious craft
+            if (this.isCraftOfType(craft, HideoutAreas.BITCOIN_FARM)) {
+                this.updateBitcoinFarm(
                     pmcData,
+                    pmcData.Hideout.Production[prodId],
                     hideoutProperties.btcFarmCGs,
                     hideoutProperties.isGeneratorOn,
                 );
+
                 continue;
             }
 
-            // Other recipes not covered by above
-            const recipe = recipes.find((r) => r._id === prodId);
+            // No recipe, needs special handling
+            if (this.isCraftOfType(craft, HideoutAreas.CIRCLE_OF_CULTISTS)) {
+                this.updateCultistCircleCraftProgress(pmcData, prodId);
+
+                continue;
+            }
+
+            // Ensure recipe exists before using it in updateProductionProgress()
+            const recipe = recipes.recipes.find((r) => r._id === prodId);
             if (!recipe) {
                 this.logger.error(this.localisationService.getText("hideout-missing_recipe_for_area", prodId));
 
@@ -299,6 +315,45 @@ export class HideoutHelper {
 
             this.updateProductionProgress(pmcData, prodId, recipe, hideoutProperties);
         }
+    }
+
+    /**
+     * Is a craft from a particular hideout area
+     * @param craft Craft to check
+     * @param hideoutType Type to check craft against
+     * @returns True it is from that area
+     */
+    protected isCraftOfType(craft: IProduction, hideoutType: HideoutAreas) {
+        switch (hideoutType) {
+            case HideoutAreas.WATER_COLLECTOR:
+                return craft.RecipeId === HideoutHelper.waterCollector;
+            case HideoutAreas.BITCOIN_FARM:
+                return craft.RecipeId === HideoutHelper.bitcoinFarm;
+            case HideoutAreas.SCAV_CASE:
+                return craft.sptIsScavCase;
+            case HideoutAreas.CIRCLE_OF_CULTISTS:
+                return craft.sptIsCultistCircle;
+
+            default:
+                this.logger.error(
+                    `Unhandled hideout area: ${hideoutType}, assuming craft: ${craft.RecipeId} is not of this type`,
+                );
+                return false;
+        }
+    }
+
+    /**
+     * Has the craft completed
+     * Ignores bitcoin farm/cultist circle as they're continuous crafts
+     * @param craft Craft to check
+
+     * @returns True when craft is compelte
+     */
+    protected isCraftComplete(craft: IProduction) {
+        return (
+            craft.Progress >= craft.ProductionTime &&
+            ![HideoutHelper.bitcoinFarm, HideoutHelper.cultistCircleCraftId].includes(craft.RecipeId)
+        );
     }
 
     /**
@@ -351,6 +406,41 @@ export class HideoutHelper {
         }
     }
 
+    protected updateCultistCircleCraftProgress(pmcData: IPmcData, prodId: string): void {
+        const production = pmcData.Hideout.Production[prodId];
+
+        // Check if we're already complete, skip
+        if (production.AvailableForFinish) {
+            return;
+        }
+
+        // Get seconds since last hideout update
+        const timeElapsedSeconds = this.timeUtil.getTimestamp() - pmcData.Hideout.sptUpdateLastRunTimestamp;
+
+        // Increment progress by time passed if progress is less than time needed
+        if (production.Progress < production.ProductionTime) {
+            production.Progress += timeElapsedSeconds;
+
+            // Check if craft is complete
+            if (production.Progress >= production.ProductionTime) {
+                this.flagCultistCircleCraftAsComplete(production);
+            }
+
+            return;
+        }
+
+        // Craft in complete
+        this.flagCultistCircleCraftAsComplete(production);
+    }
+
+    protected flagCultistCircleCraftAsComplete(production: IProductive) {
+        // Craft is complete, flas as such
+        production.AvailableForFinish = true;
+
+        // Reset progress so its not over production time
+        production.Progress = production.ProductionTime;
+    }
+
     /**
      * Check if a productions progress value matches its corresponding recipes production time value
      * @param pmcData Player profile
@@ -370,7 +460,7 @@ export class HideoutHelper {
     protected updateScavCaseProductionTimer(pmcData: IPmcData, productionId: string): void {
         const timeElapsed =
             this.timeUtil.getTimestamp() -
-            pmcData.Hideout.Production[productionId].StartTimestamp -
+            Number(pmcData.Hideout.Production[productionId].StartTimestamp) -
             pmcData.Hideout.Production[productionId].Progress;
         pmcData.Hideout.Production[productionId].Progress += timeElapsed;
     }
@@ -412,7 +502,7 @@ export class HideoutHelper {
      * @param pmcData Player profile
      * @param isGeneratorOn Is the generator turned on since last update
      */
-    protected updateFuel(generatorArea: HideoutArea, pmcData: IPmcData, isGeneratorOn: boolean): void {
+    protected updateFuel(generatorArea: IBotHideoutArea, pmcData: IPmcData, isGeneratorOn: boolean): void {
         // 1 resource last 14 min 27 sec, 1/14.45/60 = 0.00115
         // 10-10-2021 From wiki, 1 resource last 12 minutes 38 seconds, 1/12.63333/60 = 0.00131
         let fuelUsedSinceLastTick =
@@ -512,7 +602,7 @@ export class HideoutHelper {
     protected updateWaterCollector(
         sessionId: string,
         pmcData: IPmcData,
-        area: HideoutArea,
+        area: IBotHideoutArea,
         hideoutProperties: { btcFarmCGs: number; isGeneratorOn: boolean; waterCollectorHasFilter: boolean },
     ): void {
         // Skip water collector when not level 3 (cant collect until 3)
@@ -564,7 +654,9 @@ export class HideoutHelper {
     ): number {
         const globalSkillsDb = this.databaseService.getGlobals().config.SkillsSettings;
 
-        const recipe = this.databaseService.getHideout().production.find((production) => production._id === recipeId);
+        const recipe = this.databaseService
+            .getHideout()
+            .production.recipes.find((production) => production._id === recipeId);
         if (!recipe) {
             this.logger.error(this.localisationService.getText("hideout-missing_recipe_in_db", recipeId));
 
@@ -615,8 +707,8 @@ export class HideoutHelper {
      * @param pmcData Player profile
      */
     protected updateWaterFilters(
-        waterFilterArea: HideoutArea,
-        production: Production,
+        waterFilterArea: IBotHideoutArea,
+        production: IProduction,
         isGeneratorOn: boolean,
         pmcData: IPmcData,
     ): void {
@@ -756,7 +848,10 @@ export class HideoutHelper {
      * @returns seconds to produce item
      */
     protected getTotalProductionTimeSeconds(prodId: string): number {
-        return this.databaseService.getHideout().production.find((prod) => prod._id === prodId)?.productionTime ?? 0;
+        return (
+            this.databaseService.getHideout().production.recipes.find((prod) => prod._id === prodId)?.productionTime ??
+            0
+        );
     }
 
     /**
@@ -771,7 +866,7 @@ export class HideoutHelper {
         resourceValue: number,
         resourceUnitsConsumed: number,
         isFoundInRaid: boolean,
-    ): Upd {
+    ): IUpd {
         return {
             StackObjectsCount: stackCount,
             Resource: { Value: resourceValue, UnitsConsumed: resourceUnitsConsumed },
@@ -779,7 +874,7 @@ export class HideoutHelper {
         };
     }
 
-    protected updateAirFilters(airFilterArea: HideoutArea, pmcData: IPmcData, isGeneratorOn: boolean): void {
+    protected updateAirFilters(airFilterArea: IBotHideoutArea, pmcData: IPmcData, isGeneratorOn: boolean): void {
         // 300 resources last 20 hrs, 300/20/60/60 = 0.00416
         /* 10-10-2021 from WIKI (https://escapefromtarkov.fandom.com/wiki/FP-100_filter_absorber)
             Lasts for 17 hours 38 minutes and 49 seconds (23 hours 31 minutes and 45 seconds with elite hideout management skill),
@@ -831,27 +926,22 @@ export class HideoutHelper {
         }
     }
 
-    protected updateBitcoinFarm(pmcData: IPmcData, btcFarmCGs: number, isGeneratorOn: boolean): Production | undefined {
-        const btcProd = pmcData.Hideout.Production[HideoutHelper.bitcoinFarm];
-        const bitcoinProdData = this.databaseService
-            .getHideout()
-            .production.find((production) => production._id === HideoutHelper.bitcoinProductionId);
-        const coinSlotCount = this.getBTCSlots(pmcData);
-
-        // Full on bitcoins, halt progress
-        if (this.isProduction(btcProd) && btcProd.Products.length >= coinSlotCount) {
-            // Set progress to 0
-            btcProd.Progress = 0;
-
-            return btcProd;
+    protected updateBitcoinFarm(
+        pmcData: IPmcData,
+        btcProduction: IProductive,
+        btcFarmCGs: number,
+        isGeneratorOn: boolean,
+    ): void {
+        const isBtcProd = this.isProduction(btcProduction);
+        if (!isBtcProd) {
+            return;
         }
 
-        if (this.isProduction(btcProd)) {
-            // The wiki has a wrong formula!
-            // Do not change unless you validate it with the Client code files!
-            // This formula was found on the client files:
-            // *******************************************************
-            /*
+        // The wiki has a wrong formula!
+        // Do not change unless you validate it with the Client code files!
+        // This formula was found on the client files:
+        // *******************************************************
+        /*
                 public override int InstalledSuppliesCount
              {
               get
@@ -869,44 +959,59 @@ export class HideoutHelper {
                     }
                 }
             */
-            // **********************************************************
-            // At the time of writing this comment, this was GClass1667
-            // To find it in case of weird results, use DNSpy and look for usages on class AreaData
-            // Look for a GClassXXXX that has a method called "InitDetails" and the only parameter is the AreaData
-            // That should be the bitcoin farm production. To validate, try to find the snippet below:
-            /*
+        // **********************************************************
+        // At the time of writing this comment, this was GClass1667
+        // To find it in case of weird results, use DNSpy and look for usages on class AreaData
+        // Look for a GClassXXXX that has a method called "InitDetails" and the only parameter is the AreaData
+        // That should be the bitcoin farm production. To validate, try to find the snippet below:
+        /*
                 protected override void InitDetails(AreaData data)
                 {
                     base.InitDetails(data);
                     this.gclass1678_1.Type = EDetailsType.Farming;
                 }
             */
-            // BSG finally fixed their settings, they now get loaded from the settings and used in the client
-            const adjustedCraftTime =
-                (this.profileHelper.isDeveloperAccount(pmcData.sessionId) ? 40 : bitcoinProdData.productionTime) /
-                (1 + (btcFarmCGs - 1) * this.databaseService.getHideout().settings.gpuBoostRate);
-
-            // The progress should be adjusted based on the GPU boost rate, but the target is still the base productionTime
-            const timeMultiplier = bitcoinProdData.productionTime / adjustedCraftTime;
-            const timeElapsedSeconds = this.getTimeElapsedSinceLastServerTick(pmcData, isGeneratorOn);
-            btcProd.Progress += Math.floor(timeElapsedSeconds * timeMultiplier);
-
-            while (btcProd.Progress >= bitcoinProdData.productionTime) {
-                if (btcProd.Products.length < coinSlotCount) {
-                    // Has space to add a coin to production
-                    this.addBtcToProduction(btcProd, bitcoinProdData.productionTime);
-                } else {
-                    // Filled up bitcoin storage
-                    btcProd.Progress = 0;
-                }
-            }
-
-            btcProd.StartTimestamp = this.timeUtil.getTimestamp();
-
-            return btcProd;
+        // Needs power to function
+        if (!isGeneratorOn) {
+            // Return with no changes
+            return;
         }
 
-        return undefined;
+        const coinSlotCount = this.getBTCSlots(pmcData);
+
+        // Full of bitcoins, halt progress
+        if (btcProduction.Products.length >= coinSlotCount) {
+            // Set progress to 0
+            btcProduction.Progress = 0;
+
+            return;
+        }
+
+        const bitcoinProdData = this.databaseService
+            .getHideout()
+            .production.recipes.find((production) => production._id === HideoutHelper.bitcoinProductionId);
+
+        // BSG finally fixed their settings, they now get loaded from the settings and used in the client
+        const adjustedCraftTime =
+            (this.profileHelper.isDeveloperAccount(pmcData.sessionId) ? 40 : bitcoinProdData.productionTime) /
+            (1 + (btcFarmCGs - 1) * this.databaseService.getHideout().settings.gpuBoostRate);
+
+        // The progress should be adjusted based on the GPU boost rate, but the target is still the base productionTime
+        const timeMultiplier = bitcoinProdData.productionTime / adjustedCraftTime;
+        const timeElapsedSeconds = this.getTimeElapsedSinceLastServerTick(pmcData, isGeneratorOn);
+        btcProduction.Progress += Math.floor(timeElapsedSeconds * timeMultiplier);
+
+        while (btcProduction.Progress >= bitcoinProdData.productionTime) {
+            if (btcProduction.Products.length < coinSlotCount) {
+                // Has space to add a coin to production rewards
+                this.addBtcToProduction(btcProduction, bitcoinProdData.productionTime);
+            } else {
+                // Filled up bitcoin storage
+                btcProduction.Progress = 0;
+            }
+        }
+
+        btcProduction.StartTimestamp = this.timeUtil.getTimestamp().toString();
     }
 
     /**
@@ -914,7 +1019,7 @@ export class HideoutHelper {
      * @param btcProd Bitcoin production object
      * @param coinCraftTimeSeconds Time to craft a bitcoin
      */
-    protected addBtcToProduction(btcProd: Production, coinCraftTimeSeconds: number): void {
+    protected addBtcToProduction(btcProd: IProduction, coinCraftTimeSeconds: number): void {
         btcProd.Products.push({
             _id: this.hashUtil.generate(),
             _tpl: ItemTpl.BARTER_PHYSICAL_BITCOIN,
@@ -963,7 +1068,7 @@ export class HideoutHelper {
     protected getBTCSlots(pmcData: IPmcData): number {
         const bitcoinProductions = this.databaseService
             .getHideout()
-            .production.find((production) => production._id === HideoutHelper.bitcoinFarm);
+            .production.recipes.find((production) => production._id === HideoutHelper.bitcoinFarm);
         const productionSlots = bitcoinProductions?.productionLimitCount || 3; // Default to 3 if none found
         const hasManagementSkillSlots = this.profileHelper.hasEliteSkillLevel(SkillTypes.HIDEOUT_MANAGEMENT, pmcData);
         const managementSlotsCount = this.getEliteSkillAdditionalBitcoinSlotCount() || 2;
@@ -1045,8 +1150,8 @@ export class HideoutHelper {
         return productionTime * skillTimeReductionMultipler;
     }
 
-    public isProduction(productive: Productive): productive is Production {
-        return (productive as Production).Progress !== undefined || (productive as Production).RecipeId !== undefined;
+    public isProduction(productive: IProductive): productive is IProduction {
+        return (productive as IProduction).Progress !== undefined || (productive as IProduction).RecipeId !== undefined;
     }
 
     /**
@@ -1074,7 +1179,7 @@ export class HideoutHelper {
             return;
         }
 
-        const itemsToAdd: Item[][] = [];
+        const itemsToAdd: IItem[][] = [];
         for (let index = 0; index < craftedCoinCount; index++) {
             itemsToAdd.push([
                 {
@@ -1103,7 +1208,9 @@ export class HideoutHelper {
         const coinSlotCount = this.getBTCSlots(pmcData);
         if (pmcData.Hideout.Production[HideoutHelper.bitcoinFarm].Products.length >= coinSlotCount) {
             // Set start to now
-            pmcData.Hideout.Production[HideoutHelper.bitcoinFarm].StartTimestamp = this.timeUtil.getTimestamp();
+            pmcData.Hideout.Production[HideoutHelper.bitcoinFarm].StartTimestamp = this.timeUtil
+                .getTimestamp()
+                .toString();
         }
 
         // Remove crafted coins from production in profile now they've been collected
@@ -1137,7 +1244,7 @@ export class HideoutHelper {
      * @returns true if complete
      */
     protected hideoutImprovementIsComplete(improvement: IHideoutImprovement): boolean {
-        return improvement?.completed ? true : false;
+        return !!improvement?.completed;
     }
 
     /**
@@ -1145,8 +1252,8 @@ export class HideoutHelper {
      * @param pmcProfile Profile to adjust
      */
     public setHideoutImprovementsToCompleted(pmcProfile: IPmcData): void {
-        for (const improvementId in pmcProfile.Hideout.Improvement) {
-            const improvementDetails = pmcProfile.Hideout.Improvement[improvementId];
+        for (const improvementId in pmcProfile.Hideout.Improvements) {
+            const improvementDetails = pmcProfile.Hideout.Improvements[improvementId];
             if (
                 improvementDetails.completed === false &&
                 improvementDetails.improveCompleteTimestamp < this.timeUtil.getTimestamp()
@@ -1196,7 +1303,7 @@ export class HideoutHelper {
      * @param activeDogtags Active dogtags in place of fame dogtag slots
      * @returns combat bonus
      */
-    protected getDogtagCombatSkillBonusPercent(pmcData: IPmcData, activeDogtags: Item[]): number {
+    protected getDogtagCombatSkillBonusPercent(pmcData: IPmcData, activeDogtags: IItem[]): number {
         // Not own dogtag
         // Side = opposite of player
         let result = 0;
@@ -1213,5 +1320,27 @@ export class HideoutHelper {
         }
 
         return result;
+    }
+
+    /**
+     * The wall pollutes a profile with various temp buffs/debuffs,
+     * Remove them all
+     * @param wallAreaDb Hideout area data
+     * @param pmcData Player profile
+     */
+    public removeHideoutWallBuffsAndDebuffs(wallAreaDb: IHideoutArea, pmcData: IPmcData) {
+        // Smush all stage bonuses into one array for easy iteration
+        const wallBonuses = Object.values(wallAreaDb.stages).flatMap((stage) => stage.bonuses);
+
+        // Get all bonus Ids that the wall adds
+        const bonusIdsToRemove: string[] = [];
+        for (const bonus of wallBonuses) {
+            bonusIdsToRemove.push(bonus.id);
+        }
+
+        this.logger.debug(`Removing: ${bonusIdsToRemove.length} bonuses from profile`);
+
+        // Remove the wall bonuses from profile by id
+        pmcData.Bonuses = pmcData.Bonuses.filter((bonus) => !bonusIdsToRemove.includes(bonus.id));
     }
 }

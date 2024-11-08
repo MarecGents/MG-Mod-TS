@@ -1,7 +1,7 @@
 import { MinMax } from "@spt/models/common/MinMax";
 import { IRandomisedBotLevelResult } from "@spt/models/eft/bot/IRandomisedBotLevelResult";
 import { IBotBase } from "@spt/models/eft/common/tables/IBotBase";
-import { BotGenerationDetails } from "@spt/models/spt/bots/BotGenerationDetails";
+import { IBotGenerationDetails } from "@spt/models/spt/bots/BotGenerationDetails";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { MathUtil } from "@spt/utils/MathUtil";
@@ -26,7 +26,7 @@ export class BotLevelGenerator {
      */
     public generateBotLevel(
         levelDetails: MinMax,
-        botGenerationDetails: BotGenerationDetails,
+        botGenerationDetails: IBotGenerationDetails,
         bot: IBotBase,
     ): IRandomisedBotLevelResult {
         const expTable = this.databaseService.getGlobals().config.exp.level.exp_table;
@@ -59,7 +59,7 @@ export class BotLevelGenerator {
      * @returns A MinMax of the lowest and highest level to generate the bots
      */
     protected getRelativeBotLevelRange(
-        botGenerationDetails: BotGenerationDetails,
+        botGenerationDetails: IBotGenerationDetails,
         levelDetails: MinMax,
         maxAvailableLevel: number,
     ): MinMax {

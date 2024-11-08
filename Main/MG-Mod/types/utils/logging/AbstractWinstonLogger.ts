@@ -1,8 +1,8 @@
-import path from "node:path";
 import crypto from "node:crypto";
 import fs from "node:fs";
+import path from "node:path";
 import { promisify } from "node:util";
-import { Daum } from "@spt/models/eft/itemEvent/IItemEventRouterRequest";
+import { IDaum } from "@spt/models/eft/itemEvent/IItemEventRouterRequest";
 import { LogBackgroundColor } from "@spt/models/spt/logging/LogBackgroundColor";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import { SptLogger } from "@spt/models/spt/logging/SptLogger";
@@ -112,7 +112,7 @@ export abstract class AbstractWinstonLogger implements ILogger {
         return "14d";
     }
 
-    public async writeToLogFile(data: string | Daum): Promise<void> {
+    public async writeToLogFile(data: string | IDaum): Promise<void> {
         const command: ICommand = {
             uuid: crypto.randomUUID(),
             cmd: async () => await this.writeFilePromisify(this.filePath, `${data}\n`, true),
@@ -164,7 +164,7 @@ export abstract class AbstractWinstonLogger implements ILogger {
     }
 
     public async success(data: string | Record<string, unknown>): Promise<void> {
-        const command: ICommand = { uuid: crypto.randomUUID(), cmd: async () => await this.logger.succ!(data) };
+        const command: ICommand = { uuid: crypto.randomUUID(), cmd: async () => await this.logger.succ(data) };
         await this.asyncQueue.waitFor(command);
     }
 

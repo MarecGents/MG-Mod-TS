@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import { TimeUtil } from "@spt/utils/TimeUtil";
 import crc32 from "buffer-crc32";
+import { mongoid } from "mongoid-js";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -13,11 +14,16 @@ export class HashUtil {
      * @returns 24 character hash
      */
     public generate(): string {
-        const shasum = crypto.createHash("sha256");
-        const time = Math.random() * this.timeUtil.getTimestamp();
+        return mongoid();
+    }
 
-        shasum.update(time.toString());
-        return shasum.digest("hex").substring(0, 24);
+    /**
+     * is the passed in string a valid mongo id
+     * @param stringToCheck String to check
+     * @returns True when string is a valid mongo id
+     */
+    public isValidMongoId(stringToCheck: string) {
+        return /^[a-fA-F0-9]{24}$/.test(stringToCheck);
     }
 
     public generateMd5ForData(data: string): string {

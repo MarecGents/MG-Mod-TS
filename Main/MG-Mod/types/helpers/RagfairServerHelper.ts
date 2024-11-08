@@ -1,7 +1,7 @@
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { ProfileHelper } from "@spt/helpers/ProfileHelper";
 import { TraderHelper } from "@spt/helpers/TraderHelper";
-import { Item } from "@spt/models/eft/common/tables/IItem";
+import { IItem } from "@spt/models/eft/common/tables/IItem";
 import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
 import { BaseClasses } from "@spt/models/enums/BaseClasses";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -135,7 +135,7 @@ export class RagfairServerHelper {
      * @param sessionID Player to send items to
      * @param returnedItems Items to send to player
      */
-    public returnItems(sessionID: string, returnedItems: Item[]): void {
+    public returnItems(sessionID: string, returnedItems: IItem[]): void {
         this.mailSendService.sendLocalisedNpcMessageToPlayer(
             sessionID,
             this.traderHelper.getTraderById(Traders.RAGMAN),
@@ -207,7 +207,7 @@ export class RagfairServerHelper {
      * @param item Preset item
      * @returns Array of weapon and its children
      */
-    public getPresetItems(item: Item): Item[] {
+    public getPresetItems(item: IItem): IItem[] {
         const preset = this.cloner.clone(this.databaseService.getGlobals().ItemPresets[item._id]._items);
         return this.itemHelper.reparentItemAndChildren(item, preset);
     }
@@ -217,7 +217,7 @@ export class RagfairServerHelper {
      * @param item Preset item
      * @returns
      */
-    public getPresetItemsByTpl(item: Item): Item[] {
+    public getPresetItemsByTpl(item: IItem): IItem[] {
         const presets = [];
         for (const itemId in this.databaseService.getGlobals().ItemPresets) {
             if (this.databaseService.getGlobals().ItemPresets[itemId]._items[0]._tpl === item._tpl) {

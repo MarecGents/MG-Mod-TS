@@ -11,20 +11,26 @@ export class WishlistItemEventRouter extends ItemEventRouterDefinition {
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return [new HandledRoute("AddToWishList", false), new HandledRoute("RemoveFromWishList", false)];
+        return [
+            new HandledRoute("AddToWishList", false),
+            new HandledRoute("RemoveFromWishList", false),
+            new HandledRoute("ChangeWishlistItemCategory", false),
+        ];
     }
 
     public override async handleItemEvent(
         url: string,
         pmcData: IPmcData,
-        body: any,
+        request: any,
         sessionID: string,
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "AddToWishList":
-                return this.wishlistCallbacks.addToWishlist(pmcData, body, sessionID);
+                return this.wishlistCallbacks.addToWishlist(pmcData, request, sessionID);
             case "RemoveFromWishList":
-                return this.wishlistCallbacks.removeFromWishlist(pmcData, body, sessionID);
+                return this.wishlistCallbacks.removeFromWishlist(pmcData, request, sessionID);
+            case "ChangeWishlistItemCategory":
+                return this.wishlistCallbacks.changeWishlistItemCategory(pmcData, request, sessionID);
         }
     }
 }

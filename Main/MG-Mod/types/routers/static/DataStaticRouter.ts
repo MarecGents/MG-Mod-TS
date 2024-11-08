@@ -4,7 +4,7 @@ import { IGlobals } from "@spt/models/eft/common/IGlobals";
 import { ICustomizationItem } from "@spt/models/eft/common/tables/ICustomizationItem";
 import { IHandbookBase } from "@spt/models/eft/common/tables/IHandbookBase";
 import { IHideoutArea } from "@spt/models/eft/hideout/IHideoutArea";
-import { IHideoutProduction } from "@spt/models/eft/hideout/IHideoutProduction";
+import { IHideoutProductionData } from "@spt/models/eft/hideout/IHideoutProduction";
 import { IHideoutScavCase } from "@spt/models/eft/hideout/IHideoutScavCase";
 import { IHideoutSettingsBase } from "@spt/models/eft/hideout/IHideoutSettingsBase";
 import { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
@@ -83,8 +83,8 @@ export class DataStaticRouter extends StaticRouter {
                     info: any,
                     sessionID: string,
                     output: string,
-                ): Promise<IGetBodyResponseData<IHideoutProduction[]>> => {
-                    return this.dataCallbacks.gethideoutProduction(url, info, sessionID);
+                ): Promise<IGetBodyResponseData<IHideoutProductionData>> => {
+                    return this.dataCallbacks.getHideoutProduction(url, info, sessionID);
                 },
             ),
             new RouteAction(
