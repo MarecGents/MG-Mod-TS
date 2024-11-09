@@ -6,12 +6,12 @@ export interface CustomTrader extends TraderInfo {
     enabled: boolean;
     // _id locales extended from TraderInfo
     insurance: CustomTraderInsurance;
-    repair:CustomTraderRepair;
-    loyaltyLevels:CustomTraderLoyaltyLevel;
-    discount:number;
-    medic:boolean;
-    updateTime:MinMax;
-    unlockedDefault:boolean;
+    repair: CustomTraderRepair;
+    loyaltyLevels: CustomTraderLoyaltyLevel;
+    discount: number;
+    medic: boolean;
+    updateTime: MinMax;
+    unlockedDefault: boolean;
 }
 
 export interface CustomTraderInsurance {
@@ -35,11 +35,11 @@ export interface Dialogue {
 
 export interface CustomTraderRepair {
     enabled: boolean;
-    coefficient:number;
-    quality:number | string;
+    coefficient: number;
+    quality: number | string;
 }
 
 export interface CustomTraderLoyaltyLevel {
-    description?:AnyInfo
-    range:ITraderLoyaltyLevel[]
+    description?: AnyInfo
+    range: ITraderLoyaltyLevel[]
 }

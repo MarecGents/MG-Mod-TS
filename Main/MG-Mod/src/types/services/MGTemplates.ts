@@ -14,17 +14,10 @@ export class MGTemplates extends CommonlLoad {
 
     }
 
-    public onload(loadList){
+    public onload(loadList) {
         this.loadList = loadList;
         this.templetes = this.mod.container.resolve<DatabaseService>("DatabaseService").getTemplates();
-        this.init();
-        this.mod.Logger.log("MGTemplates loaded Successed", LogTextColor.YELLOW);
     }
 
-    public init() {
-        if (this.templetes) {
-            this.mod.Logger.log("MGTemplates initialed", LogTextColor.YELLOW);
-        }
-        return;
-    }
+
 }

@@ -14,17 +14,8 @@ export class MGTraders extends CommonlLoad {
 
     }
 
-    public onload(loadList){
+    public onload(loadList) {
         this.loadList = loadList;
         this.traders = this.mod.container.resolve<DatabaseService>("DatabaseService").getTraders();
-        this.init();
-        this.mod.Logger.log("MGTraders loaded Successed", LogTextColor.YELLOW);
-    }
-
-    public init() {
-        if (this.traders) {
-            this.mod.Logger.log("MGTraders initialed", LogTextColor.YELLOW);
-        }
-        return;
     }
 }

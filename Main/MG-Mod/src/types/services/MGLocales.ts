@@ -14,18 +14,9 @@ export class MGLocales extends CommonlLoad {
         super(mod, data);
     }
 
-    public onload(loadList){
+    public onload(loadList) {
         this.loadList = loadList;
         this.globalLocales = this.mod.container.resolve<DatabaseServer>("DatabaseServer").getTables().locales.global;
-        this.init();
-        this.mod.Logger.log("MGLocales loaded Successed", LogTextColor.YELLOW);
-    }
-
-    public init() {
-        if (this.globalLocales) {
-            this.mod.Logger.log("MGLocales initialed", LogTextColor.YELLOW);
-        }
-        return;
     }
 
     public addInfo(info: GeneralInfo) {

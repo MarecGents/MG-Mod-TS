@@ -14,17 +14,8 @@ export class MGHideout extends CommonlLoad {
 
     }
 
-    public onload(loadList){
+    public onload(loadList) {
         this.loadList = loadList;
         this.hideout = this.mod.container.resolve<DatabaseService>("DatabaseService").getHideout();
-        this.init();
-        this.mod.Logger.log("MGHideout loaded Successed", LogTextColor.YELLOW);
-    }
-
-    public init() {
-        if (this.hideout) {
-            this.mod.Logger.log("MGHideout initialed", LogTextColor.YELLOW);
-        }
-        return;
     }
 }

@@ -7,11 +7,12 @@ import {MGBots} from "../../../services/MGBots";
 import {MGConfigs} from "../../../services/MGConfigs";
 
 export interface LoadList {
-    MGList:MGList;
-    [key:string]:any;
+    MGList: MGList;
+
+    [key: string]: any;
 }
 
-export interface MGList{
+export interface MGList {
     MGtraders: MGTraders;
     MGglobals: MGGlobals;
     MGtemplates: MGTemplates;

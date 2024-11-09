@@ -14,31 +14,33 @@ import {ModConfig} from "./models/mg/config/IConfig";
 import {LoadList} from "./models/mg/services/ILoadList";
 import {FormatOutput} from "./servers/FormatOutput";
 
-export class loadMod{
+export class loadMod {
 
     protected mod;
-    public loadList:LoadList;
+    public loadList: LoadList;
+
     constructor(mod) {
         this.mod = mod;
     }
 
-    load(){
-        const ConfigJson:ModConfig = new IClone(this.mod).clone(this.mod.modpath + PathTypes.ModConfigList).config;
+    load() {
+        const ConfigJson: ModConfig = new IClone(this.mod).clone(this.mod.modpath + PathTypes.ModConfigList).config;
         // (new Test(this.mod,ConfigJson));
         this.loadList = {
-            MGList:{
-                MGlocales : (new MGLocales(this.mod,ConfigJson)),
-                MGbots : (new MGBots(this.mod,ConfigJson)),
-                MGconfigs : (new MGConfigs(this.mod,ConfigJson)),
-                MGglobals : (new MGGlobals(this.mod,ConfigJson)),
-                MGhideout : (new MGHideout(this.mod,ConfigJson)),
-                MGtemplates : (new MGTemplates(this.mod,ConfigJson)),
-                MGtraders : (new MGTraders(this.mod,ConfigJson)),
+            MGList: {
+                MGlocales: (new MGLocales(this.mod, ConfigJson)),
+                MGbots: (new MGBots(this.mod, ConfigJson)),
+                MGconfigs: (new MGConfigs(this.mod, ConfigJson)),
+                MGglobals: (new MGGlobals(this.mod, ConfigJson)),
+                MGhideout: (new MGHideout(this.mod, ConfigJson)),
+                MGtraders: (new MGTraders(this.mod, ConfigJson)),
+                MGtemplates: (new MGTemplates(this.mod, ConfigJson)),
             },
-            Output:(new FormatOutput(this.mod.Logger))
+            Output: (new FormatOutput(this.mod.Logger))
         };
-        for(const service in this.loadList.MGList){
+        for (const service in this.loadList.MGList) {
             this.loadList.MGList[service].onload(this.loadList);
         }
+        return this.loadList;
     }
 }

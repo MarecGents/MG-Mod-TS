@@ -15,18 +15,9 @@ export class MGConfigs extends CommonlLoad {
 
     }
 
-    public onload(loadList){
+    public onload(loadList) {
         this.loadList = loadList;
         this.ConfigServer = this.mod.container.resolve<ConfigServer>("ConfigServer");
         this.configsJson = this.ConfigJson.configs;
-        this.init();
-        this.mod.Logger.log("MGConfigs loaded Successed", LogTextColor.YELLOW)
-    }
-
-    public init() {
-        if (this.ConfigServer) {
-            this.mod.Logger.log("MGConfigs initialed", LogTextColor.YELLOW)
-        }
-        return;
     }
 }
