@@ -2,7 +2,7 @@ import {DatabaseServer} from "@spt/servers/DatabaseServer";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {GeneralInfo, ItemsInfo, TraderInfo, QuestInfo} from "../models/mg/locales/GlobalInfo";
 
-export class Locales {
+export class MGLocales {
 
     private mod: any;
     private ConfigJson: object;

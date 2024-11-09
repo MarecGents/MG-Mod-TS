@@ -1,5 +1,5 @@
 
-export class Traders{
+export class MGTraders {
     private mod: any;
     private ConfigJson: object;
     constructor(mod,ConfigJson) {
