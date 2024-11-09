@@ -1,22 +1,19 @@
 {
   "MGTrader": {
-    "enable": true,
     "addItems": true,
     "addAssorts": false
   },
   "extra": {
-    "enable": true,
     "KeyNameExpand": true,
     "profilesRepair": false,
     "FleaMarket": true,
     "newProfile": true
   },
   "bots": {
-    "enable": true,
-    "healthRate": "default"
+    "healthRate": "default",
+    "customEquipment": false
   },
   "configs": {
-    "enable": true,
     "updateTime": 300,
     "updateTimeDefault": 300,
     "chance": {
@@ -243,7 +240,6 @@
     }
   },
   "globals": {
-    "enable": true,
     "BaseLoadTime": 0.1,
     "BaseUnloadTime": 0.1,
     "LootMultiplier": {
@@ -284,13 +280,11 @@
     "SkillExperience": false
   },
   "hideout": {
-    "enable": true,
     "areas": 30,
     "production": 30,
     "scavcase": 10
   },
   "items": {
-    "enable": true,
     "ExaminedByDefault": true,
     "AllWeaponInColumn": true,
     "AmmoSetting": {
@@ -482,7 +476,6 @@
     "itemOptimize": true
   },
   "locations": {
-    "enable": true,
     "Boss_100_Chance": true,
     "otherBossType": {
       "enable": true,
@@ -514,12 +507,10 @@
     "newLooseLoot": false
   },
   "request": {
-    "enable": true,
     "changeCost_cont": 0,
     "questOptimize": false
   },
   "traders": {
-    "enable": true,
     "insurance": {
       "min_return_hour": 0,
       "max_return_hour": 0
