@@ -1,8 +1,9 @@
 import {DependencyContainer} from "tsyringe";
 import {ImporterUtil} from "@spt/utils/ImporterUtil";
 import {JsonUtil} from "@spt/utils/JsonUtil";
+import {ICloner} from "@spt/utils/cloners/ICloner";
 
-export class IClone {
+export class IClone implements ICloner{
     private mod: any;
     constructor(mod) {
         this.mod = mod;

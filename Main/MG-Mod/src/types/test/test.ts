@@ -10,5 +10,6 @@ export class Test{
     }
 
     test1(){
+
     }
 }

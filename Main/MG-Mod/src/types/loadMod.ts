@@ -14,6 +14,7 @@ export class loadMod{
 
     load(){
         const ConfigJson = new IClone(this.mod).clone(this.mod.modpath + PathTypes.ModConfigList).config;
+        // (new Test(this.mod,ConfigJson));
         (new MGLocales(this.mod,ConfigJson));
     }
 }
