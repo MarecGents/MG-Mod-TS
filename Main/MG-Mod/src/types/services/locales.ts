@@ -22,7 +22,7 @@ export class Locales {
 
     public addInfo(info: GeneralInfo) {
         for (let lang in this.globalLocales) {
-            this.globalLocales[lang][info.id] = info.desc;
+            this.globalLocales[lang][info._id] = info.desc;
         }
     }
 
@@ -30,7 +30,7 @@ export class Locales {
         const DescList = ["Name", "ShortName", "Description"]
         for (let lang in this.globalLocales) {
             for(let desc of DescList){
-                this.globalLocales[lang][`${info.id} ${desc}`] = info.desc[desc];
+                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
             }
         }
     }
@@ -47,7 +47,7 @@ export class Locales {
         ]
         for (let lang in this.globalLocales) {
             for(let desc of DescList){
-                this.globalLocales[lang][`${info.id} ${desc}`] = info.desc[desc];
+                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
             }
             if(Object.keys(info.other?info.other:{}).length > 0){
                 for(let other_id in info.other){
@@ -67,7 +67,7 @@ export class Locales {
         ]
         for (let lang in this.globalLocales) {
             for(let desc of DescList){
-                this.globalLocales[lang][`${info.id} ${desc}`] = info.desc[desc];
+                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
             }
         }
     }
