@@ -1,5 +1,5 @@
-import {IProps} from "@spt/models/eft/common/tables/ITemplateItem";
-import {IBuff} from "@spt/models/eft/common/IGlobals";
+import {IProps, ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
+import {BuffList} from "../traders/ITraderGlobals";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 
@@ -9,6 +9,7 @@ export interface BrothersItem {
     overrideProperties:IProps
     fleaPriceRoubles?:number
     locales:BroLocal
+    Buffs?:BuffList
 }
 
 export interface BroLocal {
@@ -24,7 +25,7 @@ export interface BroCh{
 export interface SuperItem {
     tpl:string
     items:Superitems
-    Buffs?:IBuff[]
+    Buffs?:BuffList
     handbook?:IHandbookItem
     assort?:IItem[]
 }
@@ -39,7 +40,7 @@ export interface MGItems {
     items:MGitems
     price:number
     description:MGItemDesc
-    Buffs?:MGBuff
+    Buffs?:BuffList
     toTraderId?:string
     isSold?:boolean
     loyal_level?:number
@@ -58,6 +59,10 @@ export interface MGItemDesc {
     description:string
 }
 
-export interface MGBuff {
-    [key:string]:IBuff[]
+
+
+export interface CustomTraderItems{
+    item:ITemplateItem
+    origin:string
+    Type:string[]
 }
