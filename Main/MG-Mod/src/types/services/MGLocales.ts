@@ -1,7 +1,6 @@
 import {DatabaseServer} from "@spt/servers/DatabaseServer";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
-import {ModConfig} from "../models/mg/config/IConfig";
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
 
@@ -10,8 +9,8 @@ export class MGLocales extends CommonlLoad {
     private globalLocales: object;
     private loadList: LoadList;
 
-    constructor(mod: any, data: ModConfig) {
-        super(mod, data);
+    constructor(mod: any) {
+        super(mod);
     }
 
     public onload(loadList) {

@@ -1,19 +1,16 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
-import {ModConfig} from "../models/mg/config/IConfig";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {IGlobals} from "@spt/models/eft/common/IGlobals";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LoadList} from "../models/mg/services/ILoadList";
-import {GeneralInfo} from "../models/mg/locales/GlobalInfo";
 import {BuffList} from "../models/mg/globals/ITraderGlobals";
 
 export class MGGlobals extends CommonlLoad {
     private globals: IGlobals;
     private loadList: LoadList;
 
-    constructor(mod: any, data: ModConfig) {
-        super(mod, data);
-
+    constructor(mod: any) {
+        super(mod);
     }
 
     public onload(loadList) {

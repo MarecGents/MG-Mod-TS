@@ -1,5 +1,4 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
-import {ModConfig} from "../models/mg/config/IConfig";
 import {ITemplates} from "@spt/models/spt/templates/ITemplates";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
@@ -9,9 +8,8 @@ export class MGTemplates extends CommonlLoad {
     private templetes: ITemplates;
     private loadList: LoadList;
 
-    constructor(mod: any, data: ModConfig) {
-        super(mod, data);
-
+    constructor(mod: any) {
+        super(mod);
     }
 
     public onload(loadList) {

@@ -1,11 +1,16 @@
 import {ILogger} from "@spt/models/spt/utils/ILogger";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
+import {LogBackgroundColor} from "@spt/models/spt/logging/LogBackgroundColor";
 
 export class FormatOutput {
     private logger: ILogger
 
     constructor(logger: ILogger) {
         this.logger = logger
+    }
+
+    public _OutputAny(text:string,color:LogTextColor,bgColor?:LogBackgroundColor) {
+        this.logger.log(text, color,bgColor);
     }
 
     public _FormatOutput(title: string, content: string, color: LogTextColor): void {

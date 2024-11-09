@@ -10,7 +10,7 @@ import {MGHideout} from "./services/MGHideout";
 import {MGLocales} from "./services/MGLocales";
 import {MGTemplates} from "./services/MGTemplates";
 import {MGTraders} from "./services/MGTraders";
-import {ModConfig} from "./models/mg/config/IConfig";
+import {MGModConfig} from "./models/mg/config/IConfig";
 import {LoadList} from "./models/mg/services/ILoadList";
 import {FormatOutput} from "./servers/FormatOutput";
 
@@ -24,17 +24,17 @@ export class loadMod {
     }
 
     load() {
-        const ConfigJson: ModConfig = new IClone(this.mod).clone(this.mod.modpath + PathTypes.ModConfigList).config;
+        const ConfigJson: MGModConfig = new IClone(this.mod).clone(this.mod.modpath + PathTypes.ModConfigList).config;
         // (new Test(this.mod,ConfigJson));
         this.loadList = {
             MGList: {
-                MGlocales: (new MGLocales(this.mod, ConfigJson)),
-                MGbots: (new MGBots(this.mod, ConfigJson)),
-                MGconfigs: (new MGConfigs(this.mod, ConfigJson)),
-                MGglobals: (new MGGlobals(this.mod, ConfigJson)),
-                MGhideout: (new MGHideout(this.mod, ConfigJson)),
-                MGtraders: (new MGTraders(this.mod, ConfigJson)),
-                MGtemplates: (new MGTemplates(this.mod, ConfigJson)),
+                MGlocales: (new MGLocales(this.mod)),
+                MGbots: (new MGBots(this.mod)),
+                MGconfigs: (new MGConfigs(this.mod)),
+                MGglobals: (new MGGlobals(this.mod)),
+                MGhideout: (new MGHideout(this.mod)),
+                MGtraders: (new MGTraders(this.mod)),
+                MGtemplates: (new MGTemplates(this.mod)),
             },
             Output: (new FormatOutput(this.mod.Logger))
         };

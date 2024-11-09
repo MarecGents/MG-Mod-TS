@@ -1,4 +1,8 @@
-export interface ModConfig {
+/**
+ * Build 
+ */
+
+export interface MGModConfig {
     MGTrader: object;
     extra: object;
     bots: object;

@@ -6,6 +6,8 @@ import {IPostDBLoadMod} from "@spt/models/external/IPostDBLoadMod";
 import {IPostSptLoadMod} from "@spt/models/external/IPostSptLoadMod";
 import {PreSptModLoader} from "@spt/loaders/PreSptModLoader";
 import {loadMod} from "./types/loadMod";
+import {LoadList} from "./types/models/mg/services/ILoadList";
+import {Main} from "./custom/Main";
 
 class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
 
@@ -16,6 +18,7 @@ class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
     public VFS: VFS;
     public modpath: string;
     private clone: any;
+    // private loadList: LoadList;
 
     preSptLoad(container: DependencyContainer) {
         this.container = container;
@@ -27,7 +30,8 @@ class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
 
     postDBLoad(container: DependencyContainer) {
         this.container = container;
-        (new loadMod(this)).load();
+        const loadList:LoadList = (new loadMod(this)).load();
+        (new Main(this,loadList));
     }
 
     postSptLoad(container: DependencyContainer) {
