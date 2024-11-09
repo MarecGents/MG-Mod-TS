@@ -12,7 +12,7 @@ export class Main{
     }
 
     public start(){
-        this.MGList.MGconfigs.ConfigsUpdate("spt-bot",["presetBatch","assault"],10);
-        this.loadList.Output._OutputAny(this.MGList.MGconfigs.getConfig("spt-bot").presetBatch.assault,"red");
+        // this.loadList.ValueUpdate._ValueUpdate(this.MGList.MGconfigs.getConfig("spt-bot"),["presetBatch","assault"],10);
+        // this.loadList.Output._OutputAny(this.MGList.MGconfigs.getConfig("spt-bot").presetBatch.assault,"red");
     }
 }

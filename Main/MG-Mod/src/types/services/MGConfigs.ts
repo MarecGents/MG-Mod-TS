@@ -21,18 +21,6 @@ export class MGConfigs extends CommonlLoad {
     public getConfig(configType){
         return this.ConfigServer.getConfig(configType);
     }
-    /**
-     * @param configType like spt-bot is going to load database/config/bot.json
-     * @param index  like ['presetBatch', 'assault'] is shown that you want change the value of bot["presetBatch"]["assault"]
-     * or bot.presetBatch.assault
-     * @param value is the value you want change under index
-     * @constructor
-     */
-    public ConfigsUpdate(configType:ConfigTypes,index:string[],value:any) {
-        let Nowconfig = this.getConfig(configType);
-        const indexStr = index.map(ele => `.${ele}`).join("")
-        eval(`Nowconfig${indexStr} = value`);
-    }
 
     /**
      * change the default update time in trader.json using key: "updateTimeDefault"
@@ -54,9 +42,7 @@ export class MGConfigs extends CommonlLoad {
             max:value1,
             min:value2?value2:value1
         }
-        for(let it in traderConfig.updateTime){
-            traderConfig.updateTime[it].seconds = seconds;
-        }
+        this.loadList.ValueUpdate._batchUpdate(traderConfig,["updateTime"],seconds, ["seconds"]);
     }
 
     public c_traderUpdateTime(traderId_name:string,seconds:MinMax){
@@ -70,13 +56,59 @@ export class MGConfigs extends CommonlLoad {
 
     /**
      * change the value of items durability sold on flea by config/ragfair.dynamic.condition
-     * @param chance belong to 0~1 with the unified value to change all types
+     * @param chance is in the interval 0~1 as the unified value to change all types
      */
-    public c_RagfairDynamicCondition(chance:number){
+    public c_RagfairDynamicConditionChance(chance:number){
         chance = chance<1?chance:chance/100;
         let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
         for(let id in RagfairConfig.dynamic.condition){
             RagfairConfig.dynamic.condition[id].conditionChance = chance
+        }
+    }
+
+    public c_traderInsuranceChance(chance:number){
+        if(chance<1){chance = Math.round(chance*100);}
+        this.loadList.ValueUpdate._batchUpdate(this.getConfig(ConfigTypes.INSURANCE),["returnChancePercent"],chance);
+    }
+
+
+
+    public c_EquipmentBuffSettings(type:string,chance:number){
+        let rarityWeight = {
+            "common": chance/100,
+            "rare": chance/100
+        }
+        let Repair = this.getConfig(ConfigTypes.REPAIR);
+        this.loadList.ValueUpdate._ValueUpdate(Repair,["repairKit",type,"rarityWeight"],rarityWeight);
+        if(type in ["armor","weapon"]){
+            this.loadList.ValueUpdate._ValueUpdate(Repair,["repairKitIntellectGainMultiplier",type],chance);
+        }
+        this.loadList.ValueUpdate._ValueUpdate(Repair,["maxIntellectGainPerRepair",type,"kit"],chance);
+        if(type==="armor"){
+            Repair.armorKitSkillPointGainPerRepairPointMultiplier *= chance;
+        }
+        else if(type==="weapon"){
+            Repair.weaponSkillRepairGain *= chance;
+        }
+    }
+
+    /**
+     *
+     * @param value  only if not types input , value is the whole weather.json/weather object
+     * @param types  like
+     * { "clouds":{
+     *      values: [xx],
+     *      weights:[xx]
+     *      }
+     * } etc.
+     */
+    public c_weatherConfig(value:any, types?:string){
+        let WeatherConfig = this.getConfig(ConfigTypes.WEATHER);
+        if(!types){
+            WeatherConfig.weather = value;
+        }
+        else{
+            WeatherConfig.weather[types] = value;
         }
     }
 }

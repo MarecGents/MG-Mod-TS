@@ -13,6 +13,7 @@ import {MGTraders} from "./services/MGTraders";
 import {MGModConfig} from "./models/mg/config/IConfig";
 import {LoadList} from "./models/mg/services/ILoadList";
 import {FormatOutput} from "./servers/FormatOutput";
+import {ValueUpdate} from "./servers/ValueUpdate";
 
 export class loadMod {
 
@@ -36,7 +37,8 @@ export class loadMod {
                 MGtraders: (new MGTraders(this.mod)),
                 MGtemplates: (new MGTemplates(this.mod)),
             },
-            Output: (new FormatOutput(this.mod.Logger))
+            Output: (new FormatOutput(this.mod.Logger)),
+            ValueUpdate:(new ValueUpdate())
         };
         for (const service in this.loadList.MGList) {
             this.loadList.MGList[service].onload(this.loadList);

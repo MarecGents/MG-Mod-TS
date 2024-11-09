@@ -6,10 +6,12 @@ import {MGHideout} from "../../../services/MGHideout";
 import {MGBots} from "../../../services/MGBots";
 import {MGConfigs} from "../../../services/MGConfigs";
 import {FormatOutput} from "../../../servers/FormatOutput";
+import {ValueUpdate} from "../../../servers/ValueUpdate";
 
 export interface LoadList {
     MGList: MGList;
     Output: FormatOutput;
+    ValueUpdate:ValueUpdate;
     [key: string]: any;
 }
 

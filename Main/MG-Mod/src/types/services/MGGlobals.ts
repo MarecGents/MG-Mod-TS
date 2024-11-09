@@ -28,4 +28,10 @@ export class MGGlobals extends CommonlLoad {
             }
         }
     }
+
+    public c_globalConfig(index:string[],value:any){
+        this.loadList.ValueUpdate._ValueUpdate(this.globals.config,index,value);
+    }
+
+
 }
