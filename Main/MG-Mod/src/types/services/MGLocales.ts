@@ -1,23 +1,29 @@
 import {DatabaseServer} from "@spt/servers/DatabaseServer";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {GeneralInfo, ItemsInfo, TraderInfo, QuestInfo} from "../models/mg/locales/GlobalInfo";
+import {ModConfig} from "../models/mg/config/IConfig";
+import {CommonlLoad} from "../models/external/CommonLoad";
 
-export class MGLocales {
+export class MGLocales extends CommonlLoad{
 
-    private mod: any;
-    private ConfigJson: object;
-    private color: any;
     private globalLocales: object;
 
-    constructor(mod: any, configJson: object) {
-        this.mod = mod;
-        this.ConfigJson = configJson;
-        this.color = LogTextColor;
-        this.init();
+
+    constructor(mod: any, data: ModConfig) {
+        super(mod,data)
     }
 
-    public init() {
+    public onload<T>():T {
         this.globalLocales = this.mod.container.resolve<DatabaseServer>("DatabaseServer").getTables().locales.global;
+        this.init();
+        return;
+    }
+
+    public init<T>():T{
+        if(this.globalLocales){
+            this.mod.Logger.log("MGLocales loaded",LogTextColor.YELLOW);
+        }
+        return;
     }
 
     public addInfo(info: GeneralInfo) {

@@ -262,6 +262,9 @@ export class GameController {
             this.logger.warning("Migration: deleting: ragfair traderinfo object from PMC");
             delete fullProfile.characters.scav.TradersInfo.ragfair;
         }
+
+        // Insured armors/helmets will return without soft inserts, remove all to be safe
+        fullProfile.insurance = [];
     }
 
     /**
