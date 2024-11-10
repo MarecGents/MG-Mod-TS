@@ -1,8 +1,8 @@
 {
-  "name": "MG-Mod-New",
-  "version": "0.6.11",
+  "name": "MG-Mod",
+  "version": "0.7.0",
   "main": "src/mod.js",
-  "license": "MGMod_new",
+  "license": "MIT license",
   "author": "MarecGents",
   "sptVersion": ">=3.10.0"
 }
