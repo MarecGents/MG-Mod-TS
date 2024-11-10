@@ -15,7 +15,7 @@ export class MGHideout extends CommonlLoad {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
         this.valueHelper = this.loadList.ValueHelper;
         this.hideout = this.mod.container.resolve<DatabaseService>("DatabaseService").getHideout();

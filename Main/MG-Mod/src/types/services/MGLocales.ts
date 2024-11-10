@@ -1,8 +1,8 @@
-import {DatabaseServer} from "@spt/servers/DatabaseServer";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
+import {DatabaseService} from "@spt//services/DatabaseService";
 
 export class MGLocales extends CommonlLoad {
 
@@ -11,9 +11,13 @@ export class MGLocales extends CommonlLoad {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
-        this.globalLocales = this.mod.container.resolve<DatabaseServer>("DatabaseServer").getTables().locales.global;
+        this.globalLocales = this.mod.container.resolve<DatabaseService>("DatabaseService").getLocales().global;
+    }
+
+    public getLocales(){
+        return this.globalLocales;
     }
 
     public addInfo(info: GeneralInfo) {

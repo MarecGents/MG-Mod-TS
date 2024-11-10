@@ -5,14 +5,24 @@ import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LoadList} from "../models/mg/services/ILoadList";
 
 export class MGTraders extends CommonlLoad {
-    private traders: Record<string, ITrader>;
+
+    private databaseService: DatabaseService;
 
     constructor(mod: any) {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
-        this.traders = this.mod.container.resolve<DatabaseService>("DatabaseService").getTraders();
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
+
+    public getTraders(): Record<string, ITrader> {
+        return this.databaseService.getTraders();
+    }
+
+    public getTrader(traderId: string): ITrader{
+        return this.databaseService.getTrader(traderId);
+    }
+
 }

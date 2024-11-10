@@ -1,5 +1,5 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
-import {DatabaseServer} from "@spt/servers/DatabaseServer";
+import {DatabaseService} from "@spt/services/DatabaseService";
 import {IBots} from "@spt/models/spt/bots/IBots";
 import {MGModConfig} from "../models/mg/config/IConfig";
 import {LoadList} from "../models/mg/services/ILoadList"
@@ -14,9 +14,13 @@ export class MGBots extends CommonlLoad {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
-        this.bots = this.mod.container.resolve<DatabaseServer>("DatabaseServer").getTables().bots;
+        this.bots = this.mod.container.resolve<DatabaseService>("DatabaseService").getBots();
+    }
+
+    public getBots():IBots{
+        return this.bots;
     }
 
     /**
@@ -24,7 +28,7 @@ export class MGBots extends CommonlLoad {
      * interface IBodyPart which you can get from SPT/Server Project
      **/
     public c_BotsHeathByRate(rate:number){
-        for(let bot in this.bots){
+        for(let bot in this.bots.types){
             let bodyPart = this.bots[bot].health.BodyParts[0];
             for(let parts in this.bots[bot].health.BodyParts[0]){
                 bodyPart[parts].max *= rate;
@@ -38,7 +42,7 @@ export class MGBots extends CommonlLoad {
      * interface IBodyPart which you can get from SPT/Server Project
      **/
     public c_BotsHeathByRealRate(RateData:IBodyPart){
-        for(let bot in this.bots){
+        for(let bot in this.bots.types){
             let bodyPart = this.bots[bot].health.BodyParts[0];
             for(let parts in this.bots[bot].health.BodyParts[0]){
                 bodyPart[parts] = RateData[parts];

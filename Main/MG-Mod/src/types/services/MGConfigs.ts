@@ -13,7 +13,7 @@ export class MGConfigs extends CommonlLoad {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
         this.valueHelper = this.loadList.ValueHelper;
         this.ConfigServer = this.mod.container.resolve<ConfigServer>("ConfigServer");
@@ -79,7 +79,6 @@ export class MGConfigs extends CommonlLoad {
             returnCP[it] = chance;
         }
     }
-
 
     public c_EquipmentBuffConfigs(type: equipmentTypes, chance: number) {
         let rarityWeight = {

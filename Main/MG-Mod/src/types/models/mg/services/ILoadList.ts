@@ -7,6 +7,7 @@ import {MGBots} from "../../../services/MGBots";
 import {MGConfigs} from "../../../services/MGConfigs";
 import {FormatOutput} from "../../../servers/FormatOutput";
 import {ValueHepler} from "../../../helpers/ValueHepler";
+import {MGLocations} from "../../../services/MGLocations";
 
 export interface LoadList {
     MGList: MGList;
@@ -16,11 +17,12 @@ export interface LoadList {
 }
 
 export interface MGList {
-    MGtraders: MGTraders;
-    MGglobals: MGGlobals;
-    MGtemplates: MGTemplates;
-    MGlocales: MGLocales;
-    MGhideout: MGHideout;
     MGbots: MGBots;
     MGconfigs: MGConfigs
+    MGglobals: MGGlobals;
+    MGhideout: MGHideout;
+    MGlocales: MGLocales;
+    MGLocations:MGLocations;
+    MGtemplates: MGTemplates;
+    MGtraders: MGTraders;
 }

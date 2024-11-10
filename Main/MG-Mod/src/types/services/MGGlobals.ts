@@ -11,10 +11,14 @@ export class MGGlobals extends CommonlLoad {
         super(mod);
     }
 
-    public onload(loadList) {
+    public onload(loadList?: LoadList) {
         this.loadList = loadList;
         this.valueHelper = this.loadList.ValueHelper;
         this.globals = this.mod.container.resolve<DatabaseService>("DatabaseService").getGlobals();
+    }
+
+    public getGlobals():IGlobals{
+        return this.globals;
     }
 
     public addNewBuffs(Buffs: BuffList) {
