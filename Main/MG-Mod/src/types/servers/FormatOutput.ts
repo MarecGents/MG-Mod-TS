@@ -9,7 +9,7 @@ export class FormatOutput {
         this.logger = logger
     }
 
-    public _OutputAny(text:string,color:LogTextColor,bgColor?:LogBackgroundColor) {
+    public _OutputAny(text:any,color:LogTextColor,bgColor?:LogBackgroundColor) {
         this.logger.log(text, color,bgColor);
     }
 

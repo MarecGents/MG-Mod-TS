@@ -6,7 +6,6 @@ import {LoadList} from "../models/mg/services/ILoadList";
 
 export class MGTraders extends CommonlLoad {
     private traders: Record<string, ITrader>;
-    private loadList: LoadList;
 
     constructor(mod: any) {
         super(mod);

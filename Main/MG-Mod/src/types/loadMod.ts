@@ -1,7 +1,5 @@
 import {IClone} from "./utils/IClone";
 import {PathTypes} from "./models/enums/PathTypes";
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
-import {LogBackgroundColor} from "@spt/models/spt/logging/LogBackgroundColor";
 import {Test} from "./test/test";
 import {MGBots} from "./services/MGBots";
 import {MGConfigs} from "./services/MGConfigs";
@@ -13,7 +11,7 @@ import {MGTraders} from "./services/MGTraders";
 import {MGModConfig} from "./models/mg/config/IConfig";
 import {LoadList} from "./models/mg/services/ILoadList";
 import {FormatOutput} from "./servers/FormatOutput";
-import {ValueUpdate} from "./servers/ValueUpdate";
+import {ValueHepler} from "./helpers/ValueHepler";
 
 export class loadMod {
 
@@ -38,7 +36,7 @@ export class loadMod {
                 MGtemplates: (new MGTemplates(this.mod)),
             },
             Output: (new FormatOutput(this.mod.Logger)),
-            ValueUpdate:(new ValueUpdate())
+            ValueHelper:(new ValueHepler())
         };
         for (const service in this.loadList.MGList) {
             this.loadList.MGList[service].onload(this.loadList);

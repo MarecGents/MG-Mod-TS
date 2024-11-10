@@ -1,20 +1,19 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {IGlobals} from "@spt/models/eft/common/IGlobals";
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {BuffList} from "../models/mg/globals/ITraderGlobals";
+import {ValueHepler} from "../helpers/ValueHepler";
 
 export class MGGlobals extends CommonlLoad {
     private globals: IGlobals;
-    private loadList: LoadList;
-
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList) {
         this.loadList = loadList;
+        this.valueHelper = this.loadList.ValueHelper;
         this.globals = this.mod.container.resolve<DatabaseService>("DatabaseService").getGlobals();
     }
 
@@ -29,8 +28,12 @@ export class MGGlobals extends CommonlLoad {
         }
     }
 
-    public c_globalConfig(index:string[],value:any){
-        this.loadList.ValueUpdate._ValueUpdate(this.globals.config,index,value);
+    public c_globalConfig(index: string[], value: any, key?: string) {
+        this.valueHelper._ValueUpdate(this.globals.config, index, value, key);
+    }
+
+    public _getGlobalValue(index: string[], value: any, key?: string) {
+        return this.valueHelper._getValue(this.globals, index, key);
     }
 
 

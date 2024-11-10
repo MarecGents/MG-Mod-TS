@@ -6,7 +6,6 @@ import {LoadList} from "../models/mg/services/ILoadList";
 
 export class MGTemplates extends CommonlLoad {
     private templetes: ITemplates;
-    private loadList: LoadList;
 
     constructor(mod: any) {
         super(mod);

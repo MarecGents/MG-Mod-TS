@@ -7,8 +7,6 @@ import {LoadList} from "../models/mg/services/ILoadList";
 export class MGLocales extends CommonlLoad {
 
     private globalLocales: object;
-    private loadList: LoadList;
-
     constructor(mod: any) {
         super(mod);
     }

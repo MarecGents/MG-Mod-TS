@@ -10,7 +10,6 @@ export class MGBots extends CommonlLoad {
     private bots: IBots;
     private loadList: LoadList;
     private className = "MGBots";
-
     constructor(mod: any) {
         super(mod);
     }

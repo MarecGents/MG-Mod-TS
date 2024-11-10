@@ -6,12 +6,12 @@ import {MGHideout} from "../../../services/MGHideout";
 import {MGBots} from "../../../services/MGBots";
 import {MGConfigs} from "../../../services/MGConfigs";
 import {FormatOutput} from "../../../servers/FormatOutput";
-import {ValueUpdate} from "../../../servers/ValueUpdate";
+import {ValueHepler} from "../../../helpers/ValueHepler";
 
 export interface LoadList {
     MGList: MGList;
     Output: FormatOutput;
-    ValueUpdate:ValueUpdate;
+    ValueHelper:ValueHepler;
     [key: string]: any;
 }
 
