@@ -1,1 +1,4 @@
 # This is a .gitignore file
+
+/.idea/
+/Main/MG-Mod/types/
