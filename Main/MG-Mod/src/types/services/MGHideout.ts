@@ -11,6 +11,8 @@ import {IHideoutProduction, IScavRecipe} from "@sptmodels/eft/hideout/IHideoutPr
 export class MGHideout extends CommonlLoad {
 
     private hideout: IHideout;
+    protected loadList: LoadList;
+    private className = "MGHideout";
     constructor(mod: any) {
         super(mod);
     }

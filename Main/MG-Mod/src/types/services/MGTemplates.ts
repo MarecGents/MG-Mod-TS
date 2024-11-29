@@ -13,7 +13,8 @@ import {ILocationServices} from "@spt/models/eft/common/tables/ILocationServices
 
 export class MGTemplates extends CommonlLoad {
     private databaseService: DatabaseService;
-
+    protected loadList: LoadList;
+    private className = "MGTemplates";
     constructor(mod: any) {
         super(mod);
     }
@@ -53,6 +54,29 @@ export class MGTemplates extends CommonlLoad {
 
     public getLocationServices(): ILocationServices {
         return this.databaseService.getLocationServices();
+    }
+
+    public addFilterToDB(newItemList){
+        let itemsDB = this.getItems;
+        const FilterList = ["Slots", "Chambers", "Cartridges"];
+        for (const item in itemsDB) {
+            for (const types in FilterList) {
+                const tp = FilterList[types];
+                if (itemsDB[item]._props[tp] && itemsDB[item]._props[tp].length>0) {
+                    for (const type in itemsDB[item]._props[tp]) {
+                        if (itemsDB[item]._props[tp][type]._props.filters.length > 0) {
+                            let idList = itemsDB[item]._props[tp][type]._props.filters[0].Filter
+                            for(let nId in newItemList){
+                                let keyId = newItemList[nId].cloneId;
+                                if (idList.includes(keyId) && !idList.includes(nId)) {
+                                    itemsDB[item]._props[tp][type]._props.filters[0].Filter.push(nId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

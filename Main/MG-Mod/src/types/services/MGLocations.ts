@@ -6,7 +6,8 @@ import {ILocation} from "@spt/models/eft/common/ILocation";
 
 export class MGLocations extends CommonlLoad{
     private databaseService: DatabaseService;
-
+    protected loadList: LoadList;
+    private className = "MGLocations";
     constructor(mod:any) {
         super(mod);
     }

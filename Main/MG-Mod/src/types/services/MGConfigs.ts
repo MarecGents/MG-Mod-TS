@@ -9,6 +9,8 @@ import {ValueHepler} from "../helpers/ValueHepler";
 export class MGConfigs extends CommonlLoad {
 
     private ConfigServer: ConfigServer;
+    protected loadList: LoadList;
+    private className = "MGConfigs";
     constructor(mod: any) {
         super(mod);
     }

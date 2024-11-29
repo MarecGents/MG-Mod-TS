@@ -7,7 +7,8 @@ import {LoadList} from "../models/mg/services/ILoadList";
 export class MGTraders extends CommonlLoad {
 
     private databaseService: DatabaseService;
-
+    protected loadList: LoadList;
+    private className = "MGTraders";
     constructor(mod: any) {
         super(mod);
     }

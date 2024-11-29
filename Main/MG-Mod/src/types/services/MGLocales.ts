@@ -7,6 +7,8 @@ import {DatabaseService} from "@spt//services/DatabaseService";
 export class MGLocales extends CommonlLoad {
 
     private globalLocales: object;
+    protected loadList: LoadList;
+    private className = "MGLocales";
     constructor(mod: any) {
         super(mod);
     }

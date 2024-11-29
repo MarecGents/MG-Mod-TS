@@ -7,6 +7,8 @@ import {ValueHepler} from "../helpers/ValueHepler";
 
 export class MGGlobals extends CommonlLoad {
     private globals: IGlobals;
+    protected loadList: LoadList;
+    private className = "MGGlobals";
     constructor(mod: any) {
         super(mod);
     }

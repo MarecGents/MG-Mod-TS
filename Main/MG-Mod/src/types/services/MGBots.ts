@@ -8,7 +8,7 @@ import {IBodyPart} from "@spt/models/eft/common/tables/IBotType";
 export class MGBots extends CommonlLoad {
 
     private bots: IBots;
-    private loadList: LoadList;
+    protected loadList: LoadList;
     private className = "MGBots";
     constructor(mod: any) {
         super(mod);

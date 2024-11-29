@@ -5,7 +5,8 @@ export class CommonlLoad {
 
     private mod: any;
     protected loadList: LoadList;
-    protected valueHelper: ValueHepler;
+    private className: string;
+    //protected valueHelper: ValueHepler;
     constructor(mod: any) {
         this.mod = mod;
     }
