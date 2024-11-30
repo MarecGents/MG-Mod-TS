@@ -1,25 +1,30 @@
-import {CommonlLoad} from "../models/external/CommonLoad";
-import {DatabaseService} from "@spt/services/DatabaseService";
-import {IGlobals} from "@spt/models/eft/common/IGlobals";
-import {LoadList} from "../models/mg/services/ILoadList";
-import {BuffList} from "../models/mg/globals/ITraderGlobals";
-import {ValueHepler} from "../helpers/ValueHepler";
+import { CommonlLoad } from "../models/external/CommonLoad";
+import { DatabaseService } from "@spt/services/DatabaseService";
+import { IGlobals } from "@spt/models/eft/common/IGlobals";
+import { LoadList } from "../models/mg/services/ILoadList";
+import { BuffList } from "../models/mg/globals/ITraderGlobals";
+
 
 export class MGGlobals extends CommonlLoad {
-    private globals: IGlobals;
+
+    protected globals: IGlobals;
     protected loadList: LoadList;
-    private className = "MGGlobals";
+    protected className = "MGGlobals";
+    
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList?: LoadList) {
-        this.loadList = loadList;
-        this.valueHelper = this.loadList.ValueHelper;
+        if (loadList) {
+            this.loadList = loadList;
+            this.output = this.loadList.Output;
+            this.valueHelper = this.loadList.ValueHelper;
+        }
         this.globals = this.mod.container.resolve<DatabaseService>("DatabaseService").getGlobals();
     }
 
-    public getGlobals():IGlobals{
+    public getGlobals(): IGlobals {
         return this.globals;
     }
 

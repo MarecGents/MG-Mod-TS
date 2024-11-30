@@ -1,21 +1,25 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {IBots} from "@spt/models/spt/bots/IBots";
-import {MGModConfig} from "../models/mg/config/IConfig";
 import {LoadList} from "../models/mg/services/ILoadList"
 import {IBodyPart} from "@spt/models/eft/common/tables/IBotType";
 
 export class MGBots extends CommonlLoad {
 
-    private bots: IBots;
+    protected bots: IBots;
     protected loadList: LoadList;
-    private className = "MGBots";
+    protected className = "MGBots";
+
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList?: LoadList) {
-        this.loadList = loadList;
+        if (loadList) {
+            this.loadList = loadList;
+            this.output = this.loadList.Output;
+            this.valueHelper = this.loadList.ValueHelper;
+        }
         this.bots = this.mod.container.resolve<DatabaseService>("DatabaseService").getBots();
     }
 

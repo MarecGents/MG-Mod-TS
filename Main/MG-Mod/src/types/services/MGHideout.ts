@@ -1,25 +1,27 @@
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {IHideout} from "../models/mg/hideout/IHideout";
-import {ValueHepler} from "../helpers/ValueHepler";
 import {IHideoutArea} from "@sptmodels/eft/hideout/IHideoutArea";
 import {IQteData} from "@sptmodels/eft/hideout/IQteData";
 import {IHideoutProduction, IScavRecipe} from "@sptmodels/eft/hideout/IHideoutProduction";
 
 export class MGHideout extends CommonlLoad {
 
-    private hideout: IHideout;
+    protected hideout: IHideout;
     protected loadList: LoadList;
-    private className = "MGHideout";
+    protected className = "MGHideout";
+    
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList?: LoadList) {
-        this.loadList = loadList;
-        this.valueHelper = this.loadList.ValueHelper;
+        if (loadList) {
+            this.loadList = loadList;
+            this.output = this.loadList.Output;
+            this.valueHelper = this.loadList.ValueHelper;
+        }
         this.hideout = this.mod.container.resolve<DatabaseService>("DatabaseService").getHideout();
     }
 

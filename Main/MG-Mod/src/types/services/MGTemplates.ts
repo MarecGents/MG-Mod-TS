@@ -1,26 +1,31 @@
-import {CommonlLoad} from "../models/external/CommonLoad";
-import {ITemplates} from "@spt/models/spt/templates/ITemplates";
-import {DatabaseService} from "@spt/services/DatabaseService";
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
-import {LoadList} from "../models/mg/services/ILoadList";
-import {IAchievement} from "@spt/models/eft/common/tables/IAchievement";
-import {ICustomizationItem} from "@spt/models/eft/common/tables/ICustomizationItem";
-import {IHandbookBase} from "@spt/models/eft/common/tables/IHandbookBase";
-import {ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
-import {IProfileTemplates} from "@spt/models/eft/common/tables/IProfileTemplate";
-import {IQuest} from "@spt/models/eft/common/tables/IQuest";
-import {ILocationServices} from "@spt/models/eft/common/tables/ILocationServices";
+import { CommonlLoad } from "../models/external/CommonLoad";
+import { DatabaseService } from "@spt/services/DatabaseService";
+import { LoadList } from "../models/mg/services/ILoadList";
+import { IAchievement } from "@spt/models/eft/common/tables/IAchievement";
+import { ICustomizationItem } from "@spt/models/eft/common/tables/ICustomizationItem";
+import { IHandbookBase } from "@spt/models/eft/common/tables/IHandbookBase";
+import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
+import { IProfileTemplates } from "@spt/models/eft/common/tables/IProfileTemplate";
+import { IQuest } from "@spt/models/eft/common/tables/IQuest";
+import { ILocationServices } from "@spt/models/eft/common/tables/ILocationServices";
+import { ItemFilterList } from "../models/mg/items/ItemFilterList";
 
 export class MGTemplates extends CommonlLoad {
-    private databaseService: DatabaseService;
+
+    protected databaseService: DatabaseService;
     protected loadList: LoadList;
-    private className = "MGTemplates";
+    protected className = "MGTemplates";
+
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList?: LoadList) {
-        this.loadList = loadList;
+        if (loadList) {
+            this.loadList = loadList;
+            this.output = this.loadList.Output;
+            this.valueHelper = this.loadList.ValueHelper;
+        }
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
@@ -56,18 +61,21 @@ export class MGTemplates extends CommonlLoad {
         return this.databaseService.getLocationServices();
     }
 
-    public addFilterToDB(newItemList){
-        let itemsDB = this.getItems;
-        const FilterList = ["Slots", "Chambers", "Cartridges"];
+    /**
+     * @description Items function
+     */
+    public addFilterToDB(newItemList: ItemFilterList) {
+        let itemsDB = this.getItems();
+        const FilterList = ["StackSlots", "Slots", "Chambers", "Cartridges", "Grids"];
         for (const item in itemsDB) {
             for (const types in FilterList) {
                 const tp = FilterList[types];
-                if (itemsDB[item]._props[tp] && itemsDB[item]._props[tp].length>0) {
+                if (itemsDB[item]._props[tp] && itemsDB[item]._props[tp].length > 0) {
                     for (const type in itemsDB[item]._props[tp]) {
                         if (itemsDB[item]._props[tp][type]._props.filters.length > 0) {
                             let idList = itemsDB[item]._props[tp][type]._props.filters[0].Filter
-                            for(let nId in newItemList){
-                                let keyId = newItemList[nId].cloneId;
+                            for (let nId in newItemList) {
+                                let keyId = newItemList[nId].filterId;
                                 if (idList.includes(keyId) && !idList.includes(nId)) {
                                     itemsDB[item]._props[tp][type]._props.filters[0].Filter.push(nId);
                                 }
@@ -78,5 +86,6 @@ export class MGTemplates extends CommonlLoad {
             }
         }
     }
+
 
 }

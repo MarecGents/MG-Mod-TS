@@ -1,7 +1,7 @@
-import {IProps, ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
-import {BuffList, ITraderGlobals} from "../globals/ITraderGlobals";
-import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
-import {IItem} from "@spt/models/eft/common/tables/IItem";
+import { IProps, ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
+import { BuffList, ITraderGlobals } from "../globals/ITraderGlobals";
+import { IHandbookItem } from "@spt/models/eft/common/tables/IHandbookBase";
+import { IItem } from "@spt/models/eft/common/tables/IItem";
 
 export interface BrothersItem extends ITraderGlobals {
     newId: string;

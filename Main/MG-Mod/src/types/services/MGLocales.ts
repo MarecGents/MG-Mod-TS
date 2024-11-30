@@ -1,4 +1,3 @@
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
@@ -6,15 +5,20 @@ import {DatabaseService} from "@spt//services/DatabaseService";
 
 export class MGLocales extends CommonlLoad {
 
-    private globalLocales: object;
+    protected globalLocales: object;
     protected loadList: LoadList;
-    private className = "MGLocales";
+    protected className = "MGLocales";
+
     constructor(mod: any) {
         super(mod);
     }
 
     public onload(loadList?: LoadList) {
-        this.loadList = loadList;
+        if (loadList) {
+            this.loadList = loadList;
+            this.output = this.loadList.Output;
+            this.valueHelper = this.loadList.ValueHelper;
+        }
         this.globalLocales = this.mod.container.resolve<DatabaseService>("DatabaseService").getLocales().global;
     }
 
