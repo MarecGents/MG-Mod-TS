@@ -30,4 +30,6 @@ export class MGTraders extends CommonlLoad {
         return this.databaseService.getTrader(traderId);
     }
 
+
+
 }

@@ -54,6 +54,10 @@ export class MGConfigs extends CommonlLoad {
         }
     }
 
+    /**
+     * @param traderId_name change func depends on trader's Id or Name
+     * @param seconds custom value of update time with min,max
+     */
     public c_traderUpdateTime(traderId_name: string, seconds: MinMax) {
         let traderConfig = this.getConfig(ConfigTypes.TRADER);
         for (let it in traderConfig.updateTime) {
@@ -64,6 +68,21 @@ export class MGConfigs extends CommonlLoad {
     }
 
     /**
+     * @param traderId your trader's id to add
+     * @param traderName your trader's name either name , nickname or full name is ok
+     * @param seconds the update time with min,max
+     */
+    public addNewTraderUpdateTime(traderId:string,traderName:string,seconds:MinMax) {
+        let traderConfig = this.getConfig(ConfigTypes.TRADER);
+        traderConfig.updateTime.push({
+            _name: traderName,
+            traderId: traderId,
+            seconds: seconds,
+        })
+    }
+
+    /**
+     *
      * change the value of items durability sold on flea by config/ragfair.dynamic.condition
      * @param chance is in the interval 0~1 as the unified value to change all types
      */
@@ -121,4 +140,13 @@ export class MGConfigs extends CommonlLoad {
             WeatherConfig.weather[types] = value;
         }
     }
+    /**
+     * @param traderId the trader's ID your want to add
+     * @param bool if the value is true or false
+     */
+    public addTradersRagfair(traderId:string,bool=true) {
+        let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
+        RagfairConfig.traders[traderId] = bool;
+    }
+
 }

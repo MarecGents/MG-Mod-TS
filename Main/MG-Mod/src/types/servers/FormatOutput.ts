@@ -22,6 +22,10 @@ export class FormatOutput {
     }
 
     public buffNameRepeat(buffName: string): void {
-        this.logger.log(`针剂Buff名称：${buffName} 重复！请更换其他Buff名称`)
+        this.logger.warning(`针剂Buff名称：${buffName} 重复！请更换其他Buff名称`);
+    }
+
+    public questAlreadyExist(questId:string): void {
+        this.logger.warning(`自定义任务id: ${questId} 已存在，请更换其他id`);
     }
 }
