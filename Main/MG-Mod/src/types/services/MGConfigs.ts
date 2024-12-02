@@ -94,7 +94,7 @@ export class MGConfigs extends CommonlLoad {
         }
     }
 
-    public c_traderInsuranceChance(chance: number) {
+    public c_TraderReturnChance(chance: number) {
         if (chance < 1) {
             chance = Math.round(chance * 100);
         }
@@ -140,6 +140,7 @@ export class MGConfigs extends CommonlLoad {
             WeatherConfig.weather[types] = value;
         }
     }
+
     /**
      * @param traderId the trader's ID your want to add
      * @param bool if the value is true or false
@@ -147,6 +148,16 @@ export class MGConfigs extends CommonlLoad {
     public addTradersRagfair(traderId:string,bool=true) {
         let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
         RagfairConfig.traders[traderId] = bool;
+    }
+
+    /**
+     * @param traderId the trader's id
+     * @param chance the chance value is from 0 to 100
+     */
+    public addTraderReturnChance(traderId:string,chance:number) {
+        let InsuranceConfig = this.getConfig(ConfigTypes.INSURANCE);
+         InsuranceConfig.returnChancePercent[traderId] = chance;
+
     }
 
 }

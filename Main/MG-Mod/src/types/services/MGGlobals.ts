@@ -1,6 +1,6 @@
 import { CommonlLoad } from "../models/external/CommonLoad";
 import { DatabaseService } from "@spt/services/DatabaseService";
-import { IGlobals } from "@spt/models/eft/common/IGlobals";
+import {IBuff, IGlobals} from "@spt/models/eft/common/IGlobals";
 import { LoadList } from "../models/mg/services/ILoadList";
 import { BuffList } from "../models/mg/globals/ITraderGlobals";
 
@@ -24,18 +24,21 @@ export class MGGlobals extends CommonlLoad {
         this.globals = this.mod.container.resolve<DatabaseService>("DatabaseService").getGlobals();
     }
 
-    public getGlobals(): IGlobals {
-        return this.globals;
+    public addNewBuff(BuffName: string,Buff:IBuff[]): void {
+        let globalsBuffs = this.globals.config.Health.Effects.Stimulator.Buffs;
+        if (BuffName in globalsBuffs) {
+            this.loadList.Output.buffNameRepeat(BuffName);
+            return;
+        } else {
+            globalsBuffs[BuffName] = Buff;
+            return;
+        }
     }
 
     public addNewBuffs(Buffs: BuffList) {
-        let globalsBuffs = this.globals.config.Health.Effects.Stimulator.Buffs;
+
         for (let BuffName in Buffs) {
-            if (!(BuffName in globalsBuffs)) {
-                globalsBuffs[BuffName] = Buffs[BuffName];
-            } else {
-                this.loadList.Output.buffNameRepeat(BuffName);
-            }
+            this.addNewBuff(BuffName, Buffs[BuffName]);
         }
     }
 

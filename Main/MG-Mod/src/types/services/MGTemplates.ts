@@ -9,6 +9,8 @@ import {IProfileTemplates} from "@spt/models/eft/common/tables/IProfileTemplate"
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {ILocationServices} from "@spt/models/eft/common/tables/ILocationServices";
 import {ItemFilterList} from "../models/mg/items/ItemFilterList";
+import {NewItemFromCloneDetails} from "@spt/models/spt/mod/NewItemDetails";
+import {CustomItemService} from "@spt/services/mod/CustomItemService";
 
 export class MGTemplates extends CommonlLoad {
 
@@ -26,7 +28,8 @@ export class MGTemplates extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        // this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.databaseService = new DatabaseService();
     }
 
     public getAchievements(): IAchievement[] {
@@ -62,8 +65,9 @@ export class MGTemplates extends CommonlLoad {
     }
 
     /**
-     * @description Items function
+     * @description items.json add or change
      */
+
     public addFilterToDB(newItemList: ItemFilterList) {
         let itemsDB = this.getItems();
         const FilterList = ["StackSlots", "Slots", "Chambers", "Cartridges", "Grids"];
@@ -87,9 +91,36 @@ export class MGTemplates extends CommonlLoad {
         }
     }
 
+    public addItem(id:string,item:ITemplateItem) {
+        let itemDB = this.getItems();
+        if(id !== item._id){
+            this.output.itemNotEquals(id,item._id);
+            return;
+        }
+        if(id in item){
+            itemDB[id] = item;
+            this.output.itemReplace(id);
+            return;
+        }
+        itemDB[id] = item;
+        this.output.itemAdd(id);
+        return;
+    }
+
+    public addCustomItem(newItem:NewItemFromCloneDetails){
+        // let CustomItemService = this.mod.container.resolve<CustomItemService>("CustomItemService");
+        (new CustomItemService()).createItemFromClone(newItem);
+    }
+
+    public addCustomItems(newItemList:NewItemFromCloneDetails[]){
+        newItemList.forEach(newItem => this.addCustomItem(newItem))
+    }
+
+
     /**
      * @description HandBook add or change
      */
+
     public addHandbookCategory(Category: IHandbookCategory) {
         let HBCategory: IHandbookCategory[] = this.getHandbook().Categories;
         let index = -1;
@@ -128,9 +159,21 @@ export class MGTemplates extends CommonlLoad {
         ItemList.forEach(value => this.addHandbookItem(value));
     }
 
+    public findHandbookParentIdById(itemId:string):string{
+        let HBItem: IHandbookItem[] = this.getHandbook().Items;
+        for(let it in HBItem) {
+            if(HBItem[it].Id !== itemId){
+                continue;
+            }
+            return HBItem[it].ParentId;
+        }
+        return "null";
+    }
+
     /**
-     * @description quests add or change
+     * @description quests.json add or change
      */
+
     public CustomQuest(id:string,quest: IQuest) {
         let Quest:Record<string,IQuest> = this.getQuests();
         if(id !== quest._id){
@@ -148,4 +191,29 @@ export class MGTemplates extends CommonlLoad {
     public CustomQuests(quests: Record<string,IQuest>) {
         return Object.keys(quests).forEach(id => this.CustomQuest(id, quests[id]));
     }
+
+
+    /**
+     * @description prices.json add or change
+     */
+
+    public c_priceById(id:string,price:number){
+        let prices = this.getPrices();
+        if(id in prices){
+            prices[id] = prices[id];
+        } else {
+            this.output._OutputAny(`prices.json中未找到物品：id为${id}`,"red");
+        }
+    }
+
+    public c_PricesByIds(priceList:Record<string,number>){
+        Object.keys(priceList).forEach(id => {this.c_priceById(id,priceList[id])});
+    }
+
+    /**
+     * @description profile.json add or change
+     */
+
+    // public addProfile()
+
 }
