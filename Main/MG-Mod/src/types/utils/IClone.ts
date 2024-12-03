@@ -18,7 +18,6 @@ export class IClone implements ICloner {
         } else if (typeof value === "string") {
             return JsonUtil.clone(JmporterUtil.loadRecursive(value));
         }
-
     }
 }
 

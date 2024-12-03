@@ -28,9 +28,100 @@ export class MGConfigs extends CommonlLoad {
         return this.ConfigServer.getConfig(configType);
     }
 
+
     /**
-     * change the default update time in trader.json using key: "updateTimeDefault"
+     * @description insurance.json
      */
+
+    public c_TraderReturnChance(chance: number) {
+        if (chance < 1) {
+            chance = Math.round(chance * 100);
+        }
+        let returnCP = this.valueHelper._getValue(this.getConfig(ConfigTypes.INSURANCE), ["returnChancePercent"]);
+        for (let it in returnCP) {
+            returnCP[it] = chance;
+        }
+    }
+
+    /**
+     * @param traderId the trader's id
+     * @param chance the chance value is from 0 to 100
+     */
+    public addTraderReturnChance(traderId:string,chance:number) {
+        let InsuranceConfig = this.getConfig(ConfigTypes.INSURANCE);
+        InsuranceConfig.returnChancePercent[traderId] = chance;
+    }
+
+    /**
+     * @description pmc.json
+     */
+
+    public pmcEquipmentBlackList(itemId:string){
+        let pmcConfig = this.getConfig(ConfigTypes.PMC);
+        const lootSlots = ['vestLoot', 'pocketLoot', 'backpackLoot'];
+        lootSlots.forEach(value=>{
+            if(pmcConfig[value].blacklist && !(itemId in pmcConfig[value].blacklist)){
+                pmcConfig[value].blacklist.push(itemId);
+            }
+        })
+    }
+
+    /**
+     * @description ragfair.json
+     * @description change the value of items durability sold on flea by config/ragfair.dynamic.condition
+     * @param chance is in the interval 0~1 as the unified value to change all types
+     */
+
+    public c_RagfairDynamicConditionChance(chance: number) {
+        chance = chance < 1 ? chance : chance / 100;
+        let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
+        for (let id in RagfairConfig.dynamic.condition) {
+            RagfairConfig.dynamic.condition[id].conditionChance = chance
+        }
+    }
+
+    /**
+     * @param traderId the trader's ID your want to add
+     * @param bool if the value is true or false
+     */
+    public addTradersRagfair(traderId:string,bool=true) {
+        let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
+        RagfairConfig.traders[traderId] = bool;
+    }
+
+    /**
+     * @description repair.json
+     */
+
+    public c_EquipmentBuffConfigs(type: equipmentTypes, chance: number) {
+        let rarityWeight = {
+            "common": chance / 100,
+            "rare": chance / 100
+        }
+        let Repair = this.getConfig(ConfigTypes.REPAIR);
+        this.valueHelper._ValueUpdate(Repair, ["repairKit", type, "rarityWeight"], rarityWeight);
+        if (type in ["armor", "weapon"]) {
+            this.valueHelper._ValueUpdate(Repair, ["repairKitIntellectGainMultiplier", type], chance);
+        }
+        this.valueHelper._ValueUpdate(Repair, ["maxIntellectGainPerRepair", type, "kit"], chance);
+        if (type === "armor") {
+            Repair.armorKitSkillPointGainPerRepairPointMultiplier *= chance;
+        } else if (type === "weapon") {
+            Repair.weaponSkillRepairGain *= chance;
+        }
+    }
+
+    /**
+     * @description scavcase.json
+     */
+
+    public emptyScavecase(){}
+
+    /**
+     * @description trader.json
+     * @description change the default update time in trader.json using key: "updateTimeDefault"
+     */
+
     public c_defaultUpdateTime(value: number) {
         let traderConfig = this.getConfig(ConfigTypes.TRADER);
         traderConfig.updateTimeDefault = value;
@@ -82,48 +173,7 @@ export class MGConfigs extends CommonlLoad {
     }
 
     /**
-     *
-     * change the value of items durability sold on flea by config/ragfair.dynamic.condition
-     * @param chance is in the interval 0~1 as the unified value to change all types
-     */
-    public c_RagfairDynamicConditionChance(chance: number) {
-        chance = chance < 1 ? chance : chance / 100;
-        let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
-        for (let id in RagfairConfig.dynamic.condition) {
-            RagfairConfig.dynamic.condition[id].conditionChance = chance
-        }
-    }
-
-    public c_TraderReturnChance(chance: number) {
-        if (chance < 1) {
-            chance = Math.round(chance * 100);
-        }
-        let returnCP = this.valueHelper._getValue(this.getConfig(ConfigTypes.INSURANCE), ["returnChancePercent"]);
-        for (let it in returnCP) {
-            returnCP[it] = chance;
-        }
-    }
-
-    public c_EquipmentBuffConfigs(type: equipmentTypes, chance: number) {
-        let rarityWeight = {
-            "common": chance / 100,
-            "rare": chance / 100
-        }
-        let Repair = this.getConfig(ConfigTypes.REPAIR);
-        this.valueHelper._ValueUpdate(Repair, ["repairKit", type, "rarityWeight"], rarityWeight);
-        if (type in ["armor", "weapon"]) {
-            this.valueHelper._ValueUpdate(Repair, ["repairKitIntellectGainMultiplier", type], chance);
-        }
-        this.valueHelper._ValueUpdate(Repair, ["maxIntellectGainPerRepair", type, "kit"], chance);
-        if (type === "armor") {
-            Repair.armorKitSkillPointGainPerRepairPointMultiplier *= chance;
-        } else if (type === "weapon") {
-            Repair.weaponSkillRepairGain *= chance;
-        }
-    }
-
-    /**
-     *
+     * @description weather.json
      * @param value  only if not types input , value is the whole weather.json/weather object
      * @param types  like
      * { "clouds":{
@@ -139,25 +189,6 @@ export class MGConfigs extends CommonlLoad {
         } else {
             WeatherConfig.weather[types] = value;
         }
-    }
-
-    /**
-     * @param traderId the trader's ID your want to add
-     * @param bool if the value is true or false
-     */
-    public addTradersRagfair(traderId:string,bool=true) {
-        let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
-        RagfairConfig.traders[traderId] = bool;
-    }
-
-    /**
-     * @param traderId the trader's id
-     * @param chance the chance value is from 0 to 100
-     */
-    public addTraderReturnChance(traderId:string,chance:number) {
-        let InsuranceConfig = this.getConfig(ConfigTypes.INSURANCE);
-         InsuranceConfig.returnChancePercent[traderId] = chance;
-
     }
 
 }

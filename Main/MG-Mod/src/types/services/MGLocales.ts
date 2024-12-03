@@ -1,4 +1,4 @@
-import {GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
+import {AnyInfo, GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {DatabaseService} from "@spt//services/DatabaseService";
@@ -8,6 +8,7 @@ export class MGLocales extends CommonlLoad {
     protected globalLocales: object;
     protected loadList: LoadList;
     protected className = "MGLocales";
+    protected databaseService: DatabaseService;
 
     constructor(mod: any) {
         super(mod);
@@ -19,11 +20,16 @@ export class MGLocales extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.globalLocales = this.mod.container.resolve<DatabaseService>("DatabaseService").getLocales().global;
+        this.databaseService = new DatabaseService();
+        this.globalLocales = this.databaseService.getLocales().global;
     }
 
     public getLocales(){
         return this.globalLocales;
+    }
+
+    public getServer(){
+        return this.databaseService.getServer();
     }
 
     public addInfo(info: GeneralInfo) {
@@ -76,5 +82,10 @@ export class MGLocales extends CommonlLoad {
                 this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
             }
         }
+    }
+
+    public addProfileInfo(info:AnyInfo){
+        let serverLocales = this.getServer();
+        Object.keys(info).forEach(key => {serverLocales[key] = info[key]});
     }
 }

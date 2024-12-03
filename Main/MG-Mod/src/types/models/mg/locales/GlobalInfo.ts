@@ -48,3 +48,8 @@ export interface QuestDesc {
 export interface AnyInfo {
     [key: string]: string;
 }
+
+export interface LocalesInfo{
+    Items:ItemsInfo[]
+    QuestInfo:QuestInfo[]
+}

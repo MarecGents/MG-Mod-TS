@@ -56,7 +56,6 @@ export interface MGItemDesc {
     description: string;
 }
 
-
 export interface CustomTraderItems {
     item: ITemplateItem;
     origin: string;

@@ -27,7 +27,7 @@ export class MGGlobals extends CommonlLoad {
     public addNewBuff(BuffName: string,Buff:IBuff[]): void {
         let globalsBuffs = this.globals.config.Health.Effects.Stimulator.Buffs;
         if (BuffName in globalsBuffs) {
-            this.loadList.Output.buffNameRepeat(BuffName);
+            this.loadList.Output.warning(`针剂Buff名称：${BuffName} 重复！请更换其他Buff名称`);
             return;
         } else {
             globalsBuffs[BuffName] = Buff;
@@ -36,7 +36,6 @@ export class MGGlobals extends CommonlLoad {
     }
 
     public addNewBuffs(Buffs: BuffList) {
-
         for (let BuffName in Buffs) {
             this.addNewBuff(BuffName, Buffs[BuffName]);
         }

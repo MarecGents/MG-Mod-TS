@@ -5,12 +5,14 @@ import {IAchievement} from "@spt/models/eft/common/tables/IAchievement";
 import {ICustomizationItem} from "@spt/models/eft/common/tables/ICustomizationItem";
 import {IHandbookBase, IHandbookCategory, IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
-import {IProfileTemplates} from "@spt/models/eft/common/tables/IProfileTemplate";
+import {IProfileSides, IProfileTemplates} from "@spt/models/eft/common/tables/IProfileTemplate";
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {ILocationServices} from "@spt/models/eft/common/tables/ILocationServices";
 import {ItemFilterList} from "../models/mg/items/ItemFilterList";
 import {NewItemFromCloneDetails} from "@spt/models/spt/mod/NewItemDetails";
 import {CustomItemService} from "@spt/services/mod/CustomItemService";
+import {ICustomProfile, IMGSingleProfile} from "../models/mg/profiles/ICustomProfile";
+import {CustomTraderItems} from "../models/mg/items/EItems";
 
 export class MGTemplates extends CommonlLoad {
 
@@ -52,7 +54,7 @@ export class MGTemplates extends CommonlLoad {
         return this.databaseService.getPrices();
     }
 
-    public getProfiles(): IProfileTemplates {
+    public getProfiles(): ICustomProfile {
         return this.databaseService.getProfiles();
     }
 
@@ -94,16 +96,16 @@ export class MGTemplates extends CommonlLoad {
     public addItem(id:string,item:ITemplateItem) {
         let itemDB = this.getItems();
         if(id !== item._id){
-            this.output.itemNotEquals(id,item._id);
+            this.output.warning(`物品id：${id} 与其 _id:${item._id} 不一致，请检查并更改使其保持一致！`);
             return;
         }
         if(id in item){
             itemDB[id] = item;
-            this.output.itemReplace(id);
+            this.output.log(`物品:id为${id}，已进行替换。`,"cyan");
             return;
         }
         itemDB[id] = item;
-        this.output.itemAdd(id);
+        this.output.log(`物品：id为${id}，已添加。`,"white");
         return;
     }
 
@@ -116,6 +118,23 @@ export class MGTemplates extends CommonlLoad {
         newItemList.forEach(newItem => this.addCustomItem(newItem))
     }
 
+    public AddCustomTraderItem(newItem:CustomTraderItems){
+        let itemDB = this.getItems();
+        let itemTemplate:ITemplateItem={};
+        if(!newItem.item){
+            return this.output.warning("存在自定义商人独立物品信息缺失，请自行检查！");
+        }
+        itemTemplate = newItem.item;
+        const itemId = itemTemplate._id;
+        if(!newItem.origin){
+            return this.output.warning(`自定义商人独立物品缺少originId，物品id:${itemId}`);
+        }
+
+        itemDB[itemId] = itemTemplate;
+        let filter :ItemFilterList = {};
+        filter[itemId] = {filterId:newItem.origin};
+        this.addFilterToDB(filter);
+    }
 
     /**
      * @description HandBook add or change
@@ -177,11 +196,11 @@ export class MGTemplates extends CommonlLoad {
     public CustomQuest(id:string,quest: IQuest) {
         let Quest:Record<string,IQuest> = this.getQuests();
         if(id !== quest._id){
-            this.output._OutputAny(`自定义任务id:${id} 与其 _id:${quest._id} 不一致. 请重新核对！`,"red");
+            this.output.log(`自定义任务id:${id} 与其 _id:${quest._id} 不一致. 请重新核对！`,"red");
             return;
         }
         if(id in Quest || quest._id in Quest){
-            this.output.questAlreadyExist(quest._id);
+            this.output.warning(`自定义任务id: ${quest._id} 已存在，请更换其他id`);
             return;
         }
         Quest[id] = quest;
@@ -202,7 +221,7 @@ export class MGTemplates extends CommonlLoad {
         if(id in prices){
             prices[id] = prices[id];
         } else {
-            this.output._OutputAny(`prices.json中未找到物品：id为${id}`,"red");
+            this.output.log(`prices.json中未找到物品：id为${id}`,"red");
         }
     }
 
@@ -214,6 +233,16 @@ export class MGTemplates extends CommonlLoad {
      * @description profile.json add or change
      */
 
-    // public addProfile()
+    public addProfile(profile:IMGSingleProfile){
+        let profiles:ICustomProfile=this.getProfiles();
+        profiles[profile.profileName] = profile.profileSides;
+        let desc = {};
+        desc[profile.profileSides.descriptionLocaleKey] = profile.description;
+        this.loadList.MGList.MGlocales.addProfileInfo(desc);
+    }
+
+    public addProfiles(profiles:IMGSingleProfile[]){
+        profiles.forEach(profile => this.addProfile(profile));
+    }
 
 }
