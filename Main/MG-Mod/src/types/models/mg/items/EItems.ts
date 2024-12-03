@@ -2,6 +2,7 @@ import { IProps, ITemplateItem } from "@spt/models/eft/common/tables/ITemplateIt
 import { BuffList, ITraderGlobals } from "../globals/ITraderGlobals";
 import { IHandbookItem } from "@spt/models/eft/common/tables/IHandbookBase";
 import { IItem } from "@spt/models/eft/common/tables/IItem";
+import {Money} from "../../../../../types/models/enums/Money";
 
 export interface BrothersItem extends ITraderGlobals {
     newId: string;
@@ -42,6 +43,7 @@ export interface MGItems extends ITraderGlobals {
     isSold?: boolean;
     loyal_level?: number;
     assort?: IItem[];
+    currency?:Money;
 }
 
 export interface MGitems {

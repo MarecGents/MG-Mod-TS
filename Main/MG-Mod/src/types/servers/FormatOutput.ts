@@ -17,6 +17,10 @@ export class FormatOutput {
         this.logger.warning(text);
     }
 
+    public error(text:string) {
+        this.logger.error(text);
+    }
+
     public _FormatOutput(title: string, content: string, color: LogTextColor,bgColor?:LogBackgroundColor): void {
         this.logger.log(`${title}:${content}`, color,bgColor);
     }
