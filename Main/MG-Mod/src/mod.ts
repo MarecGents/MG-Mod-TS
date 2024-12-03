@@ -8,8 +8,9 @@ import {PreSptModLoader} from "@spt/loaders/PreSptModLoader";
 import {loadMod} from "./types/loadMod";
 import {LoadList} from "./types/models/mg/services/ILoadList";
 import {Main} from "./custom/Main";
+import {DatabaseServer} from "../types/servers/DatabaseServer";
 
-class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
+export class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
 
     public container: DependencyContainer;
     // public container2: DependencyContainer;

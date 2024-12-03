@@ -1,4 +1,5 @@
 import {IItem} from "@spt/models/eft/common/tables/IItem";
+import {Mod} from "../../mod";
 
 export class IFormatUtils {
 
@@ -19,20 +20,23 @@ export class IFormatUtils {
     /**
      * this method has something wrong, do not use. written by MarecGents at 2024-12-03_19:00pm
      */
-    public assortIdIssue(assorts:IItem[]):boolean {
+    public assortIdIssue(assorts:IItem[],mod:Mod):boolean {
         let AstStr = JSON.stringify(assorts);
+        mod.Logger.log(`${AstStr}`,"white");
         assorts.forEach(assort =>{
-            // 使用全局正则表达式来查找所有匹配项，注意双引号和转义
-            const regex = new RegExp(this.escapeRegExp(assort._id), 'g');
-            // match 方法返回一个数组，包含所有匹配的结果
-            const matches = AstStr.match(regex);
-            // 如果 matches 是 null，则表示没有找到任何匹配项
-            let count = matches ? matches.length : 0;
-            if(count > 3 || count === 0){
-                return false;
-            }
+            const IdCount = this.repeatContentCount(assort._id,AstStr);
+            const parentIdCount = this.repeatContentCount(assort._id,AstStr);
         })
         return true;
+    }
+
+    private repeatContentCount(content:string,data:string):number {
+        // 使用全局正则表达式来查找所有匹配项，注意双引号和转义
+        const regex = new RegExp(this.escapeRegExp(content), 'g');
+        // match 方法返回一个数组，包含所有匹配的结果
+        const matches = data.match(regex);
+        // 如果 matches 是 null，则表示没有找到任何匹配项
+        return matches ? matches.length : 0;
     }
 
 }

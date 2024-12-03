@@ -7,6 +7,7 @@ import { BuffList } from "../models/mg/globals/ITraderGlobals";
 
 export class MGGlobals extends CommonlLoad {
 
+    protected databaseService: DatabaseService;
     protected globals: IGlobals;
     protected loadList: LoadList;
     protected className = "MGGlobals";
@@ -21,7 +22,8 @@ export class MGGlobals extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.globals = this.mod.container.resolve<DatabaseService>("DatabaseService").getGlobals();
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.globals = this.databaseService.getGlobals();
     }
 
     public addNewBuff(BuffName: string,Buff:IBuff[]): void {

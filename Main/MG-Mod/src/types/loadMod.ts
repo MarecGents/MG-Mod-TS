@@ -40,6 +40,7 @@ export class loadMod {
             Output: (new FormatOutput(this.mod.Logger)),
             ValueHelper:(new ValueHepler())
         };
+        // 这里的逻辑也稍微有点问题，onload中才加载每一个services的内联主要变量，最好是在onload之前就将类值全部设置好。
         for (const service in this.loadList.MGList) {
             this.loadList.MGList[service].onload(this.loadList);
         }

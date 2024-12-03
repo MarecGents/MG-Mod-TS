@@ -1,7 +1,7 @@
 import {AnyInfo, GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/mg/locales/GlobalInfo";
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
-import {DatabaseService} from "@spt//services/DatabaseService";
+import {DatabaseService} from "@spt/services/DatabaseService";
 
 export class MGLocales extends CommonlLoad {
 
@@ -20,8 +20,8 @@ export class MGLocales extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = new DatabaseService();
-        this.globalLocales = this.databaseService.getLocales().global;
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.globalLocales = this.databaseService.getGlobals();
     }
 
     public getLocales(){

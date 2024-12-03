@@ -9,6 +9,7 @@ export class MGBots extends CommonlLoad {
     protected bots: IBots;
     protected loadList: LoadList;
     protected className = "MGBots";
+    protected databaseService: DatabaseService;
 
     constructor(mod: any) {
         super(mod);
@@ -20,7 +21,8 @@ export class MGBots extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.bots = this.mod.container.resolve<DatabaseService>("DatabaseService").getBots();
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.bots = this.databaseService.getBots();
     }
 
     public getBots():IBots{
