@@ -18,19 +18,26 @@ export class IFormatUtils {
     }
 
     /**
-     * this method has something wrong, do not use. written by MarecGents at 2024-12-03_19:00pm
+     * @description this method is aiming to test the assorts content whether if there is repeated assort._id in any place elsewhere
      */
-    public assortIdIssue(assorts:IItem[],mod:Mod):boolean {
-        let AstStr = JSON.stringify(assorts);
-        mod.Logger.log(`${AstStr}`,"white");
-        assorts.forEach(assort =>{
+    public assortIdIssue(assortItems:IItem[]):boolean {
+        let AstStr = JSON.stringify(assortItems);
+        let key = 0;
+        assortItems.forEach(assort =>{
             const IdCount = this.repeatContentCount(assort._id,AstStr);
-            const parentIdCount = this.repeatContentCount(assort._id,AstStr);
+            const parentIdCount = this.repeatContentCount(`"parentId":"${assort._id}"`,AstStr);
+            if(IdCount-parentIdCount !== 1){
+                key += 1;
+            }
         })
-        return true;
+        return (key === 0);
     }
 
-    private repeatContentCount(content:string,data:string):number {
+    /**
+     * @param content which you want to find to count in data
+     * @param data  in which the content you want to find to count
+     */
+    public repeatContentCount(content:string,data:string):number {
         // 使用全局正则表达式来查找所有匹配项，注意双引号和转义
         const regex = new RegExp(this.escapeRegExp(content), 'g');
         // match 方法返回一个数组，包含所有匹配的结果
@@ -38,5 +45,4 @@ export class IFormatUtils {
         // 如果 matches 是 null，则表示没有找到任何匹配项
         return matches ? matches.length : 0;
     }
-
 }

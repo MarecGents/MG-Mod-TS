@@ -28,4 +28,8 @@ export class FormatOutput {
     public classLoaded(className: string): void {
         this.logger.log(`${className}:已加载`, LogTextColor.YELLOW);
     }
+
+    public debugLog(text:string){
+        this.logger.log(text,LogTextColor.RED,LogBackgroundColor.GREEN);
+    }
 }

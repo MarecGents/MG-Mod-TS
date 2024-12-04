@@ -1,18 +1,22 @@
-import { CommonlLoad } from "../models/external/CommonLoad";
-import { ConfigServer } from "@spt/servers/ConfigServer";
-import { LoadList } from "../models/mg/services/ILoadList";
-import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
-import { MinMax } from "@spt/models/common/MinMax";
-import { equipmentTypes } from "../models/enums/RepairTypes";
+import {CommonlLoad} from "../models/external/CommonLoad";
+import {ConfigServer} from "@spt/servers/ConfigServer";
+import {LoadList} from "../models/mg/services/ILoadList";
+import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
+import {MinMax} from "@spt/models/common/MinMax";
+import {equipmentTypes} from "../models/enums/RepairTypes";
 
 export class MGConfigs extends CommonlLoad {
 
     protected ConfigServer: ConfigServer;
     protected loadList: LoadList;
-    protected className = "MGConfigs";
 
     constructor(mod: any) {
         super(mod);
+    }
+
+    public init() {
+        this.className = "MGConfigs";
+        this.ConfigServer = this.mod.container.resolve<ConfigServer>("ConfigServer");
     }
 
     public onload(loadList?: LoadList) {
@@ -21,13 +25,11 @@ export class MGConfigs extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.ConfigServer = this.mod.container.resolve<ConfigServer>("ConfigServer");
     }
 
     public getConfig(configType: ConfigTypes) {
         return this.ConfigServer.getConfig(configType);
     }
-
 
     /**
      * @description insurance.json
@@ -47,7 +49,7 @@ export class MGConfigs extends CommonlLoad {
      * @param traderId the trader's id
      * @param chance the chance value is from 0 to 100
      */
-    public addTraderReturnChance(traderId:string,chance:number) {
+    public addTraderReturnChance(traderId: string, chance: number) {
         let InsuranceConfig = this.getConfig(ConfigTypes.INSURANCE);
         InsuranceConfig.returnChancePercent[traderId] = chance;
     }
@@ -56,11 +58,11 @@ export class MGConfigs extends CommonlLoad {
      * @description pmc.json
      */
 
-    public pmcEquipmentBlackList(itemId:string){
+    public pmcEquipmentBlackList(itemId: string) {
         let pmcConfig = this.getConfig(ConfigTypes.PMC);
         const lootSlots = ['vestLoot', 'pocketLoot', 'backpackLoot'];
-        lootSlots.forEach(value=>{
-            if(pmcConfig[value].blacklist && !(itemId in pmcConfig[value].blacklist)){
+        lootSlots.forEach(value => {
+            if (pmcConfig[value].blacklist && !(itemId in pmcConfig[value].blacklist)) {
                 pmcConfig[value].blacklist.push(itemId);
             }
         })
@@ -84,7 +86,7 @@ export class MGConfigs extends CommonlLoad {
      * @param traderId the trader's ID your want to add
      * @param bool if the value is true or false
      */
-    public addTradersRagfair(traderId:string,bool=true) {
+    public addTradersRagfair(traderId: string, bool = true) {
         let RagfairConfig = this.getConfig(ConfigTypes.RAGFAIR);
         RagfairConfig.traders[traderId] = bool;
     }
@@ -115,7 +117,8 @@ export class MGConfigs extends CommonlLoad {
      * @description scavcase.json
      */
 
-    public emptyScavecase(){}
+    public emptyScavecase() {
+    }
 
     /**
      * @description trader.json
@@ -163,7 +166,7 @@ export class MGConfigs extends CommonlLoad {
      * @param traderName your trader's name either name , nickname or full name is ok
      * @param seconds the update time with min,max
      */
-    public addNewTraderUpdateTime(traderId:string,traderName:string,seconds:MinMax) {
+    public addNewTraderUpdateTime(traderId: string, traderName: string, seconds: MinMax) {
         let traderConfig = this.getConfig(ConfigTypes.TRADER);
         traderConfig.updateTime.push({
             _name: traderName,

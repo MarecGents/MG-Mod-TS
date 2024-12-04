@@ -10,11 +10,16 @@ export class MGHideout extends CommonlLoad {
 
     protected hideout: IHideout;
     protected loadList: LoadList;
-    protected className = "MGHideout";
     protected databaseService: DatabaseService;
 
     constructor(mod: any) {
         super(mod);
+    }
+
+    public init(){
+        this.className = "MGHideout";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.hideout = this.databaseService.getHideout();
     }
 
     public onload(loadList?: LoadList) {
@@ -23,8 +28,7 @@ export class MGHideout extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.hideout = this.databaseService.getHideout();
+
     }
 
     /**

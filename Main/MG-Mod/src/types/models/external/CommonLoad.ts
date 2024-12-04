@@ -12,7 +12,13 @@ export class CommonlLoad {
     protected valueHelper: ValueHepler;
     constructor(mod: any) {
         this.mod = mod;
+        this.init()
     }
+    public init(){
+
+    }
+
     public onload(loadList?: LoadList) {
+
     }
 }

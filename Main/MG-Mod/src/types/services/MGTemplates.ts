@@ -18,10 +18,14 @@ export class MGTemplates extends CommonlLoad {
 
     protected databaseService: DatabaseService;
     protected loadList: LoadList;
-    protected className = "MGTemplates";
 
     constructor(mod: any) {
         super(mod);
+    }
+
+    public init() {
+        this.className = "MGTemplates";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
     public onload(loadList?: LoadList) {
@@ -30,8 +34,6 @@ export class MGTemplates extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        // this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.databaseService = new DatabaseService();
     }
 
     public getAchievements(): IAchievement[] {

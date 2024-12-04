@@ -10,20 +10,22 @@ export class MGGlobals extends CommonlLoad {
     protected databaseService: DatabaseService;
     protected globals: IGlobals;
     protected loadList: LoadList;
-    protected className = "MGGlobals";
     
     constructor(mod: any) {
         super(mod);
     }
 
+    public init(){
+        this.className = "MGGlobals";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.globals = this.databaseService.getGlobals();
+    }
     public onload(loadList?: LoadList) {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.globals = this.databaseService.getGlobals();
     }
 
     public addNewBuff(BuffName: string,Buff:IBuff[]): void {

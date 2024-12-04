@@ -8,19 +8,21 @@ export class MGLocations extends CommonlLoad {
 
     protected databaseService: DatabaseService;
     protected loadList: LoadList;
-    protected className = "MGLocations";
 
     constructor(mod: any) {
         super(mod);
     }
 
+    public init(){
+        this.className = "MGLocations";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+    }
     public onload(loadList?: LoadList) {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
     public getLocations(): ILocations {

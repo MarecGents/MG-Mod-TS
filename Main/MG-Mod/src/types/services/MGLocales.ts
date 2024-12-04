@@ -7,11 +7,16 @@ export class MGLocales extends CommonlLoad {
 
     protected globalLocales: object;
     protected loadList: LoadList;
-    protected className = "MGLocales";
     protected databaseService: DatabaseService;
 
     constructor(mod: any) {
         super(mod);
+    }
+
+    public init() {
+        this.className = "MGLocales";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
+        this.globalLocales = this.databaseService.getGlobals();
     }
 
     public onload(loadList?: LoadList) {
@@ -20,8 +25,6 @@ export class MGLocales extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.globalLocales = this.databaseService.getGlobals();
     }
 
     public getLocales(){

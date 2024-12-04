@@ -10,10 +10,14 @@ export class MGTraders extends CommonlLoad {
 
     protected databaseService: DatabaseService;
     protected loadList: LoadList;
-    protected className = "MGTraders";
 
     constructor(mod: any) {
         super(mod);
+    }
+
+    public init() {
+        this.className = "MGTraders";
+        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
     public onload(loadList?: LoadList) {
@@ -22,7 +26,6 @@ export class MGTraders extends CommonlLoad {
             this.output = this.loadList.Output;
             this.valueHelper = this.loadList.ValueHelper;
         }
-        this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
     public getTraders(): Record<string, ITrader> {
