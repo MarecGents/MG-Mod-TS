@@ -20,5 +20,3 @@ export class IClone implements ICloner {
         }
     }
 }
-
-.0

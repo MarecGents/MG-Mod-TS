@@ -3,15 +3,15 @@
  */
 
 export interface MGModConfig {
-    MGTrader: object;
-    extra: object;
-    bots: object;
-    configs: object;
-    globals: object;
-    hideout: object;
-    items: object;
-    locations: object;
-    request: object;
-    traders: object;
-    saveTime: string;
+    MGTrader: any;
+    extra: any;
+    bots: any;
+    configs: any;
+    globals: any;
+    hideout: any;
+    items: any;
+    locations: any;
+    request: any;
+    traders: any;
+    saveTime: any;
 }
