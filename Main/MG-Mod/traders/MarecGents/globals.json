@@ -1,0 +1,36 @@
+{
+  "ItemPresets": {
+
+  },
+  "Buffs": {
+    "Buffs_MG-Propital": [
+      {
+        "AbsoluteValue": true,
+        "BuffType": "QuantumTunnelling",
+        "Chance": 1,
+        "Delay": 1,
+        "Duration": 5,
+        "SkillName": "",
+        "Value": 0
+      },
+      {
+        "AbsoluteValue": true,
+        "BuffType": "HandsTremor",
+        "Chance": 1,
+        "Delay": 1,
+        "Duration": 5,
+        "SkillName": "",
+        "Value": 0
+      },
+      {
+        "AbsoluteValue": true,
+        "BuffType": "HealthRate",
+        "Chance": 1,
+        "Delay": 0,
+        "Duration": 350,
+        "SkillName": "",
+        "Value": 1.5
+      }
+    ]
+  }
+}
