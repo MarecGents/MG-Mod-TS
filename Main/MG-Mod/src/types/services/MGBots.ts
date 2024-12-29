@@ -6,7 +6,6 @@ import {IBodyPart} from "@spt/models/eft/common/tables/IBotType";
 
 export class MGBots extends CommonlLoad {
 
-    protected bots: IBots;
     protected loadList: LoadList;
     protected databaseService: DatabaseService;
 
@@ -17,7 +16,6 @@ export class MGBots extends CommonlLoad {
     public init(){
         this.className = "MGBots";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.bots = this.databaseService.getBots();
     }
 
     public onload(loadList?: LoadList) {
@@ -29,7 +27,7 @@ export class MGBots extends CommonlLoad {
     }
 
     public getBots():IBots{
-        return this.bots;
+        return this.databaseService.getBots();
     }
 
     /**
@@ -37,9 +35,10 @@ export class MGBots extends CommonlLoad {
      * interface IBodyPart which you can get from SPT/Server Project
      **/
     public c_BotsHeathByRate(rate:number){
-        for(let bot in this.bots.types){
-            let bodyPart = this.bots[bot].health.BodyParts[0];
-            for(let parts in this.bots[bot].health.BodyParts[0]){
+        let bots = this.getBots();
+        for(let bot in bots.types){
+            let bodyPart = bots[bot].health.BodyParts[0];
+            for(let parts in bots[bot].health.BodyParts[0]){
                 bodyPart[parts].max *= rate;
                 bodyPart[parts].min *= rate;
             }
@@ -51,9 +50,10 @@ export class MGBots extends CommonlLoad {
      * interface IBodyPart which you can get from SPT/Server Project
      **/
     public c_BotsHeathByRealRate(RateData:IBodyPart){
-        for(let bot in this.bots.types){
-            let bodyPart = this.bots[bot].health.BodyParts[0];
-            for(let parts in this.bots[bot].health.BodyParts[0]){
+        let bots = this.getBots();
+        for(let bot in bots.types){
+            let bodyPart = bots[bot].health.BodyParts[0];
+            for(let parts in bots[bot].health.BodyParts[0]){
                 bodyPart[parts] = RateData[parts];
             }
         }
