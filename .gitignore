@@ -3,4 +3,5 @@
 /.idea/
 /Main/MG-Mod/types/
 /Main/MG-Mod/MG-Mod.exe
+/Main/MG-Mod/node_modules
 /Main/order.json
