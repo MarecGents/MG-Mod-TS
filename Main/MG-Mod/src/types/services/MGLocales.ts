@@ -2,10 +2,10 @@ import {AnyInfo, GeneralInfo, ItemsInfo, QuestInfo, TraderInfo} from "../models/
 import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {DatabaseService} from "@spt/services/DatabaseService";
+import {IGlobals} from "@spt/models/eft/common/IGlobals";
 
 export class MGLocales extends CommonlLoad {
 
-    protected globalLocales: object;
     protected loadList: LoadList;
     protected databaseService: DatabaseService;
 
@@ -16,41 +16,46 @@ export class MGLocales extends CommonlLoad {
     public init() {
         this.className = "MGLocales";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.globalLocales = this.databaseService.getGlobals();
     }
 
     public onload(loadList?: LoadList) {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
-            this.valueHelper = this.loadList.ValueHelper;
         }
     }
 
-    public getLocales(){
-        return this.globalLocales;
+    public getLocales():IGlobals{
+        return this.databaseService.getGlobals();
     }
 
     public getServer(){
         return this.databaseService.getServer();
     }
 
+    public getInfoByWholeId(id:string){
+        return this.getLocales()[id];
+    }
+
     public addInfo(info: GeneralInfo) {
-        for (let lang in this.globalLocales) {
-            this.globalLocales[lang][info._id] = info.desc;
+        let globalLocales = this.getLocales();
+        for (let lang in globalLocales) {
+            globalLocales[lang][info._id] = info.desc;
         }
     }
 
     public addItemInfo(info: ItemsInfo) {
+        let globalLocales = this.getLocales();
         const DescList = ["Name", "ShortName", "Description"]
-        for (let lang in this.globalLocales) {
-            for (let desc of DescList) {
-                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
-            }
+        for (let lang in globalLocales) {
+            DescList.forEach((desc:string) =>{
+                globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
+            })
         }
     }
 
     public addQuestInfo(info: QuestInfo) {
+        let globalLocales = this.getLocales();
         const DescList = [
             "name",
             "description",
@@ -60,19 +65,20 @@ export class MGLocales extends CommonlLoad {
             "declinePlayerMessage",
             "completePlayerMessage"
         ]
-        for (let lang in this.globalLocales) {
-            for (let desc of DescList) {
-                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
-            }
+        for (let lang in globalLocales) {
+            DescList.forEach((desc:string) =>{
+                globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
+            })
             if (Object.keys(info.other ? info.other : {}).length > 0) {
-                for (let other_id in info.other) {
-                    this.globalLocales[lang][other_id] = info.other[other_id];
-                }
+                Object.keys(info.other).forEach((other_id:string) => {
+                    globalLocales[lang][other_id] = info.other[other_id];
+                })
             }
         }
     }
 
     public addTraderInfo(info: TraderInfo) {
+        let globalLocales = this.getLocales();
         const DescList = [
             "FullName",
             "FirstName",
@@ -80,10 +86,10 @@ export class MGLocales extends CommonlLoad {
             "Location",
             "Description"
         ]
-        for (let lang in this.globalLocales) {
-            for (let desc of DescList) {
-                this.globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
-            }
+        for (let lang in globalLocales) {
+            DescList.forEach((desc:string) =>{
+                globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
+            })
         }
     }
 

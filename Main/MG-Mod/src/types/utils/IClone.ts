@@ -16,7 +16,8 @@ export class IClone implements ICloner {
         if (typeof (value) === "object" && value !== null) {
             return JsonUtil.clone(value);
         } else if (typeof value === "string") {
-            return JsonUtil.clone(JmporterUtil.loadRecursive(value));
+            // on this condition, value is the relative path
+            return JsonUtil.clone(JmporterUtil.loadRecursive(this.mod.modpath+value));
         }
     }
 }

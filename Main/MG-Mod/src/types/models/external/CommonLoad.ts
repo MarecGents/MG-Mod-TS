@@ -9,7 +9,6 @@ export class CommonlLoad {
     protected loadList: LoadList;
     protected className: string;
     protected output: FormatOutput;
-    protected valueHelper: ValueHepler;
     constructor(mod: any) {
         this.mod = mod;
         this.init()

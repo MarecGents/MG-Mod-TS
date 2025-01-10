@@ -24,8 +24,11 @@ export class MGGlobals extends CommonlLoad {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
-            this.valueHelper = this.loadList.ValueHelper;
         }
+    }
+
+    public getGlobals(){
+        return this.globals;
     }
 
     public addNewBuff(BuffName: string,Buff:IBuff[]): void {
@@ -43,14 +46,6 @@ export class MGGlobals extends CommonlLoad {
         for (let BuffName in Buffs) {
             this.addNewBuff(BuffName, Buffs[BuffName]);
         }
-    }
-
-    public c_globalConfig(index: string[], value: any, key?: string) {
-        this.valueHelper._ValueUpdate(this.globals.config, index, value, key);
-    }
-
-    public _getGlobalValue(index: string[], value: any, key?: string) {
-        return this.valueHelper._getValue(this.globals, index, key);
     }
 
 

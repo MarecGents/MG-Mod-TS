@@ -24,7 +24,6 @@ export class MGTraders extends CommonlLoad {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
-            this.valueHelper = this.loadList.ValueHelper;
         }
     }
 

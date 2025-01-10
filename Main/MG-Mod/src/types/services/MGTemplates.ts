@@ -13,6 +13,9 @@ import {NewItemFromCloneDetails} from "@spt/models/spt/mod/NewItemDetails";
 import {CustomItemService} from "@spt/services/mod/CustomItemService";
 import {ICustomProfile, IMGSingleProfile} from "../models/mg/profiles/ICustomProfile";
 import {CustomTraderItems} from "../models/mg/items/EItems";
+import {ITemplates} from "@spt/models/spt/templates/ITemplates";
+import {LocalisationService} from "@spt/services/LocalisationService";
+import {IRepeatableQuestDatabase} from "@spt/models/eft/common/tables/IRepeatableQuests";
 
 export class MGTemplates extends CommonlLoad {
 
@@ -32,8 +35,11 @@ export class MGTemplates extends CommonlLoad {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
-            this.valueHelper = this.loadList.ValueHelper;
         }
+    }
+
+    public getTemplates():ITemplates {
+        return this.databaseService.getTemplates();
     }
 
     public getAchievements(): IAchievement[] {
@@ -66,6 +72,15 @@ export class MGTemplates extends CommonlLoad {
 
     public getLocationServices(): ILocationServices {
         return this.databaseService.getLocationServices();
+    }
+
+    public getRepeatableQuests():IRepeatableQuestDatabase{
+        if (!this.getTemplates().repeatableQuests) {
+            throw new Error(
+                (new LocalisationService()).getText("database-data_at_path_missing", "assets/database/templates"),
+            );
+        }
+        return this.getTemplates().repeatableQuests;
     }
 
     /**

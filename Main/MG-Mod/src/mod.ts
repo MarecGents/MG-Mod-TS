@@ -9,6 +9,7 @@ import {loadMod} from "./types/loadMod";
 import {LoadList} from "./types/models/mg/services/ILoadList";
 import {Main} from "./custom/Main";
 import {DatabaseServer} from "../types/servers/DatabaseServer";
+import {IClone} from "./types/utils/IClone";
 
 export class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
 
@@ -18,7 +19,7 @@ export class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
     public Logger: ILogger;
     public VFS: VFS;
     public modpath: string;
-    private clone: any;
+    private clone: IClone;
     // private loadList: LoadList;
 
     preSptLoad(container: DependencyContainer) {
@@ -26,7 +27,7 @@ export class Mod implements IPreSptLoadMod, IPostDBLoadMod, IPostSptLoadMod {
         this.Logger = container.resolve<ILogger>("WinstonLogger");
         this.VFS = container.resolve<VFS>("VFS");
         const PreSptModLoader = container.resolve<PreSptModLoader>('PreSptModLoader');
-        this.modpath = PreSptModLoader.getModPath("MG-Mod-New");
+        this.modpath = PreSptModLoader.getModPath(require("./../package.json").name);
     }
 
     postDBLoad(container: DependencyContainer) {

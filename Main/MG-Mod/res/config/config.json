@@ -16,15 +16,15 @@
     },
     "configs": {
         "enable": true,
-        "updateTime": 300,
-        "updateTimeDefault": 300,
+        "updateTime": 3600,
+        "updateTimeDefault": 3600,
         "chance": {
             "enable": true,
             "base": 100
         },
         "time": {
             "enable": true,
-            "max": 0.002,
+            "max": 0.001,
             "min": 0
         },
         "dynamic": {
@@ -40,7 +40,7 @@
                 },
                 "showAsSingleStack": [],
                 "armor": {
-                    "removeRemovablePlateChance": 5
+                    "removeRemovablePlateChance": 0
                 }
             },
             "condition": false,
@@ -159,7 +159,7 @@
         },
         "LootMultiplier": {
             "static": 2,
-            "container": 2
+            "container": 1
         },
         "BuffSettings": {
             "AmmoBuff": 100,
@@ -255,8 +255,8 @@
     },
     "globals": {
         "enable": true,
-        "BaseLoadTime": 0.1,
-        "BaseUnloadTime": 0.1,
+        "BaseLoadTime": 0.01,
+        "BaseUnloadTime": 0.01,
         "LootMultiplier": {
             "Total": 2,
             "Valuable": 1
@@ -269,14 +269,14 @@
             "SavagePlayCooldownDevelop": 0
         },
         "RagFair": {
-            "minUserLevel": 15,
+            "minUserLevel": 1,
             "TaxRate": {
                 "enable": true,
                 "communityTax": 0.01,
                 "communityItemTax": 0.01,
                 "communityRequirementTax": 0.01
             },
-            "count_Magnification": 5
+            "count_Magnification": 1
         },
         "RestrictionsInRaid": false,
         "stamina": {
@@ -507,7 +507,7 @@
             "工厂 白": true,
             "工厂 夜": true,
             "立交桥": true,
-            "实验室": true,
+            "实验室": false,
             "灯塔": true,
             "储备站": true,
             "海岸线": true,
@@ -519,7 +519,7 @@
     },
     "request": {
         "enable": true,
-        "changeCost_cont": 5000,
+        "changeCost_cont": 0,
         "questOptimize": true
     },
     "traders": {
@@ -529,5 +529,5 @@
             "max_return_hour": 0
         }
     },
-    "saveTime": "2024-12-29 14:50:03.097188"
+    "saveTime": "2024-12-29 23:26:27.914049"
 }

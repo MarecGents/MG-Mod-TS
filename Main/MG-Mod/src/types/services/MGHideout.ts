@@ -2,9 +2,9 @@ import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {IHideout} from "../models/mg/hideout/IHideout";
-import {IHideoutArea} from "@sptmodels/eft/hideout/IHideoutArea";
-import {IQteData} from "@sptmodels/eft/hideout/IQteData";
-import {IHideoutProduction, IScavRecipe} from "@sptmodels/eft/hideout/IHideoutProduction";
+import {IHideoutArea} from "@spt/models/eft/hideout/IHideoutArea";
+import {IQteData} from "@spt/models/eft/hideout/IQteData";
+import {IHideoutProduction, IScavRecipe} from "@spt/models/eft/hideout/IHideoutProduction";
 
 export class MGHideout extends CommonlLoad {
 
@@ -26,30 +26,8 @@ export class MGHideout extends CommonlLoad {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
-            this.valueHelper = this.loadList.ValueHelper;
         }
 
-    }
-
-    /**
-     * This method is build based on SPT-3.10.X or later
-     * @param index
-     * @param value
-     * @param key
-     */
-    public c_Production(index: string[], value: any, key?: string): void {
-        this.valueHelper._ValueUpdate(this.hideout.production.recipes, index, value, key);
-    }
-
-    public c_Scavecase(index: string[], value: any, key?: string): void {
-        this.valueHelper._ValueUpdate(this.hideout.production.scavRecipes, index, value, key);
-    }
-
-    public c_Area(index: string[], value: any, key?: string): void {
-        this.valueHelper._ValueUpdate(this.hideout.areas, index, value, key);
-    }
-    public c_Qte(index: string[], value: any, key?: string): void {
-        this.valueHelper._ValueUpdate(this.hideout.qte, index, value, key);
     }
 
     public getProductions():IHideoutProduction[]{
@@ -67,6 +45,35 @@ export class MGHideout extends CommonlLoad {
         return this.hideout.qte;
     }
 
+    public c_constructionTime(time:number):void {
+        let areas = this.getAreas();
+        for(let id1 in areas){
+            for(let n in areas[id1].stages){
+                let time = areas[id1].stages[n].constructionTime;
+                if(time!==0){
+                    areas[id1].stages[n].constructionTime = time;
+                }
+            }
+        }
+    }
+
+    public c_productionTime(time:number):void {
+        let production = this.getProductions();
+        for(let it of production){
+            if(it.productionTime !== 0){
+                it.productionTime = time;
+            }
+        }
+    }
+
+    public c_scavecaseTime(time:number):void {
+        let scavecase = this.getScavecases();
+        for(let it of scavecase){
+            if(it.productionTime !== 0){
+                it.productionTime = time;
+            }
+        }
+    }
     
 
 }

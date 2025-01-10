@@ -1,8 +1,8 @@
-import { IProps, ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
-import { BuffList, ITraderGlobals } from "../globals/ITraderGlobals";
-import { IHandbookItem } from "@spt/models/eft/common/tables/IHandbookBase";
-import { IItem } from "@spt/models/eft/common/tables/IItem";
-import {Money} from "../../../../../types/models/enums/Money";
+import {IProps, ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
+import {ITraderGlobals} from "../globals/ITraderGlobals";
+import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
+import {IItem} from "@spt/models/eft/common/tables/IItem";
+import {Money} from "@spt/models/enums/Money";
 
 export interface BrothersItem extends ITraderGlobals {
     newId: string;
@@ -24,29 +24,29 @@ export interface BroCh {
 
 export interface SuperItem extends ITraderGlobals {
     tpl: string;
-    items: Superitems;
+    items: SuperItems;
     handbook?: IHandbookItem;
     assort?: IItem[];
 }
 
-export interface Superitems {
+export interface SuperItems {
     _id: string;
     _name: string;
     _props: IProps;
 }
 
 export interface MGItems extends ITraderGlobals {
-    items: MGitems;
+    items: MGItem;
     price: number;
     description: MGItemDesc;
     toTraderId?: string;
     isSold?: boolean;
     loyal_level?: number;
     assort?: IItem[];
-    currency?:Money;
+    currency?: Money;
 }
 
-export interface MGitems {
+export interface MGItem {
     newId: string;
     cloneId: string;
     _props: IProps;
