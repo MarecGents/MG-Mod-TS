@@ -1,20 +1,19 @@
+import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
 import {LoadList, MGList} from "../types/models/mg/services/ILoadList";
-import {ValueHepler} from "../types/helpers/ValueHepler";
-import {FormatOutput} from "../types/servers/FormatOutput";
+import {FormatOutput} from "../types/services/FormatOutput";
 import {MGModConfig} from "../types/models/mg/config/IConfig";
 import {IClone} from "../types/utils/IClone";
 import {PathTypes} from "../types/models/enums/PathTypes";
-import {MGBots} from "../types/services/MGBots";
-import {MGConfigs} from "../types/services/MGConfigs";
-import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
-import {MGGlobals} from "../types/services/MGGlobals";
-import {MGHideout} from "../types/services/MGHideout";
-import {MGLocations} from "../types/services/MGLocations";
+import {MGBots} from "../types/servers/MGBots";
+import {MGConfigs} from "../types/servers/MGConfigs";
+import {MGGlobals} from "../types/servers/MGGlobals";
+import {MGHideout} from "../types/servers/MGHideout";
+import {MGLocations} from "../types/servers/MGLocations";
 import {MapChType} from "../types/models/enums/MapChType";
-import {MGTemplates} from "../types/services/MGTemplates";
-import {MGLocales} from "../types/services/MGLocales";
-import {MGTraders} from "../types/services/MGTraders";
-import {CustomItemsService} from "./CustomItemsServices";
+import {MGTemplates} from "../types/servers/MGTemplates";
+import {MGLocales} from "../types/servers/MGLocales";
+import {MGTraders} from "../types/servers/MGTraders";
+import {CustomItemsService} from "../types/services/CustomItemsServices";
 
 export class Main{
     private loadList:LoadList;

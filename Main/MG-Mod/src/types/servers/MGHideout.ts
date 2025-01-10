@@ -5,6 +5,7 @@ import {IHideout} from "../models/mg/hideout/IHideout";
 import {IHideoutArea} from "@spt/models/eft/hideout/IHideoutArea";
 import {IQteData} from "@spt/models/eft/hideout/IQteData";
 import {IHideoutProduction, IScavRecipe} from "@spt/models/eft/hideout/IHideoutProduction";
+import {Mod} from "../../mod";
 
 export class MGHideout extends CommonlLoad {
 
@@ -12,7 +13,7 @@ export class MGHideout extends CommonlLoad {
     protected loadList: LoadList;
     protected databaseService: DatabaseService;
 
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 

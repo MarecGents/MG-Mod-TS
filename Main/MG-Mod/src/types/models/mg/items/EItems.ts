@@ -3,6 +3,7 @@ import {ITraderGlobals} from "../globals/ITraderGlobals";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {Money} from "@spt/models/enums/Money";
+import {LocaleDetails} from "@spt/models/spt/mod/NewItemDetails";
 
 export interface BrothersItem extends ITraderGlobals {
     newId: string;
@@ -13,19 +14,13 @@ export interface BrothersItem extends ITraderGlobals {
 }
 
 export interface BroLocal {
-    ch: BroCh;
-}
-
-export interface BroCh {
-    name: string;
-    shortName: string;
-    description: string;
+    ch: LocaleDetails;
 }
 
 export interface SuperItem extends ITraderGlobals {
     tpl: string;
     items: SuperItems;
-    handbook?: IHandbookItem;
+    handbook: IHandbookItem;
     assort?: IItem[];
 }
 
@@ -38,7 +33,7 @@ export interface SuperItems {
 export interface MGItems extends ITraderGlobals {
     items: MGItem;
     price: number;
-    description: MGItemDesc;
+    description: LocaleDetails;
     toTraderId?: string;
     isSold?: boolean;
     loyal_level?: number;
@@ -50,12 +45,6 @@ export interface MGItem {
     newId: string;
     cloneId: string;
     _props: IProps;
-}
-
-export interface MGItemDesc {
-    name: string;
-    shortName: string;
-    description: string;
 }
 
 export interface CustomTraderItems {

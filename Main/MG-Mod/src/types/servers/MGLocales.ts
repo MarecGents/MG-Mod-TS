@@ -3,13 +3,14 @@ import {CommonlLoad} from "../models/external/CommonLoad";
 import {LoadList} from "../models/mg/services/ILoadList";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {IGlobals} from "@spt/models/eft/common/IGlobals";
+import {Mod} from "../../mod";
 
 export class MGLocales extends CommonlLoad {
 
     protected loadList: LoadList;
     protected databaseService: DatabaseService;
 
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 

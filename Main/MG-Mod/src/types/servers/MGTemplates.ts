@@ -5,24 +5,24 @@ import {IAchievement} from "@spt/models/eft/common/tables/IAchievement";
 import {ICustomizationItem} from "@spt/models/eft/common/tables/ICustomizationItem";
 import {IHandbookBase, IHandbookCategory, IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
-import {IProfileSides, IProfileTemplates} from "@spt/models/eft/common/tables/IProfileTemplate";
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {ILocationServices} from "@spt/models/eft/common/tables/ILocationServices";
 import {ItemFilterList} from "../models/mg/items/ItemFilterList";
 import {NewItemFromCloneDetails} from "@spt/models/spt/mod/NewItemDetails";
 import {CustomItemService} from "@spt/services/mod/CustomItemService";
 import {ICustomProfile, IMGSingleProfile} from "../models/mg/profiles/ICustomProfile";
-import {CustomTraderItems} from "../models/mg/items/EItems";
+import {CustomTraderItems, MGItems} from "../models/mg/items/EItems";
 import {ITemplates} from "@spt/models/spt/templates/ITemplates";
 import {LocalisationService} from "@spt/services/LocalisationService";
 import {IRepeatableQuestDatabase} from "@spt/models/eft/common/tables/IRepeatableQuests";
+import {Mod} from "../../mod";
 
 export class MGTemplates extends CommonlLoad {
 
     protected databaseService: DatabaseService;
     protected loadList: LoadList;
 
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 
@@ -87,6 +87,20 @@ export class MGTemplates extends CommonlLoad {
      * @description items.json add or change
      */
 
+    public isInItems(id:string):boolean {
+        const Items:ITemplateItem = this.databaseService.getItems();
+        return id in Items;
+
+    }
+
+    public findParentIdById(id:string):string{
+        const Items:Record<string, ITemplateItem> = this.getItems();
+        if(id in Items){
+            return Items[id]._parent;
+        }
+        return "null";
+    }
+
     public addFilterToDB(newItemList: ItemFilterList) {
         let itemsDB = this.getItems();
         const FilterList = ["StackSlots", "Slots", "Chambers", "Cartridges", "Grids"];
@@ -135,6 +149,31 @@ export class MGTemplates extends CommonlLoad {
         newItemList.forEach(newItem => this.addCustomItem(newItem))
     }
 
+    public addMGCustomItem(MGItem:MGItems){
+        const NewItemDetails:NewItemFromCloneDetails = {
+            fleaPriceRoubles: MGItem.price,
+            handbookParentId: "",
+            handbookPriceRoubles: MGItem.price,
+            itemTplToClone: MGItem.items.cloneId,
+            locales: undefined,
+            newId: MGItem.items.newId,
+            overrideProperties: MGItem.items._props,
+            parentId: ""
+        }
+        if(this.findParentIdById(MGItem.items.cloneId) === "null"){
+            this.output.warning(`MG独立物品id为${MGItem.items.newId}的\"cloneId\"未能在items.json中找到，无法添加到游戏中，请检查\"cloneId\"是否正确！`);
+        }
+        NewItemDetails.parentId = this.findParentIdById(MGItem.items.cloneId);
+        if(this.findHandbookParentIdById(MGItem.items.cloneId) === "null"){
+            this.output.warning(`MG独立物品id为${MGItem.items.newId}的\"cloneId\"未能在handbook.json中找到，无法添加到游戏中，请检查\"cloneId\"是否正确！`);
+        }
+        NewItemDetails.handbookParentId = this.findHandbookParentIdById(MGItem.items.cloneId);
+        NewItemDetails.locales = {
+            ch:MGItem.description
+        }
+        this.addCustomItem(NewItemDetails);
+    }
+
     public AddCustomTraderItem(newItem:CustomTraderItems){
         let itemDB = this.getItems();
         let itemTemplate:ITemplateItem={};
@@ -159,11 +198,9 @@ export class MGTemplates extends CommonlLoad {
 
     public addHandbookCategory(Category: IHandbookCategory) {
         let HBCategory: IHandbookCategory[] = this.getHandbook().Categories;
-        let index = -1;
         for (let it in HBCategory) {
             if (HBCategory[it].Id === Category.Id) {
                 HBCategory[it] = Category;
-                index = parseInt(it);
                 return;
             }
         }
@@ -173,17 +210,15 @@ export class MGTemplates extends CommonlLoad {
     }
 
     public addHandbookCategories(Categories: IHandbookCategory[]) {
-        Categories.forEach(value => this.addHandbookCategory(value));
+        Categories.forEach((value:IHandbookCategory) => this.addHandbookCategory(value));
         return;
     }
 
     public addHandbookItem(Item: IHandbookItem) {
         let HBItem: IHandbookItem[] = this.getHandbook().Items;
-        let index = -1;
         for (let it in HBItem) {
             if (HBItem[it].Id === Item.Id) {
                 HBItem[it] = Item;
-                index = parseInt(it);
                 return;
             }
         }
@@ -192,16 +227,15 @@ export class MGTemplates extends CommonlLoad {
     }
 
     public addHandbookItems(ItemList: IHandbookItem[]) {
-        ItemList.forEach(value => this.addHandbookItem(value));
+        ItemList.forEach((value:IHandbookItem) => this.addHandbookItem(value));
     }
 
     public findHandbookParentIdById(itemId:string):string{
         let HBItem: IHandbookItem[] = this.getHandbook().Items;
         for(let it in HBItem) {
-            if(HBItem[it].Id !== itemId){
-                continue;
+            if(HBItem[it].Id === itemId){
+                return HBItem[it].ParentId;
             }
-            return HBItem[it].ParentId;
         }
         return "null";
     }
@@ -213,7 +247,7 @@ export class MGTemplates extends CommonlLoad {
     public CustomQuest(id:string,quest: IQuest) {
         let Quest:Record<string,IQuest> = this.getQuests();
         if(id !== quest._id){
-            this.output.log(`自定义任务id:${id} 与其 _id:${quest._id} 不一致. 请重新核对！`,"red");
+            this.output.warning(`自定义任务id:${id} 与其 _id:${quest._id} 不一致. 请重新核对！`);
             return;
         }
         if(id in Quest || quest._id in Quest){

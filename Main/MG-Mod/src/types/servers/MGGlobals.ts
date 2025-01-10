@@ -3,6 +3,7 @@ import { DatabaseService } from "@spt/services/DatabaseService";
 import {IBuff, IGlobals} from "@spt/models/eft/common/IGlobals";
 import { LoadList } from "../models/mg/services/ILoadList";
 import { BuffList } from "../models/mg/globals/ITraderGlobals";
+import {Mod} from "../../mod";
 
 
 export class MGGlobals extends CommonlLoad {
@@ -11,7 +12,7 @@ export class MGGlobals extends CommonlLoad {
     protected globals: IGlobals;
     protected loadList: LoadList;
     
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 

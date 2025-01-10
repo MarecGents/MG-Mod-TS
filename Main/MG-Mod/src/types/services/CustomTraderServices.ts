@@ -1,10 +1,11 @@
-import {LoadList, MGList} from "../types/models/mg/services/ILoadList";
-import {MGLocales} from "../types/services/MGLocales";
-import {FormatOutput} from "../types/servers/FormatOutput";
+import {LoadList, MGList} from "../models/mg/services/ILoadList";
+import {MGLocales} from "../servers/MGLocales";
+import {FormatOutput} from "./FormatOutput";
+import {Mod} from "../../mod";
 
 export class CustomTraderService {
     private loadList:LoadList;
-    private mod: any;
+    private mod: Mod;
     private MGList: MGList;
     private Locales:MGLocales
     private outPut: FormatOutput;
@@ -12,11 +13,12 @@ export class CustomTraderService {
     constructor(mod:any,loadList:LoadList) {
         this.mod = mod;
         this.loadList = loadList;
-
         this.MGList = this.loadList.MGList;
         this.Locales = this.loadList.MGList.MGlocales;
         this.outPut = this.loadList.Output;
 
     }
+
+
 
 }

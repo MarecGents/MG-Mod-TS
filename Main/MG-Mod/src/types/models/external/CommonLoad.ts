@@ -1,11 +1,11 @@
 import {LoadList} from "../mg/services/ILoadList";
-import {ValueHepler} from "../../helpers/ValueHepler";
-import { FormatOutput } from "../../servers/FormatOutput";
+import { FormatOutput } from "../../services/FormatOutput";
+import {Mod} from "../../../mod";
 
 
 export class CommonlLoad {
 
-    protected mod: any;
+    protected mod: Mod;
     protected loadList: LoadList;
     protected className: string;
     protected output: FormatOutput;

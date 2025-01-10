@@ -1,18 +1,19 @@
-import {MGBots} from "./services/MGBots";
-import {MGConfigs} from "./services/MGConfigs";
-import {MGGlobals} from "./services/MGGlobals";
-import {MGHideout} from "./services/MGHideout";
-import {MGLocales} from "./services/MGLocales";
-import {MGTemplates} from "./services/MGTemplates";
-import {MGTraders} from "./services/MGTraders";
+import {MGBots} from "./servers/MGBots";
+import {MGConfigs} from "./servers/MGConfigs";
+import {MGGlobals} from "./servers/MGGlobals";
+import {MGHideout} from "./servers/MGHideout";
+import {MGLocales} from "./servers/MGLocales";
+import {MGTemplates} from "./servers/MGTemplates";
+import {MGTraders} from "./servers/MGTraders";
 import {LoadList} from "./models/mg/services/ILoadList";
-import {FormatOutput} from "./servers/FormatOutput";
+import {FormatOutput} from "./services/FormatOutput";
 import {ValueHepler} from "./helpers/ValueHepler";
-import {MGLocations} from "./services/MGLocations";
+import {MGLocations} from "./servers/MGLocations";
+import {Mod} from "../mod";
 
 export class loadMod {
 
-    protected mod;
+    protected mod:Mod;
     public loadList: LoadList;
 
     constructor(mod) {

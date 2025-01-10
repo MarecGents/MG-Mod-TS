@@ -13,13 +13,14 @@ import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig"
 import {IRepairConfig} from "@spt/models/spt/config/IRepairConfig";
 import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
 import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
+import {Mod} from "../../mod";
 
 export class MGConfigs extends CommonlLoad {
 
     protected ConfigServer: ConfigServer;
     protected loadList: LoadList;
 
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 

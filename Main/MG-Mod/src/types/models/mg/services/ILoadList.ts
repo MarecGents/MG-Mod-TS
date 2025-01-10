@@ -1,12 +1,12 @@
-import {MGTraders} from "../../../services/MGTraders";
-import {MGGlobals} from "../../../services/MGGlobals";
-import {MGTemplates} from "../../../services/MGTemplates";
-import {MGLocales} from "../../../services/MGLocales";
-import {MGHideout} from "../../../services/MGHideout";
-import {MGBots} from "../../../services/MGBots";
-import {MGConfigs} from "../../../services/MGConfigs";
-import {FormatOutput} from "../../../servers/FormatOutput";
-import {MGLocations} from "../../../services/MGLocations";
+import {MGTraders} from "../../../servers/MGTraders";
+import {MGGlobals} from "../../../servers/MGGlobals";
+import {MGTemplates} from "../../../servers/MGTemplates";
+import {MGLocales} from "../../../servers/MGLocales";
+import {MGHideout} from "../../../servers/MGHideout";
+import {MGBots} from "../../../servers/MGBots";
+import {MGConfigs} from "../../../servers/MGConfigs";
+import {FormatOutput} from "../../../services/FormatOutput";
+import {MGLocations} from "../../../servers/MGLocations";
 
 export interface LoadList {
     MGList: MGList;

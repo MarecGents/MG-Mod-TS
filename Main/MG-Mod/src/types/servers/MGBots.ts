@@ -3,13 +3,14 @@ import {DatabaseService} from "@spt/services/DatabaseService";
 import {IBots} from "@spt/models/spt/bots/IBots";
 import {LoadList} from "../models/mg/services/ILoadList"
 import {IBodyPart} from "@spt/models/eft/common/tables/IBotType";
+import {Mod} from "../../mod";
 
 export class MGBots extends CommonlLoad {
 
     protected loadList: LoadList;
     protected databaseService: DatabaseService;
 
-    constructor(mod: any) {
+    constructor(mod: Mod) {
         super(mod);
     }
 

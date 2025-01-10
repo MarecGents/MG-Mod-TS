@@ -2,7 +2,6 @@ import {AnyInfo, TraderInfo} from "../locales/GlobalInfo";
 import {ITraderLoyaltyLevel} from "@spt/models/eft/common/tables/ITrader";
 import {MinMax} from "@spt/models/common/MinMax";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
-import {Money} from "@spt/models/enums/Money";
 
 export interface CustomTrader extends TraderInfo {
     enabled: boolean;
@@ -50,5 +49,5 @@ export interface CustomAssort{
     assort:IItem[]
     price:number;
     loyal_level_items:number;
-    currency:Money;
+    currency:string;
 }

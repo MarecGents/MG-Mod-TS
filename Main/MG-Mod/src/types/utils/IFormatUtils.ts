@@ -1,7 +1,10 @@
 import {IItem} from "@spt/models/eft/common/tables/IItem";
-import {Mod} from "../../mod";
 
 export class IFormatUtils {
+
+    public replaceKey<T>(data:object, oldKey:string, newKey:string):T{
+        return JSON.parse(this.replaceAll(JSON.stringify(data, null, 4), oldKey, newKey));
+    }
 
     public replaceAll(data:string,Key:string,newKey:string):string{
         // 对searchValue进行转义，以避免正则表达式特殊字符的问题
@@ -44,5 +47,11 @@ export class IFormatUtils {
         const matches = data.match(regex);
         // 如果 matches 是 null，则表示没有找到任何匹配项
         return matches ? matches.length : 0;
+    }
+
+    public isMongoId(id:string):boolean {
+        // 正则表达式匹配一个24位的十六进制字符串
+        const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        return objectIdRegex.test(id);
     }
 }
