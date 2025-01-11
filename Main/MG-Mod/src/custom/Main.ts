@@ -29,6 +29,8 @@ import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig";
 import {IRepairConfig} from "@spt/models/spt/config/IRepairConfig";
 import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
 import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
+import {CustomTraderService} from "../types/services/CustomTraderServices";
+import {CustomItemsService} from "../types/services/CustomItemsServices";
 
 export class Main{
     private loadList:LoadList;
@@ -834,6 +836,30 @@ export class Main{
         }
 
         this.outPut.classLoaded("TradersServices");
+    }
+
+    private CustomTraderServices(ConfigJson:MGModConfig):void {
+        const TraderConfig:any = ConfigJson.MGTrader;
+        if (!TraderConfig.enable) {
+            return;
+        }
+        const customTraderService:CustomTraderService = new CustomTraderService(this.mod, this.loadList);
+        customTraderService.start();
+    }
+
+    private CustomItemsServices(ConfigJson:MGModConfig):void {
+        const TraderConfig:any = ConfigJson.MGTrader;
+        if(!TraderConfig.enable) {
+            return;
+        }
+        const customItemsService:CustomItemsService = new CustomItemsService(this.mod,this.loadList);
+        if(TraderConfig.addItems) {
+            customItemsService.start();
+        }
+        if(TraderConfig.addAssorts) {
+            customItemsService.addMGAssortToServer()
+        }
+
     }
 
 }

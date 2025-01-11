@@ -1,5 +1,5 @@
-import {AnyInfo, ItemsDesc, QuestDesc, TraderDesc, TraderInfo} from "../locales/GlobalInfo";
-import {ISuit, ITraderAssort, ITraderLoyaltyLevel} from "@spt/models/eft/common/tables/ITrader";
+import {AnyInfo, ItemsDesc, QuestDesc, TraderDesc} from "../locales/GlobalInfo";
+import {ISuit, ITraderAssort, ITraderBase, ITraderLoyaltyLevel} from "@spt/models/eft/common/tables/ITrader";
 import {MinMax} from "@spt/models/common/MinMax";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {ITraderServiceModel} from "@spt/models/spt/services/ITraderServiceModel";
@@ -44,6 +44,7 @@ export interface CustomTraderTemplates {
 }
 
 export interface CustomTraderData {
+    base?:ITraderBase;
     assort?: ITraderAssort;
     questassort?: Record<string, Record<string, string>>;
     suits?: ISuit[];
@@ -56,6 +57,7 @@ export interface CustomTraderGlobals extends ITraderGlobals {
 
 export interface CustomTraderInfo {
     enable: boolean;
+    name:string;
     _id: string;
     locales: TraderDesc;
     insurance: CustomTraderInsurance;
@@ -74,22 +76,13 @@ export interface CustomTraderInsurance {
     pay: number;
     chance: number;
     storageTime: number;
-    Message: Dialogue;
-}
-
-export interface Dialogue {
-    insuranceStart: string[];
-    insuranceFound: string[];
-    insuranceFailed: string[];
-    insuranceExpired: string[];
-    insuranceComplete: string[];
-    insuranceFailedLabs: string[];
+    Message: Record<string, string[]>;
 }
 
 export interface CustomTraderRepair {
     enabled: boolean;
     coefficient: number;
-    quality: number | string;
+    quality: number;
 }
 
 export interface CustomTraderLoyaltyLevel {
@@ -97,9 +90,10 @@ export interface CustomTraderLoyaltyLevel {
     range: ITraderLoyaltyLevel[]
 }
 
-export interface CustomAssort{
+export interface CustomTraderAssort {
     assort:IItem[]
     price:number;
     loyal_level_items:number;
     currency:string;
+    traderId:string;
 }

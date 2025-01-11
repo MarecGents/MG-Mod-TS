@@ -37,8 +37,8 @@ export class OutputServices {
         this.logger.log(`MG独立物品【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.MAGENTA);
     }
 
-    public addCustomTraderSuccess(traderNickName:string){
-        this.logger.log(`商人：[${traderNickName}] 已加载`, LogTextColor.CYAN);
+    public addCustomTraderSuccess(TraderName:string){
+        this.logger.log(`商人：[${TraderName}] 已加载。`, LogTextColor.CYAN);
     }
 
 

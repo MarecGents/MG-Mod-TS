@@ -113,7 +113,7 @@ export class MGLocales extends CommonlLoad {
         }
     }
 
-    public addProfileDesc(info: AnyInfo): void {
+    public addProfileInfo(info: AnyInfo): void {
         let serverLocales: Record<string, Record<string, string>> = this.getServer();
         for (let lang in serverLocales) {
             Object.keys(info).forEach((key: string): void => {

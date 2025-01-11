@@ -336,4 +336,14 @@ export class MGTemplates extends CommonlLoad {
         profiles.forEach(profile => this.addProfile(profile));
     }
 
+    public addTraderInitialLoyaltyLevel(traderId:string, level:number = 1):void {
+        let profiles:ICustomProfile=this.getProfiles();
+        Object.keys(profiles).forEach((profile:string):void => {
+            profiles[profile].bear.trader.initialLoyaltyLevel[traderId] = level;
+            profiles[profile].usec.trader.initialLoyaltyLevel[traderId] = level;
+        })
+    }
+
+
+
 }

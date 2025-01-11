@@ -2,7 +2,7 @@ import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {ITrader, ITraderAssort} from "@spt/models/eft/common/tables/ITrader";
 import {LoadList} from "../models/mg/services/ILoadList";
-import {CustomAssort} from "../models/mg/traders/ITraderCustom";
+import {CustomTraderAssort} from "../models/mg/traders/ITraderCustom";
 import {HashUtil} from "@spt/utils/HashUtil";
 import {Mod} from "../../mod";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
@@ -40,18 +40,18 @@ export class MGTraders extends CommonlLoad {
         return this.databaseService.getTrader(traderId);
     }
 
-    public creatCustomItemAssort(MGItem:MGItems):CustomAssort{
-        const customAssort:CustomAssort = {
+    public creatCustomItemAssort(MGItem: MGItems, traderId: string): CustomTraderAssort {
+        const customAssort: CustomTraderAssort = {
             assort: [],
             currency: MGItem.currency,
             loyal_level_items: MGItem.loyal_level,
             price: MGItem.price,
+            traderId: traderId,
         }
-        if(MGItem.assort.length>0){
+        if (MGItem.assort.length > 0) {
             customAssort.assort = this.fixAssort(MGItem.assort);
-        }
-        else{
-            const assort:IItem[] = [{
+        } else {
+            const assort: IItem[] = [{
                 _id: "uniqueId",
                 _tpl: MGItem.items.newId,
                 parentId: 'hideout',
@@ -66,10 +66,10 @@ export class MGTraders extends CommonlLoad {
         return customAssort;
     }
 
-    public addAssortToTrader(traderId:string,customAssort:CustomAssort):void {
-        const TraderAssort:ITraderAssort = this.getTrader(traderId).assort;
+    public addAssortToTrader(customAssort: CustomTraderAssort): void {
+        const TraderAssort: ITraderAssort = this.getTrader(customAssort.traderId).assort;
         TraderAssort.items.push(...customAssort.assort);
-        const mainAssort:IItem = (customAssort.assort).find((x:IItem):boolean => (x.slotId == 'hideout' && x.parentId == 'hideout'));
+        const mainAssort: IItem = (customAssort.assort).find((x: IItem): boolean => (x.slotId == 'hideout' && x.parentId == 'hideout'));
         const rID = mainAssort._id;
         TraderAssort.barter_scheme[rID] = [[{
             count: customAssort.price,
@@ -78,16 +78,17 @@ export class MGTraders extends CommonlLoad {
         TraderAssort.loyal_level_items[rID] = customAssort.loyal_level_items;
     }
 
-    public addCustomTrader(trader: ITrader) {
-
+    public addCustomTrader(traderId: string, traderData: ITrader): void {
+        const Traders: Record<string, ITrader> = this.getTraders();
+        Traders[traderId] = traderData;
     }
 
-    public fixAssort(assorts:IItem[]):IItem[]{
-        let newAssorts:IItem[] = (new IClone(this.mod)).clone(assorts);
-        for(let assort of assorts){
-            let oldId:string = assort._id
+    public fixAssort(assorts: IItem[]): IItem[] {
+        let newAssorts: IItem[] = (new IClone(this.mod)).clone(assorts);
+        for (let assort of assorts) {
+            let oldId: string = assort._id
             assort._id = (new HashUtil()).generate();
-            newAssorts = (new IFormatUtils()).replaceKey(newAssorts,oldId,assort._id);
+            newAssorts = (new IFormatUtils()).replaceKey(newAssorts, oldId, assort._id);
         }
         return newAssorts;
     }

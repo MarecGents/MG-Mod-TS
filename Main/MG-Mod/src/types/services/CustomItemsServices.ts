@@ -1,11 +1,9 @@
-import {LoadList, MGList} from "../models/mg/services/ILoadList";
-import {MGLocales} from "../servers/MGLocales";
-import {OutputServices} from "./OutputServices";
+import {LoadList} from "../models/mg/services/ILoadList";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
-import {BrothersItem, CustomTraderItems, MGItems, SuperItem} from "../models/mg/items/EItems";
+import {BrothersItem, MGItems, SuperItem} from "../models/mg/items/EItems";
 import {Mod} from "../../mod";
-import {CustomAssort} from "../models/mg/traders/ITraderCustom";
+import {CustomTraderAssort} from "../models/mg/traders/ITraderCustom";
 import {Money} from "@spt/models/enums/Money";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ItemsInfo} from "../models/mg/locales/GlobalInfo";
@@ -13,9 +11,11 @@ import {CustomService} from "../models/external/CustomService";
 
 export class CustomItemsService extends CustomService{
 
+    protected IClone: IClone = null;
+
     constructor(mod: Mod, loadList: LoadList) {
         super(mod,loadList);
-        this.start();
+        this.IClone = new IClone(this.mod);
     }
 
     public start():void {
@@ -24,13 +24,13 @@ export class CustomItemsService extends CustomService{
     }
 
     private getAllItems(): Record<string, MGItems>{
-        const SuperItemsList: Record<string, SuperItem> | any = (new IClone(this.mod)).clone(PathTypes.SuperItemPath);
+        const SuperItemsList: Record<string, SuperItem> | any = this.IClone.clone(PathTypes.SuperItemPath);
         this.SuperItemsToMG(SuperItemsList);
-        const BrothersItemsList: Record<string, BrothersItem> | any = (new IClone(this.mod)).clone(PathTypes.BrothersItemPath);
+        const BrothersItemsList: Record<string, BrothersItem> | any = this.IClone.clone(PathTypes.BrothersItemPath);
         this.brotersItemsToMG(BrothersItemsList);
-        let MGItemsList: Record<string, MGItems> | any = (new IClone(this.mod)).clone(PathTypes.MGItemPath);
+        let MGItemsList: Record<string, MGItems> | any = this.IClone.clone(PathTypes.MGItemPath);
         this.transferMGItemsStruct(MGItemsList);
-        MGItemsList = (new IClone(this.mod)).clone(PathTypes.MGItemPath) as Record<string, MGItems>;
+        MGItemsList = this.IClone.clone(PathTypes.MGItemPath) as Record<string, MGItems>;
         return MGItemsList;
     }
 
@@ -142,14 +142,14 @@ export class CustomItemsService extends CustomService{
             this.MGList.MGtemplates.addMGCustomItem(item);
             // 向指定商人添加出售信息
             if(item.isSold){
-                const customAssort:CustomAssort = this.MGList.MGtraders.creatCustomItemAssort(item);
-                this.MGList.MGtraders.addAssortToTrader(item.toTraderId, customAssort);
+                const customAssort:CustomTraderAssort = this.MGList.MGtraders.creatCustomItemAssort(item, item.toTraderId);
+                this.MGList.MGtraders.addAssortToTrader(customAssort);
             }
 
             // 检验是否在各个部分都存在此物品的信息 若不存在则手动添加
             // handbook.json
             if(!this.MGList.MGtemplates.findIdFromHandbookItems(item.items.newId)){
-                const parentId = this.MGList.MGtemplates.findHandbookItemsParentIdById(item.items.cloneId);
+                const parentId:string = this.MGList.MGtemplates.findHandbookItemsParentIdById(item.items.cloneId);
                 const hbItem:IHandbookItem = {
                     Id:item.items.newId,
                     ParentId:parentId,
@@ -180,6 +180,16 @@ export class CustomItemsService extends CustomService{
             }
             this.outPut.addItemsSuccess(it,this.Locales.getTraderNicknameByIdFromSpecificLanguage(item.toTraderId,"ch"));
         }
+    }
+
+    private getMGAssorts():CustomTraderAssort[]{
+        return this.IClone.clone(PathTypes.AssortItemPath);
+    }
+
+    // 未完待续
+    public addMGAssortToServer():void {
+        const MGAssorts:CustomTraderAssort[] = this.getMGAssorts();
+
     }
 
     // basically this function's input is based on MGItems from MGItem folder
