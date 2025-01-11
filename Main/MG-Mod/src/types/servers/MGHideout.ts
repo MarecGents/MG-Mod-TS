@@ -17,13 +17,13 @@ export class MGHideout extends CommonlLoad {
         super(mod);
     }
 
-    public init(){
+    public init():void {
         this.className = "MGHideout";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
         this.hideout = this.databaseService.getHideout();
     }
 
-    public onload(loadList?: LoadList) {
+    public onload(loadList?: LoadList):void  {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
@@ -47,10 +47,10 @@ export class MGHideout extends CommonlLoad {
     }
 
     public c_constructionTime(time:number):void {
-        let areas = this.getAreas();
+        let areas:IHideoutArea[] = this.getAreas();
         for(let id1 in areas){
             for(let n in areas[id1].stages){
-                let time = areas[id1].stages[n].constructionTime;
+                let time:number = areas[id1].stages[n].constructionTime;
                 if(time!==0){
                     areas[id1].stages[n].constructionTime = time;
                 }
@@ -59,7 +59,7 @@ export class MGHideout extends CommonlLoad {
     }
 
     public c_productionTime(time:number):void {
-        let production = this.getProductions();
+        let production:IHideoutProduction[] = this.getProductions();
         for(let it of production){
             if(it.productionTime !== 0){
                 it.productionTime = time;
@@ -68,7 +68,7 @@ export class MGHideout extends CommonlLoad {
     }
 
     public c_scavecaseTime(time:number):void {
-        let scavecase = this.getScavecases();
+        let scavecase:IScavRecipe[] = this.getScavecases();
         for(let it of scavecase){
             if(it.productionTime !== 0){
                 it.productionTime = time;

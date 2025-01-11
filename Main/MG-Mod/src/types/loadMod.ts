@@ -6,8 +6,7 @@ import {MGLocales} from "./servers/MGLocales";
 import {MGTemplates} from "./servers/MGTemplates";
 import {MGTraders} from "./servers/MGTraders";
 import {LoadList} from "./models/mg/services/ILoadList";
-import {FormatOutput} from "./services/FormatOutput";
-import {ValueHepler} from "./helpers/ValueHepler";
+import {OutputServices} from "./services/OutputServices";
 import {MGLocations} from "./servers/MGLocations";
 import {Mod} from "../mod";
 
@@ -32,8 +31,7 @@ export class loadMod {
                 MGtemplates: (new MGTemplates(this.mod)),
                 MGLocations: (new MGLocations(this.mod)),
             },
-            Output: (new FormatOutput(this.mod.Logger)),
-            ValueHelper:(new ValueHepler())
+            Output: (new OutputServices(this.mod.Logger)),
         };
         for (const service in this.loadList.MGList) {
             this.loadList.MGList[service].onload(this.loadList);

@@ -1,35 +1,33 @@
 {
     "MGTrader": {
-        "enable": true,
-        "addItems": true,
+        "enable": false,
+        "addItems": false,
         "addAssorts": false
     },
     "extra": {
-        "enable": true,
-        "KeyNameExpand": true,
+        "KeyNameExpand": false,
         "profilesRepair": false,
-        "FleaMarket": true
+        "FleaMarket": false,
+        "newProfile": false
     },
     "bots": {
-        "enable": true,
         "healthRate": "default"
     },
     "configs": {
-        "enable": true,
         "updateTime": 3600,
         "updateTimeDefault": 3600,
         "chance": {
-            "enable": true,
+            "enable": false,
             "base": 100
         },
         "time": {
-            "enable": true,
+            "enable": false,
             "max": 0.001,
             "min": 0
         },
         "dynamic": {
             "FleaOptimize": {
-                "enable": true,
+                "enable": false,
                 "nonStackableCount": {
                     "min": 100,
                     "max": 5000
@@ -44,7 +42,7 @@
                 }
             },
             "condition": false,
-            "blacklistEnable": false
+            "blacklistEnable": true
         },
         "returnChance": {
             "enable": false,
@@ -57,7 +55,7 @@
             "botactive": 0,
             "pmcPercent": "default"
         },
-        "newItemsMarkedFound": true,
+        "newItemsMarkedFound": false,
         "inraid": {
             "MIAOnRaidEnd": true,
             "raidMenuSettings": {
@@ -75,7 +73,7 @@
             }
         },
         "fence": {
-            "enable": true,
+            "enable": false,
             "partialRefreshTimeSeconds": 120,
             "maxPresetsPercent": 30,
             "presetPriceMult": 1.1,
@@ -158,11 +156,11 @@
             }
         },
         "LootMultiplier": {
-            "static": 2,
+            "static": 1,
             "container": 1
         },
         "BuffSettings": {
-            "AmmoBuff": 100,
+            "AmmoBuff": "default",
             "WeaponBuff": 100,
             "Otherwise": 100
         },
@@ -172,7 +170,7 @@
             "crateFallSpeed": "default"
         },
         "weather": {
-            "OverAll": "Custom",
+            "OverAll": "default",
             "clouds": {
                 "type": "default",
                 "values": [
@@ -254,11 +252,10 @@
         }
     },
     "globals": {
-        "enable": true,
-        "BaseLoadTime": 0.01,
-        "BaseUnloadTime": 0.01,
+        "BaseLoadTime": 0.85,
+        "BaseUnloadTime": 0.3,
         "LootMultiplier": {
-            "Total": 2,
+            "Total": 1,
             "Valuable": 1
         },
         "survived_seconds_requirement": 420,
@@ -269,9 +266,9 @@
             "SavagePlayCooldownDevelop": 0
         },
         "RagFair": {
-            "minUserLevel": 1,
+            "minUserLevel": 15,
             "TaxRate": {
-                "enable": true,
+                "enable": false,
                 "communityTax": 0.01,
                 "communityItemTax": 0.01,
                 "communityRequirementTax": 0.01
@@ -289,25 +286,23 @@
         },
         "RepairDegradation": false,
         "BuffSettings": {
-            "AmmoBuff": 100,
+            "AmmoBuff": "default",
             "WeaponBuff": 100
         },
         "SkillExperience": false
     },
     "hideout": {
-        "enable": true,
-        "areas": 10,
-        "production": 10,
-        "scavcase": 10
+        "areas": "default",
+        "production": "default",
+        "scavcase": "default"
     },
     "items": {
-        "enable": true,
-        "ExaminedByDefault": true,
-        "AllWeaponInColumn": true,
+        "ExaminedByDefault": false,
+        "AllWeaponInColumn": false,
         "AmmoSetting": {
-            "StackEnable": true,
+            "StackEnable": false,
             "StackMaxSize": 1000,
-            "Info": true,
+            "Info": false,
             "BlackList": [
                 "5656eb674bdc2d35148b457c",
                 "5ede474b0c226a66f5402622",
@@ -486,14 +481,13 @@
         },
         "MaximumNumberOfUsage": false,
         "MedicalSupply": "default",
-        "HeatFactor": true,
+        "HeatFactor": false,
         "RepairDegradation": false,
         "CartridgesTimes": 1,
         "DurabilityBurnModificator": false,
-        "itemOptimize": true
+        "itemOptimize": false
     },
     "locations": {
-        "enable": true,
         "Boss_100_Chance": false,
         "otherBossType": {
             "enable": true,
@@ -518,16 +512,14 @@
         "newLooseLoot": false
     },
     "request": {
-        "enable": true,
-        "changeCost_cont": 0,
-        "questOptimize": true
+        "changeCost_cont": 5000,
+        "questOptimize": false
     },
     "traders": {
-        "enable": true,
         "insurance": {
-            "min_return_hour": 0,
-            "max_return_hour": 0
+            "min_return_hour": 36,
+            "max_return_hour": 72
         }
     },
-    "saveTime": "2024-12-29 23:26:27.914049"
+    "saveTime": "2025-01-10 23:52:33.788675"
 }

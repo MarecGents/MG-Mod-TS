@@ -23,16 +23,16 @@ export interface QuestInfo {
 
 export interface ItemsDesc {
     Name: string;
-    Nickname: string;
-    Description?: string;
+    ShortName: string;
+    Description: string;
 }
 
 export interface TraderDesc {
     FullName: string;
     FirstName: string;
     Nickname: string;
-    Location?: string;
-    Description?: string;
+    Location: string;
+    Description: string;
 }
 
 export interface QuestDesc {
@@ -47,9 +47,4 @@ export interface QuestDesc {
 
 export interface AnyInfo {
     [key: string]: string;
-}
-
-export interface LocalesInfo{
-    Items:ItemsInfo[]
-    QuestInfo:QuestInfo[]
 }

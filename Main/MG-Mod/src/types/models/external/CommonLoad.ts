@@ -1,5 +1,5 @@
 import {LoadList} from "../mg/services/ILoadList";
-import { FormatOutput } from "../../services/FormatOutput";
+import { OutputServices } from "../../services/OutputServices";
 import {Mod} from "../../../mod";
 
 
@@ -8,7 +8,7 @@ export class CommonlLoad {
     protected mod: Mod;
     protected loadList: LoadList;
     protected className: string;
-    protected output: FormatOutput;
+    protected output: OutputServices;
     constructor(mod: any) {
         this.mod = mod;
         this.init()

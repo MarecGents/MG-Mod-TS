@@ -11,7 +11,7 @@ export enum PathTypes {
      * @param AssortItemList is set to place the trader's purchace assort file, like whole weapon build assort
      * @@param ModConfigList is set to place the customed config file for mod maker to ensure the mod run succeefully
      */
-    TraderPath = "trader/",
+    TraderPath = "traders/",
     ModConfigPath = "res/config/",
     KeyPath = "res/Keys/",
     PricePath = "res/price/",
@@ -21,5 +21,7 @@ export enum PathTypes {
     BrothersItemPath = "db/BrothersItem/",
     MGItemPath = "db/MGItem/",
     AssortItemPath = "db/assort/",
+
+
 
 }

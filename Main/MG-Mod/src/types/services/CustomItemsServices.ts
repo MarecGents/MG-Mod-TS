@@ -1,35 +1,24 @@
 import {LoadList, MGList} from "../models/mg/services/ILoadList";
 import {MGLocales} from "../servers/MGLocales";
-import {FormatOutput} from "./FormatOutput";
+import {OutputServices} from "./OutputServices";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
-import {LogTextColor} from "../../../types/models/spt/logging/LogTextColor";
-import {LogBackgroundColor} from "../../../types/models/spt/logging/LogBackgroundColor";
-import {BrothersItem, MGItems, SuperItem} from "../models/mg/items/EItems";
+import {BrothersItem, CustomTraderItems, MGItems, SuperItem} from "../models/mg/items/EItems";
 import {Mod} from "../../mod";
-import {NewItemFromCloneDetails} from "../../../types/models/spt/mod/NewItemDetails";
 import {CustomAssort} from "../models/mg/traders/ITraderCustom";
-import {Money} from "../../../types/models/enums/Money";
-import {IItem} from "../../../types/models/eft/common/tables/IItem";
+import {Money} from "@spt/models/enums/Money";
+import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
+import {ItemsInfo} from "../models/mg/locales/GlobalInfo";
+import {CustomService} from "../models/external/CustomService";
 
-export class CustomItemsService {
-
-    private loadList: LoadList;
-    private mod: any;
-    private MGList: MGList;
-    private Locales: MGLocales
-    private outPut: FormatOutput;
+export class CustomItemsService extends CustomService{
 
     constructor(mod: Mod, loadList: LoadList) {
-        this.mod = mod;
-        this.loadList = loadList;
-        this.MGList = this.loadList.MGList;
-        this.Locales = this.loadList.MGList.MGlocales;
-        this.outPut = this.loadList.Output;
+        super(mod,loadList);
         this.start();
     }
 
-    private start() {
+    public start():void {
         const MGItemsList: Record<string, MGItems> = this.getAllItems();
         this.addMGItemsToServer(MGItemsList);
     }
@@ -158,12 +147,40 @@ export class CustomItemsService {
             }
 
             // 检验是否在各个部分都存在此物品的信息 若不存在则手动添加
+            // handbook.json
+            if(!this.MGList.MGtemplates.findIdFromHandbookItems(item.items.newId)){
+                const parentId = this.MGList.MGtemplates.findHandbookItemsParentIdById(item.items.cloneId);
+                const hbItem:IHandbookItem = {
+                    Id:item.items.newId,
+                    ParentId:parentId,
+                    Price:item.price
+                };
+                this.MGList.MGtemplates.addHandbookItem(hbItem);
+            }
+            // price.json
+            if(this.MGList.MGtemplates.findPriceById(item.items.newId) === -1){
+                this.MGList.MGtemplates.addPriceById(item.items.newId,item.price);
+            }
+            // locales/global/xx.json
+            if(!(
+                this.Locales.getItemInfoFromSpecificLanguage(item.items.newId, "ch").Name !== ""
+                && this.Locales.getItemInfoFromSpecificLanguage(item.items.newId, "ch").ShortName !== ""
+                && this.Locales.getItemInfoFromSpecificLanguage(item.items.newId, "ch").Description !== ""
+            )){
+                const itemInfo:ItemsInfo = {
+                    _id: item.items.newId,
+                    desc: {
+                        Name: item.description.name,
+                        ShortName: item.description.shortName,
+                        Description: item.description.description
+                    }
 
-
-
+                };
+                this.Locales.addItemInfo(itemInfo);
+            }
+            this.outPut.addItemsSuccess(it,this.Locales.getTraderNicknameByIdFromSpecificLanguage(item.toTraderId,"ch"));
         }
     }
-
 
     // basically this function's input is based on MGItems from MGItem folder
     private transferMGItemsStruct(itemList: Record<string, MGItems> | any): void {

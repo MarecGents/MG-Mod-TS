@@ -44,8 +44,8 @@ export class MGTraders extends CommonlLoad {
         const customAssort:CustomAssort = {
             assort: [],
             currency: MGItem.currency,
-            loyal_level_items: 0,
-            price: 0
+            loyal_level_items: MGItem.loyal_level,
+            price: MGItem.price,
         }
         if(MGItem.assort.length>0){
             customAssort.assort = this.fixAssort(MGItem.assort);

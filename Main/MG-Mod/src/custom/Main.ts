@@ -1,6 +1,6 @@
 import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
 import {LoadList, MGList} from "../types/models/mg/services/ILoadList";
-import {FormatOutput} from "../types/services/FormatOutput";
+import {OutputServices} from "../types/services/OutputServices";
 import {MGModConfig} from "../types/models/mg/config/IConfig";
 import {IClone} from "../types/utils/IClone";
 import {PathTypes} from "../types/models/enums/PathTypes";
@@ -13,18 +13,33 @@ import {MapChType} from "../types/models/enums/MapChType";
 import {MGTemplates} from "../types/servers/MGTemplates";
 import {MGLocales} from "../types/servers/MGLocales";
 import {MGTraders} from "../types/servers/MGTraders";
-import {CustomItemsService} from "../types/services/CustomItemsServices";
+import {IProps, ITemplateItem} from "@spt/models/eft/common/tables/ITemplateItem";
+import {configContainer} from "../types/models/mg/items/EItems";
+import {Mod} from "../mod";
+import {ITrader, ITraderBase} from "@spt/models/eft/common/tables/ITrader";
+import {IQuest, IQuestCondition} from "@spt/models/eft/common/tables/IQuest";
+import {IRepeatableQuestDatabase} from "@spt/models/eft/common/tables/IRepeatableQuests";
+import {ILocations} from "@spt/models/spt/server/ILocations";
+import {IBossLocationSpawn, IExit} from "@spt/models/eft/common/ILocationBase";
+import {IConfig, IGlobals} from "@spt/models/eft/common/IGlobals";
+import {IInsuranceConfig} from "@spt/models/spt/config/IInsuranceConfig";
+import {IInventoryConfig} from "@spt/models/spt/config/IInventoryConfig";
+import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig";
+import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig";
+import {IRepairConfig} from "@spt/models/spt/config/IRepairConfig";
+import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
+import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
 
 export class Main{
     private loadList:LoadList;
-    private mod: any;
+    private mod: Mod;
     private MGList: MGList;
     private Locales:MGLocales
-    private outPut: FormatOutput;
-    constructor(mod,loadList:LoadList){
+    private outPut: OutputServices;
+    constructor(mod:Mod,loadList:LoadList){
         this.loadList = loadList;
         this.MGList = this.loadList.MGList;
-        this.Locales = this.loadList.MGList.MGlocales;
+        this.Locales = this.MGList.MGlocales;
         this.outPut = this.loadList.Output;
         this.mod = mod;
         this.start();
@@ -33,11 +48,12 @@ export class Main{
 
     public start(){
         const ConfigJson: MGModConfig = new IClone(this.mod).clone(PathTypes.ModConfigPath).config;
-        (new CustomItemsService(this.mod,this.loadList));
+        // (new CustomItemsService(this.mod,this.loadList));
+        // (new CustomTraderService(this.mod,this.loadList));
 
     }
 
-    private BotsServices(MGBots:MGBots,ConfigJson:MGModConfig){
+    private BotsServices(MGBots:MGBots,ConfigJson:MGModConfig):void {
         const botsJson:any = ConfigJson.bots;
         // 功能：AI血量
         if(botsJson.healthRate && botsJson.healthRate !== "default"){
@@ -47,7 +63,7 @@ export class Main{
         this.outPut.classLoaded("BotsServices");
     }
 
-    private ConfigServices(MGConfigs:MGConfigs,ConfigJson:MGModConfig){
+    private ConfigServices(MGConfigs:MGConfigs,ConfigJson:MGModConfig):void {
         const configJson:any = ConfigJson.configs;
 
         // airdrop.json
@@ -79,22 +95,25 @@ export class Main{
         }
 
         // insurance.json
-        let insurance = MGConfigs.getConfig(ConfigTypes.INSURANCE);
+        let insurance:IInsuranceConfig = MGConfigs.getConfig(ConfigTypes.INSURANCE);
         //功能：商人百分百回保
         if (configJson.returnChance.enable) {
             MGConfigs.c_TraderReturnChance(100);
             insurance.runIntervalSeconds = configJson.returnChance.runIntervalSeconds;
         }
+
         // inventory.json
-        let inventory = MGConfigs.getConfig(ConfigTypes.INVENTORY);
+        let inventory:IInventoryConfig = MGConfigs.getConfig(ConfigTypes.INVENTORY);
         // 功能：购买物品带钩
         if(configJson.newItemsMarkedFound){
             inventory.newItemsMarkedFound = configJson.newItemsMarkedFound;
         }
+
         // item.json
         // locale.json
+
         // location.json
-        let location = MGConfigs.getConfig(ConfigTypes.LOCATION);
+        let location:ILocationConfig = MGConfigs.getConfig(ConfigTypes.LOCATION);
         // 功能：容器物资倍率
         if(configJson.LootMultiplier.container !== 1){
             MGConfigs.c_staticLootMultiplier(configJson.LootMultiplier.container);
@@ -112,21 +131,21 @@ export class Main{
         // playerscav.json
 
         // pmc.json
-        let pmc = MGConfigs.getConfig(ConfigTypes.PMC);
+        // let pmc = MGConfigs.getConfig(ConfigTypes.PMC);
         // pmc占比
         if (configJson.botmod.pmcPercent !== "default") {
             MGConfigs.c_convertIntoPmcChance(configJson.botmod.pmcPercent);
         }
+
         // pmcchatresponse.json
         // quest.json
 
         // ragfair.json
-        let ragfair = MGConfigs.getConfig(ConfigTypes.RAGFAIR);
+        let ragfair:IRagfairConfig = MGConfigs.getConfig(ConfigTypes.RAGFAIR);
         // 功能：出售概率
         if (configJson.chance.enable){
             MGConfigs.c_sellChance(configJson.chance.base);
         }
-
         // 功能：跳蚤极速出售
         if (configJson.time.enable) {
             MGConfigs.c_sellTime({
@@ -160,19 +179,17 @@ export class Main{
         }
 
         // repair.json
-        // let repair = MGConfigs.getConfig(ConfigTypes.RAGFAIR);
+        // let repair:IRepairConfig = MGConfigs.getConfig(ConfigTypes.RAGFAIR);
         // 功能：护甲附魔
         if (configJson.BuffSettings.AmmoBuff !== "default"){
             MGConfigs.c_repairKit("armor",configJson.BuffSettings.AmmoBuff);
             MGConfigs.c_repairKit("vest",configJson.BuffSettings.AmmoBuff);
             MGConfigs.c_repairKit("headwear",configJson.BuffSettings.AmmoBuff);
         }
-
         // 功能：武器附魔
         if (configJson.BuffSettings.WeaponBuff !== "default"){
             MGConfigs.c_repairKit("weapon",configJson.BuffSettings.AmmoBuff);
         }
-
         // 功能：附魔
         MGConfigs.c_repairBuff(100);
 
@@ -180,7 +197,7 @@ export class Main{
         // seasonalevents.json
 
         // trader.json
-        let trader = MGConfigs.getConfig(ConfigTypes.TRADER);
+        let trader:ITraderConfig = MGConfigs.getConfig(ConfigTypes.TRADER);
         // 功能：商人供货时间
         if(configJson.updateTimeDefault !== 3600){
             MGConfigs.c_defaultUpdateTime(configJson.updateTimeDefault);
@@ -196,8 +213,9 @@ export class Main{
         if(configJson.newItemsMarkedFound){
             trader.purchasesAreFoundInRaid = configJson.newItemsMarkedFound;
         }
+
         // weather.json
-        let weather = MGConfigs.getConfig(ConfigTypes.WEATHER);
+        let weather:IWeatherConfig = MGConfigs.getConfig(ConfigTypes.WEATHER);
         // 功能：天气修改
         if (configJson.weather.OverAll !== "default"){
             MGConfigs.c_weatherConfig({
@@ -279,11 +297,11 @@ export class Main{
         this.outPut.classLoaded("ConfigServices");
     }
 
-    private GlobalsServices(MGGlobals:MGGlobals,ConfigJson:MGModConfig){
+    private GlobalsServices(MGGlobals:MGGlobals,ConfigJson:MGModConfig):void {
         const globalJson:any = ConfigJson.globals;
 
-        let globals = MGGlobals.getGlobals();
-        let Glconf = globals.config;
+        let globals:IGlobals = MGGlobals.getGlobals();
+        let Glconf:IConfig = globals.config;
         // 功能：撤离时间无限制
         if(globalJson.survived_seconds_requirement !== 420){
             Glconf.exp.match_end.survived_seconds_requirement = globalJson.survived_seconds_requirement;
@@ -423,7 +441,7 @@ export class Main{
 
     }
 
-    private HideoutServices(MGHideout:MGHideout,ConfigJson:MGModConfig){
+    private HideoutServices(MGHideout:MGHideout,ConfigJson:MGModConfig):void {
         const hideoutJson:any = ConfigJson.hideout;
 
         // 功能：藏身处升级时间
@@ -445,20 +463,21 @@ export class Main{
 
     }
 
-    private LocationsServices(MGLocations:MGLocations,ConfigJson:MGModConfig){
+    private LocationsServices(MGLocations:MGLocations,ConfigJson:MGModConfig):void {
         const locationJson:any = ConfigJson.locations;
-        let Locations = MGLocations.getLocations();
-        const noNeedMapName = ["develop", "hideout", "privatearea","suburbs","terminal","town","base"]
+        let Locations:ILocations = MGLocations.getLocations();
+        const noNeedMapName:string[] = ["develop", "hideout", "privatearea","suburbs","terminal","town","base"]
         for(let mapName in Locations){
             if(noNeedMapName.hasOwnProperty(mapName)){continue;}
-            if (!(typeof (Locations[mapName].base) === 'object' && Locations[mapName].base.Locked === false)){continue;}
+            if (!(typeof (Locations[mapName].base) === 'object'
+                && Locations[mapName].base.Locked === false)) {continue;}
             // 功能：战局时长(分钟)
             if(locationJson.EscapeTime!=="default"){
                 Locations[mapName].base.EscapeTimeLimit = locationJson.EscapeTime;
             }
             // 功能：boss刷新率
             if (typeof (Locations[mapName].base.BossLocationSpawn) === 'object'){
-                let locationBoss = Locations[mapName].base.BossLocationSpawn;
+                let locationBoss:IBossLocationSpawn[] = Locations[mapName].base.BossLocationSpawn;
                 for (let BZone of locationBoss) {
                     // 功能：boss刷新率100%
                     if (BZone.BossName.indexOf('boss') === 0 || !BZone.Supports) {
@@ -480,9 +499,11 @@ export class Main{
             }
 
             // 功能：100%可拉闸  功能：100%可撤离
-            if (typeof (Locations[mapName].base.exits) === 'object' && (locationJson.WorldEventChance || locationJson.EscapeChance)){
+            if (typeof (Locations[mapName].base.exits) === 'object'
+                && (locationJson.WorldEventChance
+                    || locationJson.EscapeChance)) {
                 for(let i in Locations[mapName].base.exits){
-                    let exit = Locations[mapName].base.exits[i]
+                    let exit:IExit = Locations[mapName].base.exits[i]
                     // 功能：100%可拉闸
                     if(exit.PassageRequirement === "WorldEvent" && locationJson.WorldEventChance){
                         exit.Chance = 100;
@@ -502,21 +523,37 @@ export class Main{
 
     }
 
-    private TemplatesServices(MGTemplates:MGTemplates,ConfigJson:MGModConfig){
+    private TemplatesServices(MGTemplates:MGTemplates,ConfigJson:MGModConfig):void {
         const itemJson:any = ConfigJson.items;
         const requestJson:any = ConfigJson.request;
 
-
-        let items = MGTemplates.getItems();
-        const itemsDB = (new IClone(this.mod)).clone(PathTypes.ServicesPath + "itemsDB/");
+        let items:Record<string, ITemplateItem> = MGTemplates.getItems();
+        const itemsDB:any = (new IClone(this.mod)).clone(PathTypes.ServicesPath + "itemsDB/");
         for (let item in items) {
-            let itemId = items[item]._id,
-                itemParent = items[item]._parent,
-                itemProps = items[item]._props;
+            let itemId:string = items[item]._id,
+                itemParent:string = items[item]._parent,
+                itemProps:IProps = items[item]._props;
+            const AmmoBlacklist:string[] = [
+                "5656eb674bdc2d35148b457c",
+                "5ede474b0c226a66f5402622",
+                "5ede475b549eed7c6d5c18fb",
+                "5ede4739e0350d05467f73e8",
+                "5ede47405b097655935d7d16",
+                "5ede475339ee016e8c534742",
+                "5f0c892565703e5c461894e9",
+                "62389aaba63f32501b1b444f",
+                "62389ba9a63f32501b1b4451",
+                "62389bc9423ed1685422dc57",
+                "62389be94d5d474bf712e709",
+                "635267f063651329f75a4ee8"
+            ];
+            const container:Record<string, configContainer> = itemJson.Container;
+            let MedParent:string[] = ["5448f39d4bdc2d0a728b4568", "5448f3a14bdc2d27728b4569", "5448f3a64bdc2d60728b456a", "5448f3ac4bdc2dce718b4569"];
             // 物品全检视
             itemProps.ExaminedByDefault = itemJson.ExaminedByDefault;
             //武器栏可放全部武器
-            if (itemId === "55d7217a4bdc2d86028b456d" && itemJson.AllWeaponInColumn) {
+            if (itemId === "55d7217a4bdc2d86028b456d"
+                && itemJson.AllWeaponInColumn) {
                 //主武器栏
                 itemProps.Slots.find(x => x._name === 'FirstPrimaryWeapon')._props.filters[0].Filter = ['5422acb9af1c889c16000029'];
                 //副武器栏
@@ -530,21 +567,7 @@ export class Main{
                 ];
             }
             // 子弹
-            let AmmoBlacklist = [
-                "5656eb674bdc2d35148b457c",
-                "5ede474b0c226a66f5402622",
-                "5ede475b549eed7c6d5c18fb",
-                "5ede4739e0350d05467f73e8",
-                "5ede47405b097655935d7d16",
-                "5ede475339ee016e8c534742",
-                "5f0c892565703e5c461894e9",
-                "62389aaba63f32501b1b444f",
-                "62389ba9a63f32501b1b4451",
-                "62389bc9423ed1685422dc57",
-                "62389be94d5d474bf712e709",
-                "635267f063651329f75a4ee8"
-            ]
-            if (itemParent === "5485a8684bdc2da71d8b4567") {
+            else if (itemParent === "5485a8684bdc2da71d8b4567") {
                 if (itemJson.AmmoSetting.StackEnable) {
                     // 每个堆叠最大数量
                     itemProps.StackMaxSize = itemJson.AmmoSetting.StackMaxSize;
@@ -567,7 +590,7 @@ export class Main{
                 // 子弹数据
                 if (itemJson.AmmoSetting.Info) {
                     let retStr_ammo = "<color=#00cccc><b>肉伤：" + itemProps.Damage + "     甲伤：" + itemProps.ArmorDamage + "     穿甲：" + itemProps.PenetrationPower + "     穿透率：" + itemProps.PenetrationChanceObstacle + "     跳弹率：" + itemProps.RicochetChance + "     碎弹率：" + itemProps.FragmentationChance + "</b></color>\r\n";
-                    let newDesc = retStr_ammo.concat(this.Locales.getInfoByWholeId(item + " Description"));
+                    let newDesc = retStr_ammo.concat(this.Locales.getContentByKey(item + " Description"));
                     this.Locales.addInfo({
                         _id:item + " Description",
                         desc:newDesc
@@ -575,25 +598,24 @@ export class Main{
                 }
             }
             // 容器扩容
-            const container = itemJson.Container;
-            if (itemId in container) {
+            else if (itemId in container) {
                 // 容器扩容
-                if (itemJson.Container[itemId].enable) {
-                    let itemIssue = itemJson.Container[itemId]
+                if (container[itemId].enable) {
+                    let itemIssue:configContainer = container[itemId]
                     itemProps.Grids[0]._props.cellsH = itemIssue.cellsH;
                     itemProps.Grids[0]._props.cellsV = itemIssue.cellsV;
                 }
                 // 容器兼容
-                if (itemJson.Container[itemId].Filter) {
+                if (container[itemId].Filter) {
                     itemProps.Grids[0]._props.filters = [{Filter: ['54009119af1c881c07000029'], ExcludedFilter: []}];
                 }
                 // 无负重
-                if (!itemJson.Container[itemId].Weight) {
+                if (!container[itemId].Weight) {
                     itemProps.Weight = 0;
                 }
             }
             // 保险箱
-            if (itemParent === "5448bf274bdc2dfc2f8b456a") {
+            else if (itemParent === "5448bf274bdc2dfc2f8b456a") {
                 // 容量格子调整为：宽6高8
                 if (itemJson.SafeBox.contain.enable) {
 
@@ -610,7 +632,8 @@ export class Main{
                 }
             }
             // 钱堆叠
-            if (itemParent === "543be5dd4bdc2deb348b4569" && itemJson.MoneyStack.enable) {
+            else if (itemParent === "543be5dd4bdc2deb348b4569"
+                && itemJson.MoneyStack.enable) {
                 // 每个堆叠最大数量
                 itemProps.StackMaxSize = itemJson.MoneyStack.value;
                 itemProps.Weight = 0;
@@ -629,7 +652,7 @@ export class Main{
                 }
             }
             // 背包、盲盒
-            if (itemParent === "5448e53e4bdc2d60728b4567") {
+            else if (itemParent === "5448e53e4bdc2d60728b4567") {
                 // 去除物品限制
                 if (itemJson.Backpack.Filter) {
                     itemProps.Grids[0]._props.filters = [{Filter: ['54009119af1c881c07000029'], ExcludedFilter: []}];
@@ -654,7 +677,9 @@ export class Main{
                 }
             }
             // 弹挂修改 护甲修改
-            if (itemParent === "5448e5284bdc2dcb718b4567" || itemParent === "5448e54d4bdc2dcc718b4568" || itemParent === "57bef4c42459772e8d35a53b") {
+            else if (itemParent === "5448e5284bdc2dcb718b4567"
+                || itemParent === "5448e54d4bdc2dcc718b4568"
+                || itemParent === "57bef4c42459772e8d35a53b") {
                 if (itemJson.ArmorRig.BlocksArmorVest) {
                     // 去除护甲穿戴冲突
                     itemProps.BlocksArmorVest = false;
@@ -673,7 +698,8 @@ export class Main{
                 }
 
             }
-            if (itemParent === "644120aa86ffbe10ee032b6f" || itemParent === "65649eb40bf0ed77b8044453"){
+            else if (itemParent === "644120aa86ffbe10ee032b6f"
+                || itemParent === "65649eb40bf0ed77b8044453") {
                 if (itemProps.Durability) {
                     itemProps.Durability = itemProps.Durability * itemJson.ArmorRig.DurabilityTimes;
                 }
@@ -682,7 +708,7 @@ export class Main{
                 }
             }
             // 头盔修改
-            if (itemParent === "5a341c4086f77401f2541505"){
+            else if (itemParent === "5a341c4086f77401f2541505") {
                 if (itemJson.Helmet.BlocksArmorVest) {
                     // 去除耳机佩戴冲突
                     itemProps.BlocksEarpiece = false;
@@ -701,14 +727,15 @@ export class Main{
                 }
             }
             // 钥匙和卡无限使用次数
-            if (itemParent === "5c164d2286f774194c5e69fa" || itemParent === "5c99f98d86f7745c314214b3") {
+            else if (itemParent === "5c164d2286f774194c5e69fa"
+                || itemParent === "5c99f98d86f7745c314214b3") {
                 if (itemJson.MaximumNumberOfUsage) {
                     itemProps.MaximumNumberOfUsage = 0;
                 }
             }
             // 医疗物品耐久调整
-            let MedParent = ["5448f39d4bdc2d0a728b4568", "5448f3a14bdc2d27728b4569", "5448f3a64bdc2d60728b456a", "5448f3ac4bdc2dce718b4569"];
-            if (MedParent.indexOf(itemParent) !== -1 && itemJson.MedicalSupply !== "default") {
+            else if (MedParent.indexOf(itemParent) !== -1
+                && itemJson.MedicalSupply !== "default") {
                 if (itemProps.MaxHpResource === 0) {
                     itemProps.MaxHpResource = 1;
                 }
@@ -716,46 +743,50 @@ export class Main{
                 itemProps.hpResourceRate *= itemJson.MedicalSupply;
             }
             //武器无故障
-            if (itemProps.BaseMalfunctionChance > 0 && itemJson.HeatFactor) {
-                itemProps.BaseMalfunctionChance = 0;
-                itemProps.AllowFeed = false;
-                itemProps.AllowJam = false;
-                itemProps.AllowMisfire = true;
-                itemProps.AllowOverheat = false;
-                itemProps.AllowSlide = false;
-            }
-            for (let weapons in itemProps) {
-                //武器维修无损耗
-                if (weapons === "MaxRepairDegradation" && itemJson.RepairDegradation) {
-                    itemProps[weapons] = 0; //商人
+            else if(this.MGList.MGtemplates.findItemsParentsIdById(itemId).length > 0
+                && this.MGList.MGtemplates.findItemsParentsIdById(itemId).indexOf("5422acb9af1c889c16000029") !== -1) {
+                if (itemProps.BaseMalfunctionChance > 0 && itemJson.HeatFactor) {
+                    itemProps.BaseMalfunctionChance = 0;
+                    itemProps.AllowFeed = false;
+                    itemProps.AllowJam = false;
+                    itemProps.AllowMisfire = true;
+                    itemProps.AllowOverheat = false;
+                    itemProps.AllowSlide = false;
                 }
-                if (weapons === "MaxRepairKitDegradation" && itemJson.RepairDegradation) {
-                    itemProps[weapons] = 0; //维修包
-                }
-                if (weapons === "DurabilityBurnModificator" && itemJson.DurabilityBurnModificator) {
-                    itemProps.DurabilityBurnModificator = 0;
+                for (let weapons in itemProps) {
+                    //武器维修无损耗
+                    if (weapons === "MaxRepairDegradation" && itemJson.RepairDegradation) {
+                        itemProps[weapons] = 0; //商人
+                    }
+                    if (weapons === "MaxRepairKitDegradation" && itemJson.RepairDegradation) {
+                        itemProps[weapons] = 0; //维修包
+                    }
+                    if (weapons === "DurabilityBurnModificator" && itemJson.DurabilityBurnModificator) {
+                        itemProps.DurabilityBurnModificator = 0;
+                    }
                 }
             }
             //弹夹容量
-            if (itemParent === "5448bc234bdc2d3c308b4569" && itemJson.CartridgesTimes > 0) {
+            else if (itemParent === "5448bc234bdc2d3c308b4569"
+                && itemJson.CartridgesTimes > 0) {
                 let Cartridges = itemProps.Cartridges;
                 for (let n in Cartridges) {
                     Cartridges[n]._max_count = Cartridges[n]._max_count * itemJson.CartridgesTimes;
                 }
             }
             // 优化 T7、夜视仪
-            if (itemJson.itemOptimize) {
-                if (itemParent === "5a2c3a9486f774688b05e574") {
-                    itemProps = Object.assign(itemProps, itemsDB.GPNVG._props);
-                }
-                if (itemParent === "5d21f59b6dbe99052b54ef83") {
-                    itemProps = Object.assign(itemProps, itemsDB.T7._props);
-                }
+            else if (itemParent === "5a2c3a9486f774688b05e574"
+                && itemJson.itemOptimize) {
+                itemProps = Object.assign(itemProps, itemsDB.GPNVG._props);
+            }
+            else if (itemParent === "5d21f59b6dbe99052b54ef83"
+                && itemJson.itemOptimize) {
+                itemProps = Object.assign(itemProps, itemsDB.T7._props);
             }
         }
 
-        let quests = MGTemplates.getQuests();
-        let repeatableQuests = MGTemplates.getRepeatableQuests();
+        let quests:Record<string, IQuest> = MGTemplates.getQuests();
+        let repeatableQuests:IRepeatableQuestDatabase = MGTemplates.getRepeatableQuests();
 
         // 功能：任务免费重置
         if(requestJson.changeCost_cont !== 5000){
@@ -766,11 +797,11 @@ export class Main{
         // 功能：任务难度优化
         if(requestJson.questOptimize){
             for(let qusetId in quests){
-                let AForFinish = quests[qusetId].conditions.AvailableForFinish;
+                let AForFinish:IQuestCondition[] = quests[qusetId].conditions.AvailableForFinish;
                 for(let Finish of AForFinish){
                     Finish.value = 1;
                 }
-                let AForStart = quests[qusetId].conditions.AvailableForStart;
+                let AForStart:IQuestCondition[] = quests[qusetId].conditions.AvailableForStart;
                 for(let Start of AForStart){
                     Start.availableAfter = 0;
                 }
@@ -780,13 +811,13 @@ export class Main{
 
     }
 
-    private TradersServices(MGTraders:MGTraders,ConfigJson:MGModConfig){
+    private TradersServices(MGTraders:MGTraders,ConfigJson:MGModConfig):void {
         const traderJson = ConfigJson.traders;
         const returnPay =ConfigJson.configs.returnChance.returnPay;
 
-        let traders = MGTraders.getTraders();
+        let traders:Record<string, ITrader> = MGTraders.getTraders();
         for (let tra in traders) {
-            let traB = traders[tra].base;
+            let traB:ITraderBase = traders[tra].base;
             if (tra !== "ragfair") {
                 //保险秒回
                 if ("availability" in traB.insurance && traB.insurance.availability === true) {

@@ -28,7 +28,7 @@ export class MGGlobals extends CommonlLoad {
         }
     }
 
-    public getGlobals(){
+    public getGlobals():IGlobals {
         return this.globals;
     }
 

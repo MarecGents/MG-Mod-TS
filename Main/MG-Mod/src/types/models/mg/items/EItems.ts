@@ -52,3 +52,12 @@ export interface CustomTraderItems {
     origin: string;
     Type: string[];
 }
+
+export interface configContainer{
+    enable:boolean;
+    Name:string;
+    cellsH:number;
+    cellsV:number;
+    Weight:boolean;
+    Filter:boolean;
+}

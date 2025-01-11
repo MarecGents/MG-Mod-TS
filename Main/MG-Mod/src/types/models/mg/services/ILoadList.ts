@@ -5,12 +5,12 @@ import {MGLocales} from "../../../servers/MGLocales";
 import {MGHideout} from "../../../servers/MGHideout";
 import {MGBots} from "../../../servers/MGBots";
 import {MGConfigs} from "../../../servers/MGConfigs";
-import {FormatOutput} from "../../../services/FormatOutput";
+import {OutputServices} from "../../../services/OutputServices";
 import {MGLocations} from "../../../servers/MGLocations";
 
 export interface LoadList {
     MGList: MGList;
-    Output: FormatOutput;
+    Output: OutputServices;
     [key: string]: any;
 }
 

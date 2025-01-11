@@ -6,7 +6,7 @@ import {Mod} from "../../mod";
 export class IClone implements ICloner {
     private mod: Mod;
 
-    constructor(mod) {
+    constructor(mod:Mod) {
         this.mod = mod;
     }
 

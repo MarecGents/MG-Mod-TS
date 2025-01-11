@@ -36,7 +36,7 @@ export class MGConfigs extends CommonlLoad {
         }
     }
 
-    public getConfig(configType: ConfigTypes) {
+    public getConfig<T>(configType: ConfigTypes):T {
         return this.ConfigServer.getConfig(configType);
     }
 

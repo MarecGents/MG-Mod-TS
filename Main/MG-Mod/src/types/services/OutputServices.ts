@@ -2,7 +2,7 @@ import {ILogger} from "@spt/models/spt/utils/ILogger";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LogBackgroundColor} from "@spt/models/spt/logging/LogBackgroundColor";
 
-export class FormatOutput {
+export class OutputServices {
     private logger: ILogger
 
     constructor(logger: ILogger) {
@@ -32,4 +32,14 @@ export class FormatOutput {
     public debugLog(text:string){
         this.logger.log(text,LogTextColor.RED,LogBackgroundColor.GREEN);
     }
+
+    public addItemsSuccess(fileName:string, traderNickName:string){
+        this.logger.log(`MG独立物品【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.MAGENTA);
+    }
+
+    public addCustomTraderSuccess(traderNickName:string){
+        this.logger.log(`商人：[${traderNickName}] 已加载`, LogTextColor.CYAN);
+    }
+
+
 }
