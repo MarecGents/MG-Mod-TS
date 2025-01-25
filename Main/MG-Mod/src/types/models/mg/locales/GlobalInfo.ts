@@ -16,9 +16,6 @@ export interface TraderInfo {
 export interface QuestInfo {
     _id: string;
     desc: QuestDesc;
-    other?: {
-        [key: string]: string;
-    }
 }
 
 export interface ItemsDesc {
@@ -43,6 +40,9 @@ export interface QuestDesc {
     acceptPlayerMessage?: string;
     declinePlayerMessage?: string;
     completePlayerMessage?: string;
+    other?: {
+        [key: string]: string;
+    }
 }
 
 export interface AnyInfo {

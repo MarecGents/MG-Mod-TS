@@ -9,6 +9,7 @@ import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {ITraderGlobals} from "../globals/ITraderGlobals";
 import {IPreset} from "@spt/models/eft/common/IGlobals";
+import {IBundleManifest} from "@spt/loaders/BundleLoader";
 
 export interface ICustomTrader{
     images?:CustomTraderImages;
@@ -18,6 +19,7 @@ export interface ICustomTrader{
     traderData?:CustomTraderData;
     globals?:CustomTraderGlobals;
     traderInfo:CustomTraderInfo;
+    bundles?: IBundleManifest;
 }
 
 export interface CustomTraderImages{
@@ -27,13 +29,7 @@ export interface CustomTraderImages{
 
 export interface CustomTraderLocales{
     itemsdescription:Record<string, ItemsDesc>;
-    mail:Record<string, CustomTraderMail>;
-}
-
-export interface CustomTraderMail extends QuestDesc{
-    other?:{
-        [key: string]: string;
-    }
+    mail:Record<string, QuestDesc>;
 }
 
 export interface CustomTraderTemplates {

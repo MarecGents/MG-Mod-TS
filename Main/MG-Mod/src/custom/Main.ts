@@ -50,8 +50,8 @@ export class Main{
 
     public start(){
         const ConfigJson: MGModConfig = new IClone(this.mod).clone(PathTypes.ModConfigPath).config;
-        // (new CustomItemsService(this.mod,this.loadList));
-        // (new CustomTraderService(this.mod,this.loadList));
+        (new CustomItemsService(this.mod,this.loadList));
+        (new CustomTraderService(this.mod,this.loadList));
 
     }
 

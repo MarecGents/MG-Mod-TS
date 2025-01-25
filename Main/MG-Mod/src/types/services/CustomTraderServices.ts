@@ -1,15 +1,21 @@
 import {LoadList} from "../models/mg/services/ILoadList";
 import {CustomService} from "../models/external/CustomService";
-import {MGModConfig} from "../models/mg/config/IConfig";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
-import {CustomTraderData, CustomTraderInfo, ICustomTrader} from "../models/mg/traders/ITraderCustom";
+import {
+    CustomTraderData,
+    CustomTraderInfo,
+    ICustomTrader
+} from "../models/mg/traders/ITraderCustom";
 import {ITrader} from "@spt/models/eft/common/tables/ITrader";
 import {Traders} from "@spt/models/enums/Traders";
-import {TraderInfo} from "../models/mg/locales/GlobalInfo";
+import {ItemsDesc, QuestDesc, TraderInfo} from "../models/mg/locales/GlobalInfo";
 import {ImageRouter} from "@spt/routers/ImageRouter";
 import {Mod} from "../../mod";
+import {CustomTraderItems} from "../models/mg/items/EItems";
+import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
+import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 
 
 export class CustomTraderService extends CustomService {
@@ -17,12 +23,13 @@ export class CustomTraderService extends CustomService {
     protected IClone: IClone;
 
     constructor(mod: Mod, loadList: LoadList) {
-        super(mod, loadList);
+        super(mod,loadList);
         this.IClone = new IClone(this.mod);
     }
 
     public start(): void {
-        const bundlesJson: IBundleManifest = this.initCustomTrader();
+        let bundlesJson: IBundleManifest = this.initCustomTrader();
+        this.mod.VFS.writeFile(`${this.mod.modpath}bundles.json`,bundlesJson);
     }
 
     private initCustomTrader(): IBundleManifest {
@@ -58,12 +65,20 @@ export class CustomTraderService extends CustomService {
             // 添加商人本体信息
             this.addCustomTrader(TraderInfo, TraderData.traderData);
             // 添加商人的任务图片等信息
+            this.addQuestImage(TraderInfo, TraderData);
+            // 添加商人的独立物品
+            this.addItemsToServer(TraderInfo, TraderData);
+            //添加商人的物品和任务的文本信息
+            this.localesInfoToServer(TraderInfo, TraderData);
+            //添加商人的任务和物品跳蚤信息
+            this.addTemplatesToServer(TraderInfo, TraderData);
 
+            bundlesJson.manifest.push(...TraderData.bundles.manifest);
         }
         return bundlesJson;
     }
 
-    private addCustomTrader(TraderInfo: CustomTraderInfo, traderData: CustomTraderData): boolean {
+    public addCustomTrader(TraderInfo: CustomTraderInfo, traderData: CustomTraderData): boolean {
         if (TraderInfo.enable === false) {
             return false;
         }
@@ -119,7 +134,7 @@ export class CustomTraderService extends CustomService {
             this.outPut.warning(`${TraderInfo.name}:混蛋！你把我的头像放哪了！快还给我！`)
         }
         // 将商人添加到database/traders中
-        this.MGList.MGtraders.addCustomTrader(traderId, newTraderDB);
+        this.MGList.MGtraders.addCustomTrader(traderId,newTraderDB);
         Traders[traderId] = traderId;
 
         // locales/global/xx.json
@@ -149,7 +164,54 @@ export class CustomTraderService extends CustomService {
         return true;
     }
 
-    private addQuestImage(TraderName:string,){
+    public addQuestImage(TraderInfo: CustomTraderInfo, traderData: ICustomTrader):void{
+        if(!("images" in traderData)){ return;}
+        if(!("quests" in traderData.images)){ return;}
+        const questImagesPath = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/images/quests/`;
+        const iconList:any = this.mod.VFS.getFiles(questImagesPath);
+        for(let icon in iconList){
+            const filename:string = this.mod.VFS.stripExtension(icon);
+            const ImageRouter:ImageRouter = this.mod.container.container.resolve<ImageRouter>("ImageRouter");
+            ImageRouter.addRoute(`/files/quest/icon/${filename}`, `${questImagesPath}${icon}`);
+        }
+    }
+
+    public addItemsToServer(TraderInfo: CustomTraderInfo, traderData: ICustomTrader):void{
+        // 重写  函数 和 功能重复
+        const ItemsList:Record<string, CustomTraderItems> = traderData.items;
+        for(let itemName in ItemsList){
+            let Item:CustomTraderItems = ItemsList[itemName];
+            if(this.MGList.MGtemplates.isInItems(Item.item._id)){
+                this.outPut.warning(`警高：自定义商人:${TraderInfo.name}的独立物品:${itemName}已存在，本次添加操作不执行。如果不是重复添加，请修改独立物品的_id,以确保正常使用。`);
+                continue;
+            }
+            this.MGList.MGtemplates.addCustomTraderItem(Item);
+        }
+    }
+
+    public localesInfoToServer(TraderInfo: CustomTraderInfo, traderData:ICustomTrader):void{
+        const itemsDesc:Record<string, ItemsDesc> = traderData.locales.itemsdescription;
+        const mail:Record<string, QuestDesc> = traderData.locales.mail;
+        for(let id in itemsDesc){
+            this.Locales.addItemInfo({
+                _id:id,
+                desc:itemsDesc[id]
+            });
+        }
+        for(let id in mail){
+            this.Locales.addQuestInfo({
+                _id:id,
+                desc:mail[id],
+            });
+        }
+    }
+
+    public addTemplatesToServer(TraderInfo:CustomTraderInfo, traderData:ICustomTrader):void{
+        const quests:Record<string, IQuest> = traderData.templates?.quests;
+        const handbook:IHandbookItem[] = traderData.templates?.handbook;
+
+        this.MGList.MGtemplates.addCustomQuests(quests);
+        this.MGList.MGtemplates.addHandbookItems(handbook);
 
     }
 

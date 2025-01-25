@@ -27,12 +27,12 @@ export class MGTemplates extends CommonlLoad {
         super(mod);
     }
 
-    public init() {
+    public init():void {
         this.className = "MGTemplates";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
-    public onload(loadList?: LoadList) {
+    public onload(loadList?: LoadList):void {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
@@ -114,18 +114,18 @@ export class MGTemplates extends CommonlLoad {
         return ParentIds;
     }
 
-    public addFilterToDB(newItemList: ItemFilterList) {
-        let itemsDB = this.getItems();
-        const FilterList = ["StackSlots", "Slots", "Chambers", "Cartridges", "Grids"];
+    public addFiltersToDB(newItemList: ItemFilterList):void {
+        let itemsDB:Record<string, ITemplateItem> = this.getItems();
+        const FilterList:string[] = ["StackSlots", "Slots", "Chambers", "Cartridges", "Grids"];
         for (const item in itemsDB) {
             for (const types in FilterList) {
-                const tp = FilterList[types];
+                const tp :string= FilterList[types];
                 if (itemsDB[item]._props[tp] && itemsDB[item]._props[tp].length > 0) {
                     for (const type in itemsDB[item]._props[tp]) {
                         if (itemsDB[item]._props[tp][type]._props.filters.length > 0) {
                             let idList = itemsDB[item]._props[tp][type]._props.filters[0].Filter
                             for (let nId in newItemList) {
-                                let keyId = newItemList[nId].filterId;
+                                let keyId:string = newItemList[nId].filterId;
                                 if (idList.includes(keyId) && !idList.includes(nId)) {
                                     itemsDB[item]._props[tp][type]._props.filters[0].Filter.push(nId);
                                 }
@@ -137,13 +137,13 @@ export class MGTemplates extends CommonlLoad {
         }
     }
 
-    public addItem(id:string,item:ITemplateItem) {
+    public addItem(id:string,item:ITemplateItem):void {
         let itemDB = this.getItems();
         if(id !== item._id){
             this.output.warning(`物品id：${id} 与其 _id:${item._id} 不一致，请检查并更改使其保持一致！`);
             return;
         }
-        if(id in item){
+        if(id in itemDB){
             itemDB[id] = item;
             this.output.log(`物品:id为${id}，已进行替换。`,"cyan");
             return;
@@ -153,12 +153,12 @@ export class MGTemplates extends CommonlLoad {
         return;
     }
 
-    public addCustomItem(newItem:NewItemFromCloneDetails){
+    public addCustomItem(newItem:NewItemFromCloneDetails):void {
         // let CustomItemService = this.mod.container.resolve<CustomItemService>("CustomItemService");
         (new CustomItemService()).createItemFromClone(newItem);
     }
 
-    public addCustomItems(newItemList:NewItemFromCloneDetails[]){
+    public addCustomItems(newItemList:NewItemFromCloneDetails[]):void {
         newItemList.forEach(newItem => this.addCustomItem(newItem))
     }
 
@@ -193,29 +193,28 @@ export class MGTemplates extends CommonlLoad {
     }
 
     public addCustomTraderItem(newItem:CustomTraderItems){
-        let itemDB = this.getItems();
+        let itemDB:Record<string,ITemplateItem> = this.getItems();
         let itemTemplate:ITemplateItem={};
         if(!newItem.item){
             this.output.warning("自定义商人独立物品信息缺失，请自行检查！");
             return;
         }
         itemTemplate = newItem.item;
-        const itemId = itemTemplate._id;
+        const itemId:string = itemTemplate._id;
         if(!newItem.origin){
             return this.output.warning(`自定义商人独立物品缺少originId，物品id:${itemId}`);
         }
-
         itemDB[itemId] = itemTemplate;
         let filter :ItemFilterList = {};
         filter[itemId] = {filterId:newItem.origin};
-        this.addFilterToDB(filter);
+        this.addFiltersToDB(filter);
     }
 
     /**
-     * @description HandBook add or change
+     * @description handbook.json add or change
      */
 
-    public addHandbookCategory(Category: IHandbookCategory) {
+    public addHandbookCategory(Category: IHandbookCategory):void {
         let HBCategory: IHandbookCategory[] = this.getHandbook().Categories;
         for (let it in HBCategory) {
             if (HBCategory[it].Id === Category.Id) {
@@ -228,12 +227,12 @@ export class MGTemplates extends CommonlLoad {
 
     }
 
-    public addHandbookCategories(Categories: IHandbookCategory[]) {
+    public addHandbookCategories(Categories: IHandbookCategory[]):void {
         Categories.forEach((value:IHandbookCategory) => this.addHandbookCategory(value));
         return;
     }
 
-    public addHandbookItem(Item: IHandbookItem) {
+    public addHandbookItem(Item: IHandbookItem):void {
         let HBItem: IHandbookItem[] = this.getHandbook().Items;
         for (let it in HBItem) {
             if (HBItem[it].Id === Item.Id) {
@@ -245,8 +244,8 @@ export class MGTemplates extends CommonlLoad {
         return;
     }
 
-    public addHandbookItems(ItemList: IHandbookItem[]) {
-        ItemList.forEach((value:IHandbookItem) => this.addHandbookItem(value));
+    public addHandbookItems(ItemList: IHandbookItem[]):void {
+        ItemList.forEach((value:IHandbookItem):void => this.addHandbookItem(value));
     }
 
     public findIdFromHandbookItems(Id:string):boolean{
@@ -271,7 +270,7 @@ export class MGTemplates extends CommonlLoad {
      * @description quests.json add or change
      */
 
-    public addCustomQuest(id:string,quest: IQuest) {
+    public addCustomQuest(id:string,quest: IQuest):void {
         let Quest:Record<string,IQuest> = this.getQuests();
         if(id !== quest._id){
             this.output.warning(`自定义任务id:${id} 与其 _id:${quest._id} 不一致. 请重新核对！`);
@@ -285,7 +284,7 @@ export class MGTemplates extends CommonlLoad {
         return;
     }
 
-    public addCustomQuests(quests: Record<string,IQuest>) {
+    public addCustomQuests(quests: Record<string,IQuest>):void {
         return Object.keys(quests).forEach(id => this.addCustomQuest(id, quests[id]));
     }
 
@@ -324,7 +323,7 @@ export class MGTemplates extends CommonlLoad {
      * @description profile.json add or change
      */
 
-    public addProfile(profile:IMGSingleProfile){
+    public addProfile(profile:IMGSingleProfile):void {
         let profiles:ICustomProfile=this.getProfiles();
         profiles[profile.profileName] = profile.profileSides;
         let desc = {};
@@ -332,7 +331,7 @@ export class MGTemplates extends CommonlLoad {
         this.loadList.MGList.MGlocales.addProfileInfo(desc);
     }
 
-    public addProfiles(profiles:IMGSingleProfile[]){
+    public addProfiles(profiles:IMGSingleProfile[]):void {
         profiles.forEach(profile => this.addProfile(profile));
     }
 

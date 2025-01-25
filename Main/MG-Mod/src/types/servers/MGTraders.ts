@@ -79,7 +79,7 @@ export class MGTraders extends CommonlLoad {
     }
 
     public addCustomTrader(traderId: string, traderData: ITrader): void {
-        const Traders: Record<string, ITrader> = this.getTraders();
+        let Traders: Record<string, ITrader> = this.getTraders();
         Traders[traderId] = traderData;
     }
 

@@ -14,12 +14,12 @@ export class MGLocales extends CommonlLoad {
         super(mod);
     }
 
-    public init() {
+    public init():void {
         this.className = "MGLocales";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
 
-    public onload(loadList?: LoadList) {
+    public onload(loadList?: LoadList):void {
         if (loadList) {
             this.loadList = loadList;
             this.output = this.loadList.Output;
@@ -83,12 +83,12 @@ export class MGLocales extends CommonlLoad {
                 }
                 globalLocales[lang][`${info._id} ${desc}`] = info.desc[desc];
             })
-            if (Object.keys(info.other ? info.other : {}).length > 0) {
-                Object.keys(info.other).forEach((other_id: string) => {
+            if (Object.keys(info.desc.other ? info.desc.other : {}).length > 0) {
+                Object.keys(info.desc.other).forEach((other_id: string):void => {
                     if (other_id in globalLocales[lang]) {
                         return;
                     }
-                    globalLocales[lang][other_id] = info.other[other_id];
+                    globalLocales[lang][other_id] = info.desc.other[other_id];
                 })
             }
         }
