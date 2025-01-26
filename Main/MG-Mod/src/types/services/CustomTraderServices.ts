@@ -3,11 +3,7 @@ import {CustomService} from "../models/external/CustomService";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
-import {
-    CustomTraderData,
-    CustomTraderInfo,
-    ICustomTrader
-} from "../models/mg/traders/ITraderCustom";
+import {CustomTraderData, CustomTraderInfo, ICustomTrader} from "../models/mg/traders/ITraderCustom";
 import {ITrader} from "@spt/models/eft/common/tables/ITrader";
 import {Traders} from "@spt/models/enums/Traders";
 import {ItemsDesc, QuestDesc, TraderInfo} from "../models/mg/locales/GlobalInfo";
