@@ -1,7 +1,8 @@
+import {Mod} from "../../mod";
 
 export class IFileControl {
     private mod:any;
-    constructor(mod) {
+    constructor(mod:Mod) {
         this.mod = mod;
     }
 

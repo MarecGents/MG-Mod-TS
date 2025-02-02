@@ -11,4 +11,12 @@ export class SyncMarketServices extends CustomService{
     public start():void {
 
     }
+
+    private getPriceFromWeb():void {
+
+    }
+
+    private addPriceToServer():void {
+
+    }
 }
