@@ -1,7 +1,7 @@
 import {Mod} from "../../mod";
 
 export class IFileControl {
-    private mod:any;
+    private mod:Mod;
     constructor(mod:Mod) {
         this.mod = mod;
     }
@@ -12,5 +12,9 @@ export class IFileControl {
 
     public removeFile(filepath: string): void{
         this.mod.VFS.removeFile(filepath);
+    }
+
+    public readFile(filepath: string):string {
+        return this.mod.VFS.readFile(filepath);
     }
 }

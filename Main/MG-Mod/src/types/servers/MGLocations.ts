@@ -18,6 +18,7 @@ export class MGLocations extends CommonlLoad {
         this.className = "MGLocations";
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
     }
+
     public onload(loadList?: LoadList) {
         if (loadList) {
             this.loadList = loadList;
@@ -32,5 +33,6 @@ export class MGLocations extends CommonlLoad {
     public getLocation(locationId: string): ILocation {
         return this.databaseService.getLocation(locationId);
     }
+
 
 }

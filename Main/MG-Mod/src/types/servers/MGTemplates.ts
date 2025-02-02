@@ -293,7 +293,7 @@ export class MGTemplates extends CommonlLoad {
      * @description prices.json add or change
      */
 
-    public findPriceById(Id:string):number{
+    public findPrice(Id:string):number{
         const prices:Record<string, number> = this.getPrices();
         if(Id in prices){
             return prices[Id];
@@ -301,13 +301,13 @@ export class MGTemplates extends CommonlLoad {
         return -1;
     }
     
-    public addPriceById(Id:string, price:number):void{
+    public addPrice(Id:string, price:number):void{
         const prices:Record<string, number> = this.getPrices();
         prices[Id] = price;
     }
     
     public c_priceById(id:string,price:number){
-        let prices = this.getPrices();
+        let prices:Record<string, number> = this.getPrices();
         if(id in prices){
             prices[id] = prices[id];
         } else {
@@ -315,8 +315,11 @@ export class MGTemplates extends CommonlLoad {
         }
     }
 
-    public c_PricesByIds(priceList:Record<string,number>){
-        Object.keys(priceList).forEach(id => {this.c_priceById(id,priceList[id])});
+    public addPrices(priceList:Record<string,number>):void {
+        const prices:Record<string, number> = this.getPrices();
+        Object.keys(priceList).forEach((id:string):void => {
+            prices[id] = priceList[id];
+        });
     }
 
     /**

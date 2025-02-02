@@ -158,8 +158,8 @@ export class CustomItemsService extends CustomService{
                 this.MGList.MGtemplates.addHandbookItem(hbItem);
             }
             // price.json
-            if(this.MGList.MGtemplates.findPriceById(item.items.newId) === -1){
-                this.MGList.MGtemplates.addPriceById(item.items.newId,item.price);
+            if(this.MGList.MGtemplates.findPrice(item.items.newId) === -1){
+                this.MGList.MGtemplates.addPrice(item.items.newId,item.price);
             }
             // locales/global/xx.json
             if(!(

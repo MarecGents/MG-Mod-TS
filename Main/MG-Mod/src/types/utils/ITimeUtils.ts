@@ -32,10 +32,10 @@ export class ITimeUtils{
         return `${Date.Year}-${Date.Month}-${Date.Day}`;
     }
 
-    public dateDiffence(oldDate:DefaultTime, newDate:DefaultTime):number {
+    public getDateDiffence(oldDate:DefaultTime):number {
         const date1:Date = new Date(oldDate.Year,oldDate.Month,oldDate.Day);
-        const date2:Date = new Date(newDate.Year,newDate.Month,newDate.Day);
-        const timeDifference:number = date2.getTime() - date1.getTime();
+        const nowDate:DefaultTime = this.getDateNow();
+        const timeDifference:number = new Date(nowDate.Year,nowDate.Month,nowDate.Day).getTime() - date1.getTime();
         return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     }
 }
