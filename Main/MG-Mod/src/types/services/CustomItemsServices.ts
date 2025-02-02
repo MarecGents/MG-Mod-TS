@@ -8,6 +8,7 @@ import {Money} from "@spt/models/enums/Money";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ItemsInfo} from "../models/mg/locales/GlobalInfo";
 import {CustomService} from "../models/external/CustomService";
+import {Traders} from "@spt/models/enums/Traders";
 
 export class CustomItemsService extends CustomService{
 
@@ -174,7 +175,6 @@ export class CustomItemsService extends CustomService{
                         ShortName: item.description.shortName,
                         Description: item.description.description
                     }
-
                 };
                 this.Locales.addItemInfo(itemInfo);
             }
@@ -182,14 +182,24 @@ export class CustomItemsService extends CustomService{
         }
     }
 
-    private getMGAssorts():CustomTraderAssort[]{
+    private getMGAssorts():Record<string, CustomTraderAssort>{
         return this.IClone.clone(PathTypes.AssortItemPath);
     }
 
-    // 未完待续
     public addMGAssortToServer():void {
-        const MGAssorts:CustomTraderAssort[] = this.getMGAssorts();
-
+        const MGAssorts:Record<string, CustomTraderAssort> = this.getMGAssorts();
+        for(let assortName in MGAssorts){
+            let assort:CustomTraderAssort = MGAssorts[assortName];
+            assort.assort = this.MGList.MGtraders.fixAssort(assort.assort);
+            if(!("traderId" in assort)){
+                assort.traderId = Traders["MarecGents"];
+            }
+            if(!("currency" in assort)){
+                assort.currency = Money.ROUBLES;
+            }
+            this.MGList.MGtraders.addAssortToTrader(assort);
+            this.outPut.addMGAssortSuccess(assortName);
+        }
     }
 
     // basically this function's input is based on MGItems from MGItem folder

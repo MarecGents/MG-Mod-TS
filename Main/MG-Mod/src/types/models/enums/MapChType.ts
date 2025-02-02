@@ -13,3 +13,17 @@ export enum MapChType {
     woods = "森林",
     sandbox = "中心区",
 }
+
+export enum MapChName{
+    Mapbigmap = "海关*",
+    Mapshoreline = "海岸线",
+    Maprezervbase = "储备站",
+    Mapfactory4 = "工厂*",
+    Mapwoods = "森林*",
+    Maplighthouse = "灯塔*",
+    Mapinterchange = "立交桥",
+    Maplaboratory = "实验室",
+    Maptarkovstreets = "街区*",
+    MapSandbox = "中心区",
+    MapunKnown = "未知*",
+}

@@ -9,37 +9,40 @@ export class OutputServices {
         this.logger = logger
     }
 
-    public log(text:any,color:LogTextColor,bgColor?:LogBackgroundColor) {
+    public log(text:any,color:LogTextColor,bgColor?:LogBackgroundColor):void  {
         this.logger.log(text, color,bgColor);
     }
 
-    public warning(text:string) {
+    public warning(text:string):void  {
         this.logger.warning(text);
     }
 
-    public error(text:string) {
+    public error(text:string):void  {
         this.logger.error(text);
     }
 
-    public _FormatOutput(title: string, content: string, color: LogTextColor,bgColor?:LogBackgroundColor): void {
+    public _FormatOutput(title: string, content: string, color: LogTextColor,bgColor?:LogBackgroundColor):void {
         this.logger.log(`${title}:${content}`, color,bgColor);
     }
 
-    public classLoaded(className: string): void {
+    public classLoaded(className: string):void {
         this.logger.log(`${className}:已加载`, LogTextColor.YELLOW);
     }
 
-    public debugLog(text:string){
+    public debugLog(text:string):void {
         this.logger.log(text,LogTextColor.RED,LogBackgroundColor.GREEN);
     }
 
-    public addItemsSuccess(fileName:string, traderNickName:string){
-        this.logger.log(`MG独立物品【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.MAGENTA);
+    public addItemsSuccess(fileName:string, traderNickName:string):void {
+        this.logger.log(`[MG-Mod][独立物品]【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.MAGENTA);
     }
 
-    public addCustomTraderSuccess(TraderName:string){
-        this.logger.log(`商人：[${TraderName}] 已加载。`, LogTextColor.CYAN);
+    public addCustomTraderSuccess(TraderName:string):void {
+        this.logger.log(`[MG-Mod][独立商人]【${TraderName}】已加载。`, LogTextColor.CYAN);
     }
 
+    public addMGAssortSuccess(fileName:string):void {
+        this.logger.log(`[MG-Mod][独立预设]【${fileName}】已加载`, LogTextColor.YELLOW);
+    }
 
 }

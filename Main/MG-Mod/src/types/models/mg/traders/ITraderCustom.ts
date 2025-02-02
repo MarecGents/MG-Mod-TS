@@ -90,6 +90,6 @@ export interface CustomTraderAssort {
     assort:IItem[]
     price:number;
     loyal_level_items:number;
-    currency:string;
-    traderId:string;
+    currency?:string;
+    traderId?:string;
 }

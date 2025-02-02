@@ -131,7 +131,7 @@ export class CustomTraderService extends CustomService {
         }
         // 将商人添加到database/traders中
         this.MGList.MGtraders.addCustomTrader(traderId,newTraderDB);
-        Traders[traderId] = traderId;
+        Traders[TraderInfo.name] = traderId;
 
         // locales/global/xx.json
         const traderInfo: TraderInfo = {
@@ -156,7 +156,7 @@ export class CustomTraderService extends CustomService {
         this.MGList.MGtemplates.addTraderInitialLoyaltyLevel(traderId);
 
         // 添加完毕
-        this.outPut.addCustomTraderSuccess(TraderInfo.name);
+        this.outPut.addCustomTraderSuccess(`[${TraderInfo.name}]`);
         return true;
     }
 

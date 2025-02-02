@@ -93,5 +93,4 @@ export class MGTraders extends CommonlLoad {
         return newAssorts;
     }
 
-
 }

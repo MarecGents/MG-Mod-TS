@@ -50,9 +50,8 @@ export class Main{
 
     public start(){
         const ConfigJson: MGModConfig = new IClone(this.mod).clone(PathTypes.ModConfigPath).config;
-        (new CustomItemsService(this.mod,this.loadList));
-        (new CustomTraderService(this.mod,this.loadList));
-
+        this.CustomItemsServices(ConfigJson);
+        this.CustomTraderServices(ConfigJson);
     }
 
     private BotsServices(MGBots:MGBots,ConfigJson:MGModConfig):void {
@@ -183,6 +182,7 @@ export class Main{
         // repair.json
         // let repair:IRepairConfig = MGConfigs.getConfig(ConfigTypes.RAGFAIR);
         // 功能：护甲附魔
+        // 功能 护甲附魔
         if (configJson.BuffSettings.AmmoBuff !== "default"){
             MGConfigs.c_repairKit("armor",configJson.BuffSettings.AmmoBuff);
             MGConfigs.c_repairKit("vest",configJson.BuffSettings.AmmoBuff);
@@ -470,7 +470,7 @@ export class Main{
         let Locations:ILocations = MGLocations.getLocations();
         const noNeedMapName:string[] = ["develop", "hideout", "privatearea","suburbs","terminal","town","base"]
         for(let mapName in Locations){
-            if(noNeedMapName.hasOwnProperty(mapName)){continue;}
+            if(mapName in noNeedMapName){continue;}
             if (!(typeof (Locations[mapName].base) === 'object'
                 && Locations[mapName].base.Locked === false)) {continue;}
             // 功能：战局时长(分钟)
@@ -499,7 +499,6 @@ export class Main{
                     // }
                 }
             }
-
             // 功能：100%可拉闸  功能：100%可撤离
             if (typeof (Locations[mapName].base.exits) === 'object'
                 && (locationJson.WorldEventChance
@@ -522,7 +521,6 @@ export class Main{
 
         }
         this.outPut.classLoaded("LocationsServices");
-
     }
 
     private TemplatesServices(MGTemplates:MGTemplates,ConfigJson:MGModConfig):void {
@@ -700,6 +698,7 @@ export class Main{
                 }
 
             }
+            // 插板耐久
             else if (itemParent === "644120aa86ffbe10ee032b6f"
                 || itemParent === "65649eb40bf0ed77b8044453") {
                 if (itemProps.Durability) {
@@ -796,7 +795,7 @@ export class Main{
                 repeatableQuests[rqt].changeCost[0].count = requestJson.changeCost_cont; //默认5000
             }
         }
-        // 功能：任务难度优化
+        // 功能：任务优化
         if(requestJson.questOptimize){
             for(let qusetId in quests){
                 let AForFinish:IQuestCondition[] = quests[qusetId].conditions.AvailableForFinish;
@@ -820,16 +819,16 @@ export class Main{
         let traders:Record<string, ITrader> = MGTraders.getTraders();
         for (let tra in traders) {
             let traB:ITraderBase = traders[tra].base;
-            if (tra !== "ragfair") {
-                //保险秒回
-                if ("availability" in traB.insurance && traB.insurance.availability === true) {
-                    traB.insurance.min_return_hour = traderJson.insurance.min_return_hour;
-                    traB.insurance.max_return_hour = traderJson.insurance.max_return_hour;
-                    //投保花费
-                    if (returnPay !== "default") {
-                        for(let index in traB.loyaltyLevels){
-                            traB.loyaltyLevels[index].insurance_price_coef = returnPay * 100;
-                        }
+            if (tra == "ragfair") {continue;}
+
+            if ("availability" in traB.insurance && traB.insurance.availability === true) {
+                // 功能：回保速度
+                traB.insurance.min_return_hour = traderJson.insurance.min_return_hour;
+                traB.insurance.max_return_hour = traderJson.insurance.max_return_hour;
+                // 功能：投保费用
+                if (returnPay !== "default") {
+                    for(let index in traB.loyaltyLevels){
+                        traB.loyaltyLevels[index].insurance_price_coef = returnPay * 100;
                     }
                 }
             }
@@ -844,6 +843,7 @@ export class Main{
             return;
         }
         const customTraderService:CustomTraderService = new CustomTraderService(this.mod, this.loadList);
+        // 独立商人
         customTraderService.start();
     }
 
@@ -853,13 +853,14 @@ export class Main{
             return;
         }
         const customItemsService:CustomItemsService = new CustomItemsService(this.mod,this.loadList);
+        // 独立物品
         if(TraderConfig.addItems) {
             customItemsService.start();
         }
+        // 独立预设
         if(TraderConfig.addAssorts) {
             customItemsService.addMGAssortToServer()
         }
-
     }
 
 }
