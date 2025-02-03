@@ -108,13 +108,15 @@ export class MGLocales {
     }
 
     public addProfileInfo(info: AnyInfo): void {
-        let serverLocales: Record<string, Record<string, string>> = this.getServer();
+        const serverLocales: Record<string, Record<string, string>> = this.getServer();
+        // const FileControl:
         for (let lang in serverLocales) {
             Object.keys(info).forEach((key: string): void => {
                 if (key in serverLocales[lang]) {
                     return;
                 }
                 serverLocales[lang][key] = info[key];
+
             });
         }
     }

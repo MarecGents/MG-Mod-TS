@@ -18,6 +18,7 @@ import {IRepeatableQuestDatabase} from "@spt/models/eft/common/tables/IRepeatabl
 import {Mod} from "../../mod";
 import {IFormatUtils} from "../utils/IFormatUtils";
 import {loadMod} from "../loadMod";
+import {AnyInfo} from "../models/mg/locales/GlobalInfo";
 
 export class MGTemplates {
 
@@ -327,13 +328,13 @@ export class MGTemplates {
     public addProfile(profile:IMGSingleProfile):void {
         let profiles:ICustomProfile=this.getProfiles();
         profiles[profile.profileName] = profile.profileSides;
-        let desc = {};
+        let desc:AnyInfo = {};
         desc[profile.profileSides.descriptionLocaleKey] = profile.description;
         this.MGLoad.MGLocales.addProfileInfo(desc);
     }
 
     public addProfiles(profiles:IMGSingleProfile[]):void {
-        profiles.forEach(profile => this.addProfile(profile));
+        profiles.forEach((profile:IMGSingleProfile):void => this.addProfile(profile));
     }
 
     public addTraderInitialLoyaltyLevel(traderId:string, level:number = 1):void {
@@ -343,7 +344,6 @@ export class MGTemplates {
             profiles[profile].usec.trader.initialLoyaltyLevel[traderId] = level;
         })
     }
-
 
 
 }
