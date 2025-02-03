@@ -1,8 +1,6 @@
-import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
-import {ITrader, ITraderAssort} from "@spt/models/eft/common/tables/ITrader";
-import {LoadList} from "../models/mg/services/ILoadList";
-import {CustomTraderAssort} from "../models/mg/traders/ITraderCustom";
+import {ITrader} from "@spt/models/eft/common/tables/ITrader";
+import {CustomTraderAssort, ITraderAssort} from "../models/mg/traders/ITraderCustom";
 import {HashUtil} from "@spt/utils/HashUtil";
 import {Mod} from "../../mod";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
@@ -79,9 +77,10 @@ export class MGTraders {
 
     public fixAssort(assorts: IItem[]): IItem[] {
         let newAssorts: IItem[] = (new IClone(this.mod)).clone(assorts);
+        const HashUtil:HashUtil = this.mod.container.resolve<HashUtil>("HashUtil");
         for (let assort of assorts) {
             let oldId: string = assort._id
-            assort._id = (new HashUtil()).generate();
+            assort._id = HashUtil.generate();
             newAssorts = (new IFormatUtils()).replaceKey(newAssorts, oldId, assort._id);
         }
         return newAssorts;

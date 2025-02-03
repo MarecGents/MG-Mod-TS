@@ -13,6 +13,9 @@ import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {loadMod} from "../loadMod";
 import {OutputServices} from "./OutputServices";
 import {MGLocales} from "../servers/MGLocales";
+import {IItem} from "@spt/models/eft/common/tables/IItem";
+import {IFormatUtils} from "../utils/IFormatUtils";
+import {HashUtil} from "../../../types/utils/HashUtil";
 
 
 export class CustomTraderService {
@@ -67,6 +70,8 @@ export class CustomTraderService {
             }
             // 添加商人本体信息
             this.addCustomTrader(TraderInfo, TraderData.traderData);
+            // 修复商人出售预设文件预存信息
+            this.fixCustomTraderAssorts(TraderId);
             // 添加商人的任务图片等信息
             this.addQuestImage(TraderInfo, TraderData);
             // 添加商人的独立物品
@@ -221,4 +226,18 @@ export class CustomTraderService {
 
     }
 
+    public fixCustomTraderAssorts(TraderId:string):void{
+        const TraderData:ITrader = this.MGLoad.MGTraders.getTrader(TraderId);
+        const FormatUtils:IFormatUtils = new IFormatUtils();
+        const HashUtil:HashUtil = this.mod.container.resolve<HashUtil>("HashUtil");
+        for(let it:number = 0; it< (TraderData.assort.items).length; it++){
+            let id:string = TraderData.assort.items[it]._id;
+            if(FormatUtils.isMongoId(id)) { continue;}
+            let newId:string = HashUtil.generate();
+            TraderData.assort = FormatUtils.replaceKey(TraderData.assort, id, newId);
+            if( "questassort" in TraderData && TraderData.questassort){
+                TraderData.questassort = FormatUtils.replaceKey(TraderData.questassort, id, newId);
+            }
+        }
+    }
 }

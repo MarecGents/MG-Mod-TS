@@ -1,5 +1,11 @@
 import {AnyInfo, ItemsDesc, QuestDesc, TraderDesc} from "../locales/GlobalInfo";
-import {ISuit, ITraderAssort, ITraderBase, ITraderLoyaltyLevel} from "@spt/models/eft/common/tables/ITrader";
+import {
+    IBarterScheme,
+    ISuit,
+    ITraderAssort,
+    ITraderBase,
+    ITraderLoyaltyLevel
+} from "@spt/models/eft/common/tables/ITrader";
 import {MinMax} from "@spt/models/common/MinMax";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {ITraderServiceModel} from "@spt/models/spt/services/ITraderServiceModel";
@@ -92,4 +98,11 @@ export interface CustomTraderAssort {
     loyal_level_items:number;
     currency?:string;
     traderId?:string;
+}
+
+export interface ITraderAssort {
+    nextResupply?: number;
+    items: IItem[];
+    barter_scheme: Record<string, IBarterScheme[][]>;
+    loyal_level_items: Record<string, number>;
 }
