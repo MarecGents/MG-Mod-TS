@@ -153,7 +153,20 @@
                     "min": 100,
                     "max": 100
                 }
-            }
+            },
+            "blacklistSeasonalItems": false,
+            "blacklist":[],
+            "weaponPresetMinMax": {
+                "min": 16,
+                "max": 32
+            },
+            "chancePlateExistsInArmorPercent": {
+                "3": 25,
+                "4": 35,
+                "5": 75,
+                "6": 85
+            },
+            "ammoMaxPenLimit": 60
         },
         "LootMultiplier": {
             "static": 1,

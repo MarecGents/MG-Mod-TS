@@ -13,7 +13,7 @@
 		"enable": true,
 		"minreturnTime": 0,
 		"maxreturnTime": 0,
-		"pay": 0.1,
+		"pay": 0,
 		"chance": 100,
 		"storageTime": 100,
 		"Message": {

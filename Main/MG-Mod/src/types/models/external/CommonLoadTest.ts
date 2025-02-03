@@ -3,10 +3,10 @@ import { OutputServices } from "../../services/OutputServices";
 import {Mod} from "../../../mod";
 
 
-export class CommonlLoad {
+export class CommonlLoadTest {
 
-    protected mod: Mod;
-    protected className: string;
+    public mod: Mod;
+    public className: string;
     constructor(mod: Mod) {
         this.mod = mod;
         this.init()

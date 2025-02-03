@@ -1,6 +1,4 @@
-import {CommonlLoad} from "../models/external/CommonLoad";
 import {ConfigServer} from "@spt/servers/ConfigServer";
-import {LoadList} from "../models/mg/services/ILoadList";
 import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
 import {MinMax} from "@spt/models/common/MinMax";
 import {IAirdropConfig} from "@spt/models/spt/config/IAirdropConfig"
@@ -11,31 +9,25 @@ import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig"
 import {IPmcConfig} from "@spt/models/spt/config/IPmcConfig"
 import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig"
 import {IRepairConfig} from "@spt/models/spt/config/IRepairConfig";
-import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
+import {IFenceConfig, ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
 import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
 import {Mod} from "../../mod";
-import {IQuestConfig, ITraderWhitelist} from "../../../types/models/spt/config/IQuestConfig";
+import {IQuestConfig} from "../../../types/models/spt/config/IQuestConfig";
 import {CustomTraderInfo} from "../models/mg/traders/ITraderCustom";
+import {loadMod} from "../loadMod";
 
-export class MGConfigs extends CommonlLoad {
+export class MGConfigs{
 
-    protected ConfigServer: ConfigServer;
-    protected loadList: LoadList;
+    private mod:Mod;
+    private className:string;
+    private MGLoad:loadMod;
+    private ConfigServer: ConfigServer;
 
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init():void {
+    constructor(mod: Mod, MGLoad:loadMod) { //
+        this.mod = mod;
         this.className = "MGConfigs";
+        this.MGLoad = MGLoad;
         this.ConfigServer = this.mod.container.resolve<ConfigServer>("ConfigServer");
-    }
-
-    public onload(loadList?: LoadList):void {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
     }
 
     public getConfig<T>(configType: ConfigTypes):T {
@@ -374,7 +366,7 @@ export class MGConfigs extends CommonlLoad {
 
     public c_fence(fenceInfo:any):void {
         let traderConfig:ITraderConfig = this.getConfig(ConfigTypes.TRADER);
-        let fence =  traderConfig.fence
+        let fence:IFenceConfig =  traderConfig.fence
         // 黑商出货刷新时间
         fence.partialRefreshTimeSeconds = fenceInfo.partialRefreshTimeSeconds;
 
@@ -389,7 +381,7 @@ export class MGConfigs extends CommonlLoad {
         fence.partialRefreshChangePercent = 30;
         // 每类物品数量限制
         fence.itemTypeLimits = fenceInfo.itemTypeLimits;
-        let assortSize = 0;
+        let assortSize:number = 0;
         for (let id in fence.itemTypeLimits) {
             assortSize += fence.itemTypeLimits[id];
         }

@@ -1,5 +1,4 @@
 import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
-import {LoadList, MGList} from "../types/models/mg/services/ILoadList";
 import {OutputServices} from "../types/services/OutputServices";
 import {MGModConfig} from "../types/models/mg/config/IConfig";
 import {IClone} from "../types/utils/IClone";
@@ -26,32 +25,43 @@ import {IInsuranceConfig} from "@spt/models/spt/config/IInsuranceConfig";
 import {IInventoryConfig} from "@spt/models/spt/config/IInventoryConfig";
 import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig";
 import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig";
-import {IRepairConfig} from "@spt/models/spt/config/IRepairConfig";
 import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
 import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
 import {CustomTraderService} from "../types/services/CustomTraderServices";
 import {CustomItemsService} from "../types/services/CustomItemsServices";
+import {loadMod} from "../types/loadMod";
+import {KeysClassifyServices} from "../types/services/KeysClassifyServices";
+import {SyncMarketServices} from "../types/services/SyncMarketServices";
 
 export class Main{
-    private loadList:LoadList;
+
     private mod: Mod;
-    private MGList: MGList;
+    private MGLoad:loadMod;
     private Locales:MGLocales
     private outPut: OutputServices;
-    constructor(mod:Mod,loadList:LoadList){
-        this.loadList = loadList;
-        this.MGList = this.loadList.MGList;
-        this.Locales = this.MGList.MGlocales;
-        this.outPut = this.loadList.Output;
-        this.mod = mod;
-        this.start();
 
+    constructor(mod:Mod,MGLoad:loadMod){
+        this.mod = mod;
+        this.MGLoad = MGLoad;
+        this.Locales = this.MGLoad.MGLocales;
+        this.outPut = this.MGLoad.Output;
+        this.start();
     }
 
-    public start(){
+    public start():void{
         const ConfigJson: MGModConfig = new IClone(this.mod).clone(PathTypes.ModConfigPath).config;
-        this.CustomItemsServices(ConfigJson);
+
+        (new SyncMarketServices(this.mod, this.MGLoad)).start();
         this.CustomTraderServices(ConfigJson);
+        this.CustomItemsServices(ConfigJson);
+        (new KeysClassifyServices(this.mod, this.MGLoad)).start(ConfigJson);
+        this.BotsServices(this.MGLoad.MGBots, ConfigJson);
+        this.ConfigServices(this.MGLoad.MGConfigs, ConfigJson);
+        this.GlobalsServices(this.MGLoad.MGGlobals, ConfigJson);
+        this.HideoutServices(this.MGLoad.MGHideout, ConfigJson);
+        this.LocationsServices(this.MGLoad.MGLocations, ConfigJson);
+        this.TemplatesServices(this.MGLoad.MGTemplates, ConfigJson);
+        this.TradersServices(this.MGLoad.MGTraders, ConfigJson);
     }
 
     private BotsServices(MGBots:MGBots,ConfigJson:MGModConfig):void {
@@ -61,7 +71,7 @@ export class Main{
             MGBots.c_BotsHeathByRate(botsJson.healthRate)
         }
 
-        this.outPut.classLoaded("BotsServices");
+        this.outPut.classLoaded("[MG-Mod][BotsServices]");
     }
 
     private ConfigServices(MGConfigs:MGConfigs,ConfigJson:MGModConfig):void {
@@ -296,7 +306,7 @@ export class Main{
             },"rainIntensity");
         }
 
-        this.outPut.classLoaded("ConfigServices");
+        this.outPut.classLoaded("[MG-Mod][ConfigServices]");
     }
 
     private GlobalsServices(MGGlobals:MGGlobals,ConfigJson:MGModConfig):void {
@@ -439,7 +449,7 @@ export class Main{
             Glconf.SkillsSettings.WeaponSkillRecoilBonusPerLevel = 0.1 //每级的全局武器技能速率加成
         }
 
-        this.outPut.classLoaded("GlobalsServices");
+        this.outPut.classLoaded("[MG-Mod][GlobalsServices]");
 
     }
 
@@ -461,7 +471,7 @@ export class Main{
             MGHideout.c_scavecaseTime(hideoutJson.scavcase);
         }
 
-        this.outPut.classLoaded("HideoutServices");
+        this.outPut.classLoaded("[MG-Mod][HideoutServices]");
 
     }
 
@@ -520,7 +530,7 @@ export class Main{
             Locations[mapName].base.IsSecret=!locationJson.Insurance[MapChType[mapName]];
 
         }
-        this.outPut.classLoaded("LocationsServices");
+        this.outPut.classLoaded("[MG-Mod][LocationsServices]");
     }
 
     private TemplatesServices(MGTemplates:MGTemplates,ConfigJson:MGModConfig):void {
@@ -744,8 +754,8 @@ export class Main{
                 itemProps.hpResourceRate *= itemJson.MedicalSupply;
             }
             //武器无故障
-            else if(this.MGList.MGtemplates.findItemsParentsIdById(itemId).length > 0
-                && this.MGList.MGtemplates.findItemsParentsIdById(itemId).indexOf("5422acb9af1c889c16000029") !== -1) {
+            else if(this.MGLoad.MGTemplates.findItemsParentsIdById(itemId).length > 0
+                && this.MGLoad.MGTemplates.findItemsParentsIdById(itemId).indexOf("5422acb9af1c889c16000029") !== -1) {
                 if (itemProps.BaseMalfunctionChance > 0 && itemJson.HeatFactor) {
                     itemProps.BaseMalfunctionChance = 0;
                     itemProps.AllowFeed = false;
@@ -791,8 +801,8 @@ export class Main{
 
         // 功能：任务免费重置
         if(requestJson.changeCost_cont !== 5000){
-            for (let rqt in repeatableQuests) {
-                repeatableQuests[rqt].changeCost[0].count = requestJson.changeCost_cont; //默认5000
+            for (let rqt in repeatableQuests.templates) {
+                repeatableQuests.templates[rqt].changeCost[0].count = requestJson.changeCost_cont; //默认5000
             }
         }
         // 功能：任务优化
@@ -808,7 +818,7 @@ export class Main{
                 }
             }
         }
-        this.outPut.classLoaded("TemplatesServices");
+        this.outPut.classLoaded("[MG-Mod][TemplatesServices]");
 
     }
 
@@ -834,7 +844,7 @@ export class Main{
             }
         }
 
-        this.outPut.classLoaded("TradersServices");
+        this.outPut.classLoaded("[MG-Mod][TradersServices]");
     }
 
     private CustomTraderServices(ConfigJson:MGModConfig):void {
@@ -842,7 +852,8 @@ export class Main{
         if (!TraderConfig.enable) {
             return;
         }
-        const customTraderService:CustomTraderService = new CustomTraderService(this.mod, this.loadList);
+
+        const customTraderService:CustomTraderService = new CustomTraderService(this.mod, this.MGLoad);
         // 独立商人
         customTraderService.start();
     }
@@ -852,7 +863,7 @@ export class Main{
         if(!TraderConfig.enable) {
             return;
         }
-        const customItemsService:CustomItemsService = new CustomItemsService(this.mod,this.loadList);
+        const customItemsService:CustomItemsService = new CustomItemsService(this.mod,this.MGLoad);
         // 独立物品
         if(TraderConfig.addItems) {
             customItemsService.start();

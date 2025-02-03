@@ -4,38 +4,32 @@ import {IBuff, IGlobals} from "@spt/models/eft/common/IGlobals";
 import { LoadList } from "../models/mg/services/ILoadList";
 import { BuffList } from "../models/mg/globals/ITraderGlobals";
 import {Mod} from "../../mod";
+import {loadMod} from "../loadMod";
 
 
-export class MGGlobals extends CommonlLoad {
+export class MGGlobals{
 
-    protected databaseService: DatabaseService;
-    protected globals: IGlobals;
-    protected loadList: LoadList;
+    private mod:Mod;
+    private className:string;
+    private MGLoad:loadMod;
+    private databaseService: DatabaseService;
+
     
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init(){
+    constructor(mod: Mod, MGLoad:loadMod) {
+        this.mod = mod;
         this.className = "MGGlobals";
+        this.MGLoad = MGLoad;
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.globals = this.databaseService.getGlobals();
-    }
-    public onload(loadList?: LoadList) {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
     }
 
     public getGlobals():IGlobals {
-        return this.globals;
+        return this.databaseService.getGlobals();
     }
 
     public addNewBuff(BuffName: string,Buff:IBuff[]): void {
-        let globalsBuffs = this.globals.config.Health.Effects.Stimulator.Buffs;
+        let globalsBuffs:any = this.getGlobals().config.Health.Effects.Stimulator.Buffs;
         if (BuffName in globalsBuffs) {
-            this.loadList.Output.warning(`针剂Buff名称：${BuffName} 重复！请更换其他Buff名称`);
+            this.MGLoad.Output.warning(`针剂Buff名称：${BuffName} 重复！请更换其他Buff名称`);
             return;
         } else {
             globalsBuffs[BuffName] = Buff;
@@ -43,7 +37,7 @@ export class MGGlobals extends CommonlLoad {
         }
     }
 
-    public addNewBuffs(Buffs: BuffList) {
+    public addNewBuffs(Buffs: BuffList):void {
         for (let BuffName in Buffs) {
             this.addNewBuff(BuffName, Buffs[BuffName]);
         }

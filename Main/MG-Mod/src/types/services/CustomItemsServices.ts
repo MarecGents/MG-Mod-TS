@@ -1,4 +1,3 @@
-import {LoadList} from "../models/mg/services/ILoadList";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {BrothersItem, MGItems, SuperItem} from "../models/mg/items/EItems";
@@ -7,15 +6,24 @@ import {CustomTraderAssort} from "../models/mg/traders/ITraderCustom";
 import {Money} from "@spt/models/enums/Money";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ItemsInfo} from "../models/mg/locales/GlobalInfo";
-import {CustomService} from "../models/external/CustomService";
 import {Traders} from "@spt/models/enums/Traders";
+import {loadMod} from "../loadMod";
+import {OutputServices} from "./OutputServices";
+import {MGLocales} from "../servers/MGLocales";
 
-export class CustomItemsService extends CustomService{
+export class CustomItemsService{
 
-    protected IClone: IClone = null;
+    private mod:Mod
+    private MGLoad:loadMod;
+    private outPut:OutputServices;
+    private Locales:MGLocales;
+    private IClone: IClone;
 
-    constructor(mod: Mod, loadList: LoadList) {
-        super(mod,loadList);
+    constructor(mod: Mod, MGLoad: loadMod) {
+        this.mod = mod;
+        this.MGLoad = MGLoad;
+        this.outPut = this.MGLoad.Output;
+        this.Locales = this.MGLoad.MGLocales;
         this.IClone = new IClone(this.mod);
     }
 
@@ -36,7 +44,7 @@ export class CustomItemsService extends CustomService{
     }
 
     private SuperItemsToMG(ItemsList: Record<string, SuperItem> | any): void {
-        const superItem = ["tpl", "items", "handbook"];
+        const superItem:string[] = ["tpl", "items", "handbook"];
         for(let it in ItemsList){
             let item:SuperItem = ItemsList[it];
             let errKey:string[] = [];
@@ -135,32 +143,32 @@ export class CustomItemsService extends CustomService{
                 this.outPut.warning(`MG独立物品:${it}.json 缺少关键属性：${resp[1]}`);
                 continue;
             }
-            if(this.MGList.MGtemplates.isInItems(item.items.newId)){
+            if(this.MGLoad.MGTemplates.isInItems(item.items.newId)){
                 this.outPut.warning(`MG独立物品:${it}.json的newId已存在于items.json中，请修改newId。`);
                 continue;
             }
             // 使用SPT的方法添加独立物品的各项信息
-            this.MGList.MGtemplates.addMGCustomItem(item);
+            this.MGLoad.MGTemplates.addMGCustomItem(item);
             // 向指定商人添加出售信息
             if(item.isSold){
-                const customAssort:CustomTraderAssort = this.MGList.MGtraders.creatCustomItemAssort(item, item.toTraderId);
-                this.MGList.MGtraders.addAssortToTrader(customAssort);
+                const customAssort:CustomTraderAssort = this.MGLoad.MGTraders.creatCustomItemAssort(item, item.toTraderId);
+                this.MGLoad.MGTraders.addAssortToTrader(customAssort);
             }
 
             // 检验是否在各个部分都存在此物品的信息 若不存在则手动添加
             // handbook.json
-            if(!this.MGList.MGtemplates.findIdFromHandbookItems(item.items.newId)){
-                const parentId:string = this.MGList.MGtemplates.findHandbookItemsParentIdById(item.items.cloneId);
+            if(!this.MGLoad.MGTemplates.findIdFromHandbookItems(item.items.newId)){
+                const parentId:string = this.MGLoad.MGTemplates.findHandbookItemsParentIdById(item.items.cloneId);
                 const hbItem:IHandbookItem = {
                     Id:item.items.newId,
                     ParentId:parentId,
                     Price:item.price
                 };
-                this.MGList.MGtemplates.addHandbookItem(hbItem);
+                this.MGLoad.MGTemplates.addHandbookItem(hbItem);
             }
             // price.json
-            if(this.MGList.MGtemplates.findPrice(item.items.newId) === -1){
-                this.MGList.MGtemplates.addPrice(item.items.newId,item.price);
+            if(this.MGLoad.MGTemplates.findPrice(item.items.newId) === -1){
+                this.MGLoad.MGTemplates.addPrice(item.items.newId,item.price);
             }
             // locales/global/xx.json
             if(!(
@@ -190,14 +198,14 @@ export class CustomItemsService extends CustomService{
         const MGAssorts:Record<string, CustomTraderAssort> = this.getMGAssorts();
         for(let assortName in MGAssorts){
             let assort:CustomTraderAssort = MGAssorts[assortName];
-            assort.assort = this.MGList.MGtraders.fixAssort(assort.assort);
+            assort.assort = this.MGLoad.MGTraders.fixAssort(assort.assort);
             if(!("traderId" in assort)){
                 assort.traderId = Traders["MarecGents"];
             }
             if(!("currency" in assort)){
                 assort.currency = Money.ROUBLES;
             }
-            this.MGList.MGtraders.addAssortToTrader(assort);
+            this.MGLoad.MGTraders.addAssortToTrader(assort);
             this.outPut.addMGAssortSuccess(assortName);
         }
     }
@@ -240,8 +248,8 @@ export class CustomItemsService extends CustomService{
         const bastPropriety: string[] = ["items", "price", "description"];
         let errKey: string[] = [] as string[];
         for (let mustKey in bastPropriety) {
-            if (!(mustKey in MGItem)) {
-                errKey.push(mustKey);
+            if (!(bastPropriety[mustKey] in MGItem)) {
+                errKey.push(bastPropriety[mustKey]);
             }
         }
         return [errKey.length > 0, errKey];

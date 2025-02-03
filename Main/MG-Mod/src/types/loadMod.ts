@@ -5,37 +5,37 @@ import {MGHideout} from "./servers/MGHideout";
 import {MGLocales} from "./servers/MGLocales";
 import {MGTemplates} from "./servers/MGTemplates";
 import {MGTraders} from "./servers/MGTraders";
-import {LoadList} from "./models/mg/services/ILoadList";
 import {OutputServices} from "./services/OutputServices";
 import {MGLocations} from "./servers/MGLocations";
 import {Mod} from "../mod";
+import {MGTest} from "./servers/MGTest";
 
 export class loadMod {
 
-    protected mod:Mod;
-    public loadList: LoadList;
+    public mod:Mod;
+    public MGBots:MGBots;
+    public MGConfigs:MGConfigs;
+    public MGGlobals:MGGlobals;
+    public MGHideout:MGHideout;
+    public MGLocales:MGLocales;
+    public MGLocations:MGLocations;
+    public MGTemplates:MGTemplates;
+    public MGTraders:MGTraders;
+    public MGTest:MGTest;
+    public Output:OutputServices;
 
-    constructor(mod) {
+    public load(mod:Mod):loadMod {
         this.mod = mod;
-    }
-
-    load() {
-        this.loadList = {
-            MGList: {
-                MGlocales: (new MGLocales(this.mod)),
-                MGbots: (new MGBots(this.mod)),
-                MGconfigs: (new MGConfigs(this.mod)),
-                MGglobals: (new MGGlobals(this.mod)),
-                MGhideout: (new MGHideout(this.mod)),
-                MGtraders: (new MGTraders(this.mod)),
-                MGtemplates: (new MGTemplates(this.mod)),
-                MGLocations: (new MGLocations(this.mod)),
-            },
-            Output: (new OutputServices(this.mod.Logger)),
-        };
-        for (const service in this.loadList.MGList) {
-            this.loadList.MGList[service].onload(this.loadList);
-        }
-        return this.loadList;
+        this.MGBots = new MGBots(this.mod,this);
+        this.MGConfigs = new MGConfigs(this.mod,this);
+        this.MGGlobals = new MGGlobals(this.mod,this);
+        this.MGHideout = new MGHideout(this.mod,this);
+        this.MGLocales = new MGLocales(this.mod,this);
+        this.MGLocations = new MGLocations(this.mod,this);
+        this.MGTemplates = new MGTemplates(this.mod,this);
+        this.MGTraders = new MGTraders(this.mod,this);
+        this.MGTest = new MGTest(this.mod, this);
+        this.Output = new OutputServices(this.mod.Logger)
+        return this;
     }
 }

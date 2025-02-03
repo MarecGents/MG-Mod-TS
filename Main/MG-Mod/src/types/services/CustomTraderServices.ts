@@ -1,5 +1,3 @@
-import {LoadList} from "../models/mg/services/ILoadList";
-import {CustomService} from "../models/external/CustomService";
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
@@ -12,24 +10,35 @@ import {Mod} from "../../mod";
 import {CustomTraderItems} from "../models/mg/items/EItems";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
+import {loadMod} from "../loadMod";
+import {OutputServices} from "./OutputServices";
+import {MGLocales} from "../servers/MGLocales";
 
 
-export class CustomTraderService extends CustomService {
+export class CustomTraderService {
 
-    protected IClone: IClone;
+    private mod:Mod
+    private MGLoad:loadMod;
+    private outPut:OutputServices;
+    private Locales:MGLocales;
+    private IClone: IClone;
 
-    constructor(mod: Mod, loadList: LoadList) {
-        super(mod,loadList);
+    constructor(mod: Mod, MGLoad: loadMod) {
+        this.mod = mod;
+        this.MGLoad = MGLoad;
+        this.outPut = this.MGLoad.Output;
+        this.Locales = this.MGLoad.MGLocales;
         this.IClone = new IClone(this.mod);
     }
 
     public start(): void {
         let bundlesJson: IBundleManifest = this.initCustomTrader();
-        this.mod.VFS.writeFile(`${this.mod.modpath}bundles.json`,bundlesJson);
+        this.mod.VFS.writeFile(`${this.mod.modpath}bundles.json`,JSON.stringify(bundlesJson, null, 4));
     }
 
     private initCustomTrader(): IBundleManifest {
         const TradersList: Record<string, ICustomTrader> = this.IClone.clone(PathTypes.TraderPath);
+
         // 第一步先将 bundles.json 删除
         if (this.mod.VFS.exists(`${this.mod.modpath}bundles.json`)) {
             this.mod.VFS.removeFile(`${this.mod.modpath}bundles.json`);
@@ -52,12 +61,10 @@ export class CustomTraderService extends CustomService {
             }
 
             let TraderId: string = TraderInfo._id;
-            let TraderName:string = TraderInfo.name;
-            if (this.MGList.MGtraders.getTrader(TraderId) || TraderId in Traders) {
+            if (TraderId in Traders) {
                 this.outPut.warning(`商人[${it}]的id:[${TraderId}]已存在于游戏中。请修改\"_id\"重新加载。`);
                 continue;
             }
-
             // 添加商人本体信息
             this.addCustomTrader(TraderInfo, TraderData.traderData);
             // 添加商人的任务图片等信息
@@ -69,7 +76,10 @@ export class CustomTraderService extends CustomService {
             //添加商人的任务和物品跳蚤信息
             this.addTemplatesToServer(TraderInfo, TraderData);
 
-            bundlesJson.manifest.push(...TraderData.bundles.manifest);
+            if("bundles" in TraderData){
+                bundlesJson.manifest.push(...TraderData.bundles.manifest);
+            }
+
         }
         return bundlesJson;
     }
@@ -123,14 +133,14 @@ export class CustomTraderService extends CustomService {
         const imagePath: string = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/${traderImage}`;
         if (this.mod.VFS.exists(imagePath)){
             newTraderDB.base.avatar = newTraderDB.base.avatar.replace("unKnown.jpg", traderImage);
-            const ImageRouter:ImageRouter = this.mod.container.container.resolve<ImageRouter>("ImageRouter");
+            const ImageRouter:ImageRouter = this.mod.container.resolve<ImageRouter>("ImageRouter");
             ImageRouter.addRoute(newTraderDB.base.avatar.replace(".jpg", ""), imagePath)
         }
         else{
             this.outPut.warning(`${TraderInfo.name}:混蛋！你把我的头像放哪了！快还给我！`)
         }
         // 将商人添加到database/traders中
-        this.MGList.MGtraders.addCustomTrader(traderId,newTraderDB);
+        this.MGLoad.MGTraders.addCustomTrader(traderId,newTraderDB);
         Traders[TraderInfo.name] = traderId;
 
         // locales/global/xx.json
@@ -143,20 +153,20 @@ export class CustomTraderService extends CustomService {
         // 将商人信息添加到config/xxx.json中
         // insurance.json
         if(TraderInfo.insurance.enabled){
-            this.MGList.MGconfigs.addTraderReturnChance(traderId, TraderInfo.insurance.chance);
+            this.MGLoad.MGConfigs.addTraderReturnChance(traderId, TraderInfo.insurance.chance);
         }
         // quest.json
-        this.MGList.MGconfigs.addRepeatableQuestsTraderWhitelist(TraderInfo);
+        this.MGLoad.MGConfigs.addRepeatableQuestsTraderWhitelist(TraderInfo);
         // ragfair.json
-        this.MGList.MGconfigs.addTradersRagfair(traderId);
+        this.MGLoad.MGConfigs.addTradersRagfair(traderId);
         // traders.json
-        this.MGList.MGconfigs.addNewTraderUpdateTime(traderId, TraderInfo.locales.Nickname, TraderInfo.updateTime);
+        this.MGLoad.MGConfigs.addNewTraderUpdateTime(traderId, TraderInfo.locales.Nickname, TraderInfo.updateTime);
 
         // 将商人等级初始化到预设存档中国
-        this.MGList.MGtemplates.addTraderInitialLoyaltyLevel(traderId);
+        this.MGLoad.MGTemplates.addTraderInitialLoyaltyLevel(traderId);
 
         // 添加完毕
-        this.outPut.addCustomTraderSuccess(`[${TraderInfo.name}]`);
+        this.outPut.addCustomTraderSuccess(`${TraderInfo.name}`);
         return true;
     }
 
@@ -167,7 +177,7 @@ export class CustomTraderService extends CustomService {
         const iconList:any = this.mod.VFS.getFiles(questImagesPath);
         for(let icon in iconList){
             const filename:string = this.mod.VFS.stripExtension(icon);
-            const ImageRouter:ImageRouter = this.mod.container.container.resolve<ImageRouter>("ImageRouter");
+            const ImageRouter:ImageRouter = this.mod.container.resolve<ImageRouter>("ImageRouter");
             ImageRouter.addRoute(`/files/quest/icon/${filename}`, `${questImagesPath}${icon}`);
         }
     }
@@ -177,11 +187,11 @@ export class CustomTraderService extends CustomService {
         const ItemsList:Record<string, CustomTraderItems> = traderData.items;
         for(let itemName in ItemsList){
             let Item:CustomTraderItems = ItemsList[itemName];
-            if(this.MGList.MGtemplates.isInItems(Item.item._id)){
+            if(this.MGLoad.MGTemplates.isInItems(Item.item._id)){
                 this.outPut.warning(`警高：自定义商人:${TraderInfo.name}的独立物品:${itemName}已存在，本次添加操作不执行。如果不是重复添加，请修改独立物品的_id,以确保正常使用。`);
                 continue;
             }
-            this.MGList.MGtemplates.addCustomTraderItem(Item);
+            this.MGLoad.MGTemplates.addCustomTraderItem(Item);
         }
     }
 
@@ -206,8 +216,8 @@ export class CustomTraderService extends CustomService {
         const quests:Record<string, IQuest> = traderData.templates?.quests;
         const handbook:IHandbookItem[] = traderData.templates?.handbook;
 
-        this.MGList.MGtemplates.addCustomQuests(quests);
-        this.MGList.MGtemplates.addHandbookItems(handbook);
+        this.MGLoad.MGTemplates.addCustomQuests(quests);
+        this.MGLoad.MGTemplates.addHandbookItems(handbook);
 
     }
 

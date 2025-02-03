@@ -9,27 +9,21 @@ import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {MGItems} from "../models/mg/items/EItems";
 import {IClone} from "../utils/IClone";
 import {IFormatUtils} from "../utils/IFormatUtils";
+import {loadMod} from "../loadMod";
 
 
-export class MGTraders extends CommonlLoad {
+export class MGTraders {
 
-    protected databaseService: DatabaseService;
-    protected loadList: LoadList;
+    private mod:Mod
+    private className:string;
+    private MGLoad:loadMod;
+    private databaseService: DatabaseService;
 
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init() {
-        this.className = "MGTraders";
+    constructor(mod: Mod, MGLoad:loadMod) {
+        this.mod = mod;
+        this.className = "MGLocales";
+        this.MGLoad = MGLoad;
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-    }
-
-    public onload(loadList?: LoadList) {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
     }
 
     public getTraders(): Record<string, ITrader> {
@@ -70,7 +64,7 @@ export class MGTraders extends CommonlLoad {
         const TraderAssort: ITraderAssort = this.getTrader(customAssort.traderId).assort;
         TraderAssort.items.push(...customAssort.assort);
         const mainAssort: IItem = (customAssort.assort).find((x: IItem): boolean => (x.slotId == 'hideout' && x.parentId == 'hideout'));
-        const rID = mainAssort._id;
+        const rID:string = mainAssort._id;
         TraderAssort.barter_scheme[rID] = [[{
             count: customAssort.price,
             _tpl: customAssort.currency

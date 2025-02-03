@@ -4,26 +4,20 @@ import {LoadList} from "../models/mg/services/ILoadList";
 import {DatabaseService} from "@spt/services/DatabaseService";
 import {Mod} from "../../mod";
 import {ILocaleBase} from "@spt/models/spt/server/ILocaleBase";
+import {loadMod} from "../loadMod";
 
-export class MGLocales extends CommonlLoad {
+export class MGLocales {
 
-    protected loadList: LoadList;
-    protected databaseService: DatabaseService;
+    private mod:Mod
+    private className:string;
+    private MGLoad:loadMod;
+    private databaseService: DatabaseService;
 
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init():void {
+    constructor(mod: Mod, MGLoad:loadMod) {
+        this.mod = mod;
         this.className = "MGLocales";
+        this.MGLoad = MGLoad;
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-    }
-
-    public onload(loadList?: LoadList):void {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
     }
 
     public getLocales(): ILocaleBase {

@@ -1,6 +1,4 @@
-import {CustomService} from "../models/external/CustomService";
 import {Mod} from "../../mod";
-import {LoadList} from "../models/mg/services/ILoadList";
 import {MapChName} from "../models/enums/MapChType";
 import {IFileControl} from "../utils/IFileControl";
 import {PathTypes} from "../models/enums/PathTypes";
@@ -8,27 +6,37 @@ import {MGModConfig} from "../models/mg/config/IConfig";
 import {HashUtil} from "@spt/utils/HashUtil";
 import {IHandbookCategory, IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {KeysClassification} from "../models/mg/items/KeysClassification";
+import {loadMod} from "../loadMod";
+import {OutputServices} from "./OutputServices";
+import {MGLocales} from "../servers/MGLocales";
 
-export class KeysClassifyServices extends CustomService{
+export class KeysClassifyServices {
 
+    private mod:Mod
+    private MGLoad:loadMod;
+    private outPut:OutputServices;
+    private Locales:MGLocales;
     private FileControl:IFileControl;
 
-    constructor(mod:Mod, loadList:LoadList) {
-        super(mod,loadList);
+    constructor(mod: Mod, MGLoad: loadMod) {
+        this.mod = mod;
+        this.MGLoad = MGLoad;
+        this.outPut = this.MGLoad.Output;
+        this.Locales = this.MGLoad.MGLocales;
         this.FileControl = new IFileControl(this.mod);
     }
 
-    public start():void {
-        const configJson:MGModConfig = JSON.parse(this.FileControl.readFile(PathTypes.ModConfigPath + "config.json"));
-        if( typeof configJson.extra.KeyNameExpand == "boolean" && configJson.extra.KeyNameExpand){
+    public start(ConfigJson: MGModConfig):void {
+        if( typeof ConfigJson.extra.KeyNameExpand == "boolean" && ConfigJson.extra.KeyNameExpand){
             this.keysClassify();
+            this.outPut.classLoaded(`[MG-Mod][钥匙分类功能]`);
         }
     }
 
     private keysClassify():void {
         const oriParentID:string[] = ["5c518ec986f7743b68682ce2", "5c518ed586f774119a772aee"];
         const MapNameToHdID:Record<string, string> = {};
-        const KeysJson:KeysClassification = JSON.parse(this.FileControl.readFile(PathTypes.KeyPath + "MapKey.json"));
+        const KeysJson:KeysClassification = JSON.parse(this.FileControl.readFile(this.mod.modpath + PathTypes.KeyPath + "MapKey.json"));
         for(let MapName in MapChName){
             let MapHdID:string = (new HashUtil()).generate();
             MapNameToHdID[MapName] = MapHdID;
@@ -43,9 +51,9 @@ export class KeysClassifyServices extends CustomService{
                 Color: "",
                 Order: "100"
             };
-            this.MGList.MGtemplates.addHandbookCategory(newCategory);
+            this.MGLoad.MGTemplates.addHandbookCategory(newCategory);
 
-            const HandBookItems:IHandbookItem[] = this.MGList.MGtemplates.getHandbook().Items;
+            const HandBookItems:IHandbookItem[] = this.MGLoad.MGTemplates.getHandbook().Items;
             for(let it in HandBookItems){
                 let ParentId:string = HandBookItems[it].ParentId;
                 if(!(ParentId in oriParentID)){continue;}
@@ -66,6 +74,5 @@ export class KeysClassifyServices extends CustomService{
                 }
             }
         }
-        this.outPut.classLoaded(`[MG-Mod][钥匙分类功能]`);
     }
 }

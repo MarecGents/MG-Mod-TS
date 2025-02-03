@@ -6,44 +6,39 @@ import {IHideoutArea} from "@spt/models/eft/hideout/IHideoutArea";
 import {IQteData} from "@spt/models/eft/hideout/IQteData";
 import {IHideoutProduction, IScavRecipe} from "@spt/models/eft/hideout/IHideoutProduction";
 import {Mod} from "../../mod";
+import {loadMod} from "../loadMod";
 
-export class MGHideout extends CommonlLoad {
+export class MGHideout{
 
-    protected hideout: IHideout;
-    protected loadList: LoadList;
-    protected databaseService: DatabaseService;
+    private mod:Mod;
+    private className:string;
+    private MGLoad:loadMod;
+    private databaseService: DatabaseService;
 
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init():void {
+    constructor(mod: Mod, MGLoad:loadMod) {
+        this.mod = mod;
         this.className = "MGHideout";
+        this.MGLoad = MGLoad;
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-        this.hideout = this.databaseService.getHideout();
     }
 
-    public onload(loadList?: LoadList):void  {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
-
+    public getHideout():IHideout{
+        return this.databaseService.getHideout();
     }
 
     public getProductions():IHideoutProduction[]{
-        return this.hideout.production.recipes;
+        return this.getHideout().production.recipes;
     }
 
     public getScavecases():IScavRecipe[]{
-        return this.hideout.production.scavRecipes;
+        return this.getHideout().production.scavRecipes;
     }
 
     public getAreas():IHideoutArea[]{
-        return this.hideout.areas;
+        return this.getHideout().areas;
     }
     public getQte():IQteData[]{
-        return this.hideout.qte;
+        return this.getHideout().qte;
     }
 
     public c_constructionTime(time:number):void {

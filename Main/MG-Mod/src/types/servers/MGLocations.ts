@@ -4,26 +4,20 @@ import { LoadList } from "../models/mg/services/ILoadList";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { ILocation } from "@spt/models/eft/common/ILocation";
 import {Mod} from "../../mod";
+import {loadMod} from "../loadMod";
 
-export class MGLocations extends CommonlLoad {
+export class MGLocations{
 
-    protected databaseService: DatabaseService;
-    protected loadList: LoadList;
+    private mod:Mod
+    private className:string;
+    private MGLoad:loadMod;
+    private databaseService: DatabaseService;
 
-    constructor(mod: Mod) {
-        super(mod);
-    }
-
-    public init(){
-        this.className = "MGLocations";
+    constructor(mod: Mod, MGLoad:loadMod) {
+        this.mod = mod;
+        this.className = "MGLocales";
+        this.MGLoad = MGLoad;
         this.databaseService = this.mod.container.resolve<DatabaseService>("DatabaseService");
-    }
-
-    public onload(loadList?: LoadList) {
-        if (loadList) {
-            this.loadList = loadList;
-            this.output = this.loadList.Output;
-        }
     }
 
     public getLocations(): ILocations {

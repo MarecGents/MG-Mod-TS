@@ -1,17 +1,5 @@
-import {DatabaseServer} from "@spt/servers/DatabaseServer";
-import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
+import {Mod} from "../../mod";
+import {loadMod} from "../loadMod";
 
 export class Test {
-    private mod: any;
-    private ConfigJson: object;
-    private color = LogTextColor;
-
-    constructor(mod, data) {
-        this.mod = mod;
-        this.ConfigJson = data;
-    }
-
-    test1() {
-
-    }
 }

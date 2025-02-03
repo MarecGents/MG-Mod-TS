@@ -1,11 +1,9 @@
 {
-  "name": "MG-Mod-New",
+  "name": "MG-Mod",
   "version": "0.7.0",
   "main": "src/mod.js",
   "license": "MIT license",
   "author": "MarecGents",
   "sptVersion": ">=3.10.0",
-  "dependencies": {
-    "axios": "^1.7.9"
-  }
+  "dependencies": {}
 }

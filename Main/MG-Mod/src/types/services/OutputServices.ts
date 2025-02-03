@@ -26,23 +26,23 @@ export class OutputServices {
     }
 
     public classLoaded(className: string):void {
-        this.logger.log(`${className}:已加载`, LogTextColor.YELLOW);
+        this.logger.log(`${className}:已加载。`, LogTextColor.YELLOW);
     }
 
-    public debugLog(text:string):void {
+    public debugLog(text:any):void {
         this.logger.log(text,LogTextColor.RED,LogBackgroundColor.GREEN);
     }
 
     public addItemsSuccess(fileName:string, traderNickName:string):void {
-        this.logger.log(`[MG-Mod][独立物品]【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.MAGENTA);
+        this.logger.log(`[MG-Mod][独立物品]【${fileName}】已添加到商人【${traderNickName}】中。`, LogTextColor.WHITE);
     }
 
     public addCustomTraderSuccess(TraderName:string):void {
-        this.logger.log(`[MG-Mod][独立商人]【${TraderName}】已加载。`, LogTextColor.CYAN);
+        this.logger.log(`[MG-Mod][独立商人]【${TraderName}】已加载。`, LogTextColor.MAGENTA);
     }
 
     public addMGAssortSuccess(fileName:string):void {
-        this.logger.log(`[MG-Mod][独立预设]【${fileName}】已加载`, LogTextColor.YELLOW);
+        this.logger.log(`[MG-Mod][独立预设]【${fileName}】已加载`, LogTextColor.CYAN);
     }
 
 }

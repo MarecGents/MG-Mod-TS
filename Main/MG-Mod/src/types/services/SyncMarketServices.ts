@@ -1,41 +1,50 @@
-import {CustomService} from "../models/external/CustomService";
 import {Mod} from "../../mod";
-import {LoadList} from "../models/mg/services/ILoadList";
 import {IFileControl} from "../utils/IFileControl";
 import {PathTypes} from "../models/enums/PathTypes";
 import {MGPrices} from "../models/mg/price/IPrice";
-import {LogTextColor} from "../../../types/models/spt/logging/LogTextColor";
+import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {ITimeUtils} from "../utils/ITimeUtils";
+import {loadMod} from "../loadMod";
+import {OutputServices} from "./OutputServices";
+// import {MGLocales} from "../servers/MGLocales";
 
-export class SyncMarketServices extends CustomService{
+export class SyncMarketServices {
 
+    private mod:Mod
+    private MGLoad:loadMod;
+    private outPut:OutputServices;
+    // private Locales:MGLocales;
     private FileControl:IFileControl;
 
-    constructor(mod: Mod, loadList: LoadList) {
-        super(mod,loadList);
+    constructor(mod: Mod, MGLoad: loadMod) {
+        this.mod = mod;
+        this.MGLoad = MGLoad;
+        this.outPut = this.MGLoad.Output;
+        // this.Locales = this.MGLoad.MGLocales;
         this.FileControl = new IFileControl(this.mod);
-        this.start()
     }
 
-    public start():void {
-        const priceJson:MGPrices = JSON.parse(this.FileControl.readFile(PathTypes.PricePath + "price.json"));
-        if((new ITimeUtils().getDateDiffence({
-            Year:priceJson.date[0],
-            Month:priceJson.date[1],
-            Day:priceJson.date[2]
-        })) >= 3){
-            this.getPriceFromWeb();
+    public start(): void {
+        let priceJson: MGPrices = JSON.parse(this.FileControl.readFile(this.mod.modpath + PathTypes.PricePath + "price.json"));
+        if ((new ITimeUtils().getDateDiffence({
+            Year: priceJson.date[0],
+            Month: priceJson.date[1],
+            Day: priceJson.date[2]
+        })) >= 3) {
+            priceJson = this.getPriceFromWeb();
         }
-        this.MGList.MGtemplates.addPrices(priceJson.prices);
+        this.MGLoad.MGTemplates.addPrices(priceJson.prices);
+        this.outPut.classLoaded(`[MG-Mod][实时跳蚤]`);
+        this.outPut.log(`MG实时跳蚤：当前同步数据时间为：${priceJson.date[0]}年${priceJson.date[1]}月${priceJson.date[2]}日`, LogTextColor.BLUE);
     }
 
-    private getPriceFromWeb():void {
-        const tokens:any = JSON.parse(this.FileControl.readFile(PathTypes.PricePath + "tokens.json"));
-        // 替换为你的实际信息（仅本地测试使用！）
+    private getPriceFromWeb():MGPrices {
+        const tokens:any = JSON.parse(this.FileControl.readFile(this.mod.modpath + PathTypes.PricePath + "tokens.json"));
         const token:string = tokens.token;
         const owner:string = tokens.owner;
         const repo:string = tokens.repo;
         const filePath:string = tokens.filePath; // 文件在仓库中的路径
+        let priceJson_:MGPrices = {} as MGPrices;
         fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -47,14 +56,14 @@ export class SyncMarketServices extends CustomService{
                 return response.json();
             })
             .then((priceJson:MGPrices):void => {
-                const pricePath:string = PathTypes.PricePath + "price.json";
-                const date:number[] = priceJson.date;
+                const pricePath:string = this.mod.modpath + PathTypes.PricePath + "price.json";
                 this.FileControl.removeFile(pricePath);
                 this.FileControl.writeFile(pricePath, JSON.stringify(priceJson, null, 4));
-                this.outPut.log(`MG实时跳蚤：当前同步数据时间为：${date[0]}年${date[1]}月${date[2]}日`, LogTextColor.BLUE);
+                priceJson_ = priceJson;
             })
             .catch((error:any):void => {
                 console.error('实时跳蚤获取错误:', error);
             });
+        return priceJson_;
     }
 }
