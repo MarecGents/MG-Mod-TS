@@ -1,5 +1,5 @@
 import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
-import {OutputServices} from "../types/services/OutputServices";
+import {OutputService} from "../types/services/OutputService";
 import {MGModConfig} from "../types/models/mg/config/IConfig";
 import {IClone} from "../types/utils/IClone";
 import {PathTypes} from "../types/models/enums/PathTypes";
@@ -27,19 +27,19 @@ import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig";
 import {IRagfairConfig} from "@spt/models/spt/config/IRagfairConfig";
 import {ITraderConfig} from "@spt/models/spt/config/ITraderConfig";
 import {IWeatherConfig} from "@spt/models/spt/config/IWeatherConfig";
-import {CustomTraderService} from "../types/services/CustomTraderServices";
-import {CustomItemsService} from "../types/services/CustomItemsServices";
+import {CustomTraderService} from "../types/services/CustomTraderService";
+import {CustomItemsService} from "../types/services/CustomItemsService";
 import {loadMod} from "../types/loadMod";
-import {KeysClassifyServices} from "../types/services/KeysClassifyServices";
-import {SyncMarketServices} from "../types/services/SyncMarketServices";
-import {CustomProfileServices} from "../types/services/CustomProfileServices";
+import {KeysClassifyService} from "../types/services/KeysClassifyService";
+import {SyncMarketService} from "../types/services/SyncMarketService";
+import {CustomProfileService} from "../types/services/CustomProfileService";
 
 export class Main{
 
     private mod: Mod;
     private MGLoad:loadMod;
     private Locales:MGLocales
-    private outPut: OutputServices;
+    private outPut: OutputService;
 
     constructor(mod:Mod,MGLoad:loadMod){
         this.mod = mod;
@@ -52,11 +52,12 @@ export class Main{
     public start():void{
         const ConfigJson: MGModConfig = new IClone(this.mod).clone(PathTypes.ModConfigPath).config;
 
-        (new SyncMarketServices(this.mod, this.MGLoad)).start();
+        this.SyncMarketServices(ConfigJson);
         this.CustomTraderServices(ConfigJson);
         this.CustomItemsServices(ConfigJson);
-        (new KeysClassifyServices(this.mod, this.MGLoad)).start(ConfigJson);
-        (new CustomProfileServices(this.mod, this.MGLoad));
+        this.KeysClassifyServices(ConfigJson);
+        this.CustomProfileServices(ConfigJson);
+
         this.BotsServices(this.MGLoad.MGBots, ConfigJson);
         this.ConfigServices(this.MGLoad.MGConfigs, ConfigJson);
         this.GlobalsServices(this.MGLoad.MGGlobals, ConfigJson);
@@ -876,6 +877,30 @@ export class Main{
         if(TraderConfig.addAssorts) {
             customItemsService.addMGAssortToServer()
         }
+    }
+
+    private SyncMarketServices(ConfigJson:MGModConfig):void {
+        const extraJson:any = ConfigJson.extra;
+        if(!extraJson.FleaMarket){
+            return;
+        }
+        (new SyncMarketService(this.mod, this.MGLoad)).start();
+    }
+
+    private KeysClassifyServices(ConfigJson:MGModConfig):void {
+        const extraJson:any = ConfigJson.extra;
+        if(!extraJson.KeyNameExpand){
+            return;
+        }
+        (new KeysClassifyService(this.mod, this.MGLoad)).start(ConfigJson);
+    }
+
+    private CustomProfileServices(ConfigJson:MGModConfig):void {
+        const extraJson:any = ConfigJson.extra;
+        if(!extraJson.newProfile){
+            return;
+        }
+        (new CustomProfileService(this.mod, this.MGLoad));
     }
 
 }

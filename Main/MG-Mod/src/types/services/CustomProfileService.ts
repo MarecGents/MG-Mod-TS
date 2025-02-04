@@ -4,7 +4,7 @@ import {IFileControl} from "../utils/IFileControl";
 import {IMGSingleProfile} from "../models/mg/profiles/ICustomProfile";
 import {PathTypes} from "../models/enums/PathTypes";
 
-export class CustomProfileServices {
+export class CustomProfileService {
 
     private mod:Mod;
     private MGLoad:loadMod;

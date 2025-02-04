@@ -7,14 +7,14 @@ import {HashUtil} from "@spt/utils/HashUtil";
 import {IHandbookCategory, IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {KeysClassification} from "../models/mg/items/KeysClassification";
 import {loadMod} from "../loadMod";
-import {OutputServices} from "./OutputServices";
+import {OutputService} from "./OutputService";
 import {MGLocales} from "../servers/MGLocales";
 
-export class KeysClassifyServices {
+export class KeysClassifyService {
 
     private mod:Mod
     private MGLoad:loadMod;
-    private outPut:OutputServices;
+    private outPut:OutputService;
     private Locales:MGLocales;
     private FileControl:IFileControl;
 

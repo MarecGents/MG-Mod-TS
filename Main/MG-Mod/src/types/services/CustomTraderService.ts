@@ -16,7 +16,7 @@ import {CustomTraderItems} from "../models/mg/items/EItems";
 import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {loadMod} from "../loadMod";
-import {OutputServices} from "./OutputServices";
+import {OutputService} from "./OutputService";
 import {MGLocales} from "../servers/MGLocales";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {IFormatUtils} from "../utils/IFormatUtils";
@@ -27,7 +27,7 @@ export class CustomTraderService {
 
     private mod:Mod
     private MGLoad:loadMod;
-    private outPut:OutputServices;
+    private outPut:OutputService;
     private Locales:MGLocales;
     private IClone: IClone;
 

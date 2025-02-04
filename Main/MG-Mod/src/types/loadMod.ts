@@ -5,7 +5,7 @@ import {MGHideout} from "./servers/MGHideout";
 import {MGLocales} from "./servers/MGLocales";
 import {MGTemplates} from "./servers/MGTemplates";
 import {MGTraders} from "./servers/MGTraders";
-import {OutputServices} from "./services/OutputServices";
+import {OutputService} from "./services/OutputService";
 import {MGLocations} from "./servers/MGLocations";
 import {Mod} from "../mod";
 import {MGTest} from "./servers/MGTest";
@@ -22,7 +22,7 @@ export class loadMod {
     public MGTemplates:MGTemplates;
     public MGTraders:MGTraders;
     public MGTest:MGTest;
-    public Output:OutputServices;
+    public Output:OutputService;
 
     public load(mod:Mod):loadMod {
         this.mod = mod;
@@ -35,7 +35,7 @@ export class loadMod {
         this.MGTemplates = new MGTemplates(this.mod,this);
         this.MGTraders = new MGTraders(this.mod,this);
         this.MGTest = new MGTest(this.mod, this);
-        this.Output = new OutputServices(this.mod.Logger)
+        this.Output = new OutputService(this.mod.Logger)
         return this;
     }
 }

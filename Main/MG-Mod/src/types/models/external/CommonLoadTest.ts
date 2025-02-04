@@ -1,5 +1,5 @@
 import {LoadList} from "../mg/services/ILoadList";
-import { OutputServices } from "../../services/OutputServices";
+import { OutputService } from "../../services/OutputService";
 import {Mod} from "../../../mod";
 
 

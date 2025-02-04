@@ -2,7 +2,7 @@ import {ILogger} from "@spt/models/spt/utils/ILogger";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {LogBackgroundColor} from "@spt/models/spt/logging/LogBackgroundColor";
 
-export class OutputServices {
+export class OutputService {
     private logger: ILogger
 
     constructor(logger: ILogger) {

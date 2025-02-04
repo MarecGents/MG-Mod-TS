@@ -5,14 +5,14 @@ import {MGPrices} from "../models/mg/price/IPrice";
 import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 import {ITimeUtils} from "../utils/ITimeUtils";
 import {loadMod} from "../loadMod";
-import {OutputServices} from "./OutputServices";
+import {OutputService} from "./OutputService";
 // import {MGLocales} from "../servers/MGLocales";
 
-export class SyncMarketServices {
+export class SyncMarketService {
 
     private mod:Mod
     private MGLoad:loadMod;
-    private outPut:OutputServices;
+    private outPut:OutputService;
     // private Locales:MGLocales;
     private FileControl:IFileControl;
 

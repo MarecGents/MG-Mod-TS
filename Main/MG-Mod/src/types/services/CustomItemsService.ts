@@ -8,14 +8,14 @@ import {IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
 import {ItemsInfo} from "../models/mg/locales/GlobalInfo";
 import {Traders} from "@spt/models/enums/Traders";
 import {loadMod} from "../loadMod";
-import {OutputServices} from "./OutputServices";
+import {OutputService} from "./OutputService";
 import {MGLocales} from "../servers/MGLocales";
 
 export class CustomItemsService{
 
     private mod:Mod
     private MGLoad:loadMod;
-    private outPut:OutputServices;
+    private outPut:OutputService;
     private Locales:MGLocales;
     private IClone: IClone;
 

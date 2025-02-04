@@ -1,6 +1,6 @@
 import {LoadList, MGList} from "../mg/services/ILoadList";
 import {MGLocales} from "../../servers/MGLocales";
-import {OutputServices} from "../../services/OutputServices";
+import {OutputService} from "../../services/OutputService";
 import {Mod} from "../../../mod";
 
 export class CustomService {
@@ -8,7 +8,7 @@ export class CustomService {
     protected mod: any;
     protected MGList: MGList;
     protected Locales: MGLocales
-    protected outPut: OutputServices;
+    protected outPut: OutputService;
 
     constructor(mod: Mod, loadList: LoadList) {
         this.mod = mod;
