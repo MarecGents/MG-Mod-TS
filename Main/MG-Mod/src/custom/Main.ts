@@ -607,7 +607,6 @@ export class Main{
                         _id:item + " Description",
                         desc:newDesc
                     })
-                    this.MGLoad.Output.debugLog(this.Locales.getContentByKey(item + " Description"));
                 }
             }
             // 容器扩容
