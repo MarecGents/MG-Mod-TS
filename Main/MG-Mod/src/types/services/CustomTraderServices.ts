@@ -1,7 +1,12 @@
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
-import {CustomTraderData, CustomTraderInfo, ICustomTrader} from "../models/mg/traders/ITraderCustom";
+import {
+    CustomTraderData,
+    CustomTraderGlobals,
+    CustomTraderInfo,
+    ICustomTrader
+} from "../models/mg/traders/ITraderCustom";
 import {ITrader} from "@spt/models/eft/common/tables/ITrader";
 import {Traders} from "@spt/models/enums/Traders";
 import {ItemsDesc, QuestDesc, TraderInfo} from "../models/mg/locales/GlobalInfo";
@@ -80,6 +85,8 @@ export class CustomTraderService {
             this.localesInfoToServer(TraderInfo, TraderData);
             //添加商人的任务和物品跳蚤信息
             this.addTemplatesToServer(TraderInfo, TraderData);
+            //添加商人的globals信息
+            this.addGlobalsToServer(TraderInfo, TraderData);
 
             if("bundles" in TraderData){
                 bundlesJson.manifest.push(...TraderData.bundles.manifest);
@@ -106,13 +113,14 @@ export class CustomTraderService {
         // assort
         newTraderDB.assort = traderData.assort ? traderData.assort : traderDB.assort;
         // base
+
         newTraderDB.base = traderData.base ? traderData.base : traderDB.base;
         newTraderDB.base._id = traderId;
         newTraderDB.base.name = TraderInfo.locales.FullName;
         newTraderDB.base.surname = TraderInfo.locales.FirstName;
         newTraderDB.base.nickname = TraderInfo.locales.Nickname;
         newTraderDB.base.location = TraderInfo.locales.Location;
-        newTraderDB.base.insurance.availability = TraderInfo.insurance.enabled;
+        newTraderDB.base.insurance.availability = TraderInfo.insurance.enable;
         newTraderDB.base.insurance.min_payment = TraderInfo.insurance.pay;
         newTraderDB.base.insurance.min_return_hour = TraderInfo.insurance.minreturnTime;
         newTraderDB.base.insurance.max_return_hour = TraderInfo.insurance.maxreturnTime;
@@ -132,7 +140,7 @@ export class CustomTraderService {
         newTraderDB.services = traderData.services ? traderData.services : traderData.services;
         // suits
         newTraderDB.questassort = traderData.suits ? traderData.suits : traderData.suits;
-
+        this.MGLoad.Output.debugLog(newTraderDB.base.insurance);
         // 商人头像
         const traderImage: string = 'TraderPic.jpg';
         const imagePath: string = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/${traderImage}`;
@@ -144,6 +152,7 @@ export class CustomTraderService {
         else{
             this.outPut.warning(`${TraderInfo.name}:混蛋！你把我的头像放哪了！快还给我！`)
         }
+
         // 将商人添加到database/traders中
         this.MGLoad.MGTraders.addCustomTrader(traderId,newTraderDB);
         Traders[TraderInfo.name] = traderId;
@@ -224,6 +233,12 @@ export class CustomTraderService {
         this.MGLoad.MGTemplates.addCustomQuests(quests);
         this.MGLoad.MGTemplates.addHandbookItems(handbook);
 
+    }
+
+    public addGlobalsToServer(TraderInfo:CustomTraderInfo, traderData:ICustomTrader):void {
+        const globals:CustomTraderGlobals = traderData.globals;
+
+        this.MGLoad.MGGlobals.addNewBuffs(globals.Buffs);
     }
 
     public fixCustomTraderAssorts(TraderId:string):void{

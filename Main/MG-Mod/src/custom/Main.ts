@@ -62,6 +62,8 @@ export class Main{
         this.LocationsServices(this.MGLoad.MGLocations, ConfigJson);
         this.TemplatesServices(this.MGLoad.MGTemplates, ConfigJson);
         this.TradersServices(this.MGLoad.MGTraders, ConfigJson);
+
+
     }
 
     private BotsServices(MGBots:MGBots,ConfigJson:MGModConfig):void {

@@ -72,7 +72,7 @@ export interface CustomTraderInfo {
 }
 
 export interface CustomTraderInsurance {
-    enabled: boolean;
+    enable: boolean;
     minreturnTime: number;
     maxreturnTime: number;
     pay: number;

@@ -6,7 +6,7 @@ export class IFileControl {
         this.mod = mod;
     }
 
-    public writeFile(filepath: any, data = "", append = false, atomic = true){
+    public writeFile(filepath: any, data = "", append = false, atomic = true):void {
         this.mod.VFS.writeFile(filepath, data, append,atomic);
     }
 
