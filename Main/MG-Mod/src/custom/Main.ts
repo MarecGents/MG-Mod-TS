@@ -601,12 +601,13 @@ export class Main{
                 }
                 // 子弹数据
                 if (itemJson.AmmoSetting.Info) {
-                    let retStr_ammo = "<color=#00cccc><b>肉伤：" + itemProps.Damage + "     甲伤：" + itemProps.ArmorDamage + "     穿甲：" + itemProps.PenetrationPower + "     穿透率：" + itemProps.PenetrationChanceObstacle + "     跳弹率：" + itemProps.RicochetChance + "     碎弹率：" + itemProps.FragmentationChance + "</b></color>\r\n";
-                    let newDesc = retStr_ammo.concat(this.Locales.getContentByKey(item + " Description"));
+                    let retStr_ammo:string = "<color=#00cccc><b>肉伤：" + itemProps.Damage + "     甲伤：" + itemProps.ArmorDamage + "     穿甲：" + itemProps.PenetrationPower + "     穿透率：" + itemProps.PenetrationChanceObstacle + "     跳弹率：" + itemProps.RicochetChance + "     碎弹率：" + itemProps.FragmentationChance + "</b></color>\r\n";
+                    let newDesc:string = retStr_ammo.concat(this.Locales.getContentByKey(item + " Description"));
                     this.Locales.addInfo({
                         _id:item + " Description",
                         desc:newDesc
                     })
+                    this.MGLoad.Output.debugLog(this.Locales.getContentByKey(item + " Description"));
                 }
             }
             // 容器扩容

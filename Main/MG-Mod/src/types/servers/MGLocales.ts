@@ -39,9 +39,6 @@ export class MGLocales {
     public addInfo(info: GeneralInfo): void {
         let globalLocales: Record<string, Record<string, string>> = this.getGlobal();
         for (let lang in globalLocales) {
-            if (info._id in globalLocales[lang]) {
-                continue;
-            }
             globalLocales[lang][info._id] = info.desc;
         }
     }
