@@ -20,7 +20,7 @@ import {IQuest, IQuestCondition} from "@spt/models/eft/common/tables/IQuest";
 import {IRepeatableQuestDatabase} from "@spt/models/eft/common/tables/IRepeatableQuests";
 import {ILocations} from "@spt/models/spt/server/ILocations";
 import {IBossLocationSpawn, IExit} from "@spt/models/eft/common/ILocationBase";
-import {IConfig, IGlobals} from "@spt/models/eft/common/IGlobals";
+import {IConfig, IGlobals, ISkillsSettings} from "@spt/models/eft/common/IGlobals";
 import {IInsuranceConfig} from "@spt/models/spt/config/IInsuranceConfig";
 import {IInventoryConfig} from "@spt/models/spt/config/IInventoryConfig";
 import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig";
@@ -308,7 +308,7 @@ export class Main{
                     3,
                     1
                 ]
-            },"rainIntensity");
+            },"fog");
         }
 
         this.outPut.classLoaded("[MG-Mod][ConfigServices]");
@@ -353,7 +353,7 @@ export class Main{
 
         // 功能：跳蚤交易单倍率
         if(globalJson.RagFair.count_Magnification !== 1){
-            Glconf.RagFair.maxActiveOfferCount.forEach((index: any) =>{
+            Glconf.RagFair.maxActiveOfferCount.forEach((index: any):void =>{
                 index.count *= globalJson.RagFair.count_Magnification;
             })
         }
@@ -395,7 +395,7 @@ export class Main{
 
         // 功能：护甲维修无损耗
         if(globalJson.RepairDegradation){
-            Object.keys(Glconf.ArmorMaterials).forEach(key => {
+            Object.keys(Glconf.ArmorMaterials).forEach((key:string):void => {
                 Glconf.ArmorMaterials[key].MinRepairDegradation = 0; //商人
                 Glconf.ArmorMaterials[key].MaxRepairDegradation = 0;
                 Glconf.ArmorMaterials[key].MinRepairKitDegradation = 0; //维修包
@@ -404,10 +404,10 @@ export class Main{
         }
 
         // 功能：附魔
-        let skillsettings = Glconf.SkillsSettings;
+        let skillsettings:ISkillsSettings = Glconf.SkillsSettings;
         //100%护甲附魔
         if(globalJson.BuffSettings.AmmoBuff!=="default"){
-            let chance = globalJson.BuffSettings.AmmoBuff
+            let chance:number = globalJson.BuffSettings.AmmoBuff
             skillsettings.HeavyVests.BuffSettings.CommonBuffChanceLevelBonus = chance/100;
             skillsettings.HeavyVests.BuffSettings.CommonBuffMinChanceValue = chance/100;
             skillsettings.HeavyVests.BuffSettings.RareBuffChanceCoff = chance/100;
@@ -431,7 +431,7 @@ export class Main{
         }
         //100%枪械附魔
         if(globalJson.BuffSettings.WeaponBuff!=="default"){
-            let chance = globalJson.BuffSettings.WeaponBuff
+            let chance:number = globalJson.BuffSettings.WeaponBuff
             skillsettings.WeaponTreatment.BuffSettings.CommonBuffMinChanceValue = chance/100;
             skillsettings.WeaponTreatment.BuffSettings.CommonBuffChanceLevelBonus = chance/100;
             skillsettings.WeaponTreatment.BuffSettings.CurrentDurabilityLossToRemoveBuff = 1;
