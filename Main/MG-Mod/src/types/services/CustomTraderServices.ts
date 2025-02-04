@@ -140,7 +140,6 @@ export class CustomTraderService {
         newTraderDB.services = traderData.services ? traderData.services : traderData.services;
         // suits
         newTraderDB.questassort = traderData.suits ? traderData.suits : traderData.suits;
-        this.MGLoad.Output.debugLog(newTraderDB.base.insurance);
         // 商人头像
         const traderImage: string = 'TraderPic.jpg';
         const imagePath: string = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/${traderImage}`;
@@ -166,7 +165,7 @@ export class CustomTraderService {
 
         // 将商人信息添加到config/xxx.json中
         // insurance.json
-        if(TraderInfo.insurance.enabled){
+        if(TraderInfo.insurance.enable){
             this.MGLoad.MGConfigs.addTraderReturnChance(traderId, TraderInfo.insurance.chance);
         }
         // quest.json
