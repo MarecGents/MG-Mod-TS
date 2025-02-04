@@ -28,6 +28,7 @@ export class KeysClassifyServices {
 
     public start(ConfigJson: MGModConfig):void {
         if( typeof ConfigJson.extra.KeyNameExpand == "boolean" && ConfigJson.extra.KeyNameExpand){
+
             this.keysClassify();
             this.outPut.classLoaded(`[MG-Mod][钥匙分类功能]`);
         }
@@ -52,26 +53,25 @@ export class KeysClassifyServices {
                 Order: "100"
             };
             this.MGLoad.MGTemplates.addHandbookCategory(newCategory);
-
-            const HandBookItems:IHandbookItem[] = this.MGLoad.MGTemplates.getHandbook().Items;
-            for(let it in HandBookItems){
-                let ParentId:string = HandBookItems[it].ParentId;
-                if(!(ParentId in oriParentID)){continue;}
-                let id:string = HandBookItems[it].Id;
-                for(let Mapname in KeysJson){
-                    if(!(id in KeysJson[MapName])){continue;}
-                    HandBookItems[MapName].ParentId=MapNameToHdID[Mapname];
-                    let Name:string = this.Locales.getContentByKey(`${id} Name`) + " " + MapChName[Mapname];
-                    let Desc:string = "<color=#00cccc><b>" + MapChName[Mapname] + "</b></color>\r\n".concat(this.Locales.getContentByKey(`${id} Description`));
-                    this.Locales.addInfo({
-                        _id:`${id} Name`,
-                        desc:Name,
-                    });
-                    this.Locales.addInfo({
-                        _id:`${id} Description`,
-                        desc:Desc,
-                    });
-                }
+        }
+        const HandBookItems:IHandbookItem[] = this.MGLoad.MGTemplates.getHandbook().Items;
+        for(let it in HandBookItems){
+            let ParentId:string = HandBookItems[it].ParentId;
+            if(oriParentID.indexOf(ParentId) == -1){continue;}
+            let id:string = HandBookItems[it].Id;
+            for(let Mapname in KeysJson){
+                if((KeysJson[Mapname]).indexOf(id) == -1){continue;}
+                HandBookItems[it].ParentId=MapNameToHdID[Mapname];
+                let Name:string = this.Locales.getContentByKey(`${id} Name`) + " " + MapChName[Mapname];
+                let Desc:string = "<color=#00cccc><b>" + MapChName[Mapname] + "</b></color>\r\n".concat(this.Locales.getContentByKey(`${id} Description`));
+                this.Locales.addInfo({
+                    _id:`${id} Name`,
+                    desc:Name,
+                });
+                this.Locales.addInfo({
+                    _id:`${id} Description`,
+                    desc:Desc,
+                });
             }
         }
     }
