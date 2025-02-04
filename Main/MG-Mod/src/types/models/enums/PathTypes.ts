@@ -16,6 +16,7 @@ export enum PathTypes {
     KeyPath = "res/Keys/",
     PricePath = "res/price/",
     QuestPath = "res/quest/",
+    ProfilePath = "res/profile/",
     ServicesPath = "res/services/",
     SuperItemPath = "db/SuperModItem/",
     BrothersItemPath = "db/BrothersItem/",

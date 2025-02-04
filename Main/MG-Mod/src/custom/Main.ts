@@ -32,6 +32,7 @@ import {CustomItemsService} from "../types/services/CustomItemsServices";
 import {loadMod} from "../types/loadMod";
 import {KeysClassifyServices} from "../types/services/KeysClassifyServices";
 import {SyncMarketServices} from "../types/services/SyncMarketServices";
+import {CustomProfileServices} from "../types/services/CustomProfileServices";
 
 export class Main{
 
@@ -55,6 +56,7 @@ export class Main{
         this.CustomTraderServices(ConfigJson);
         this.CustomItemsServices(ConfigJson);
         (new KeysClassifyServices(this.mod, this.MGLoad)).start(ConfigJson);
+        (new CustomProfileServices(this.mod, this.MGLoad));
         this.BotsServices(this.MGLoad.MGBots, ConfigJson);
         this.ConfigServices(this.MGLoad.MGConfigs, ConfigJson);
         this.GlobalsServices(this.MGLoad.MGGlobals, ConfigJson);

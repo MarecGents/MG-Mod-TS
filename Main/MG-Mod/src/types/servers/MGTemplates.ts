@@ -1,6 +1,4 @@
-import {CommonlLoad} from "../models/external/CommonLoad";
 import {DatabaseService} from "@spt/services/DatabaseService";
-import {LoadList} from "../models/mg/services/ILoadList";
 import {IAchievement} from "@spt/models/eft/common/tables/IAchievement";
 import {ICustomizationItem} from "@spt/models/eft/common/tables/ICustomizationItem";
 import {IHandbookBase, IHandbookCategory, IHandbookItem} from "@spt/models/eft/common/tables/IHandbookBase";
@@ -19,6 +17,9 @@ import {Mod} from "../../mod";
 import {IFormatUtils} from "../utils/IFormatUtils";
 import {loadMod} from "../loadMod";
 import {AnyInfo} from "../models/mg/locales/GlobalInfo";
+import {IFileControl} from "../utils/IFileControl";
+import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
+import {ILocaleConfig} from "@spt/models/spt/config/ILocaleConfig";
 
 export class MGTemplates {
 
@@ -328,13 +329,22 @@ export class MGTemplates {
     public addProfile(profile:IMGSingleProfile):void {
         let profiles:ICustomProfile=this.getProfiles();
         profiles[profile.profileName] = profile.profileSides;
-        let desc:AnyInfo = {};
+        let desc:AnyInfo = {} as AnyInfo;
         desc[profile.profileSides.descriptionLocaleKey] = profile.description;
         this.MGLoad.MGLocales.addProfileInfo(desc);
+        const FileControl:IFileControl = new IFileControl(this.mod);
+        const localeConfig:ILocaleConfig = this.MGLoad.MGConfigs.getConfig(ConfigTypes.LOCALE);
+        for(let it in localeConfig.serverSupportedLocales){
+            let lang:string = localeConfig.serverSupportedLocales[it];
+            let serverPath:string = this.mod.modpath + `../../../SPT_Data/Server/database/locales/server/${lang}.json`;
+            let langFile:Record<string, string> =  JSON.parse(FileControl.readFile(serverPath));
+            langFile[profile.profileSides.descriptionLocaleKey] = profile.description;
+            FileControl.writeFile(serverPath, JSON.stringify(langFile, null, 4));
+        }
     }
 
     public addProfiles(profiles:IMGSingleProfile[]):void {
-        profiles.forEach((profile:IMGSingleProfile):void => this.addProfile(profile));
+        profiles.forEach((profile:IMGSingleProfile):void => {this.addProfile(profile)});
     }
 
     public addTraderInitialLoyaltyLevel(traderId:string, level:number = 1):void {
