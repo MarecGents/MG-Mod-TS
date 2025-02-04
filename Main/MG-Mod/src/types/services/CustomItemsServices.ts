@@ -186,6 +186,10 @@ export class CustomItemsService{
                 };
                 this.Locales.addItemInfo(itemInfo);
             }
+
+            if(item.Buffs){
+                this.MGLoad.MGGlobals.addNewBuffs(item.Buffs);
+            }
             this.outPut.addItemsSuccess(it,this.Locales.getTraderNicknameByIdFromSpecificLanguage(item.toTraderId,"ch"));
         }
     }
