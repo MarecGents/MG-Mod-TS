@@ -26,25 +26,26 @@ export class SyncMarketService {
 
     public start(): void {
         let priceJson: MGPrices = JSON.parse(this.FileControl.readFile(this.mod.modpath + PathTypes.PricePath + "price.json"));
-        if ((new ITimeUtils().getDateDiffence({
+        const TimeUtils:ITimeUtils = new ITimeUtils();
+        let dateDifference:number = (TimeUtils.getDateDiffence({
             Year: priceJson.date[0],
             Month: priceJson.date[1],
             Day: priceJson.date[2]
-        })) >= 3) {
-            priceJson = this.getPriceFromWeb();
+        }));
+        if (dateDifference >= 3) {
+            this.getPriceFromWeb();
         }
         this.MGLoad.MGTemplates.addPrices(priceJson.prices);
         this.outPut.classLoaded(`[MG-Mod][实时跳蚤]`);
-        this.outPut.log(`MG实时跳蚤：当前同步数据时间为：${priceJson.date[0]}年${priceJson.date[1]}月${priceJson.date[2]}日`, LogTextColor.BLUE);
+        this.outPut.log(`[MG-Mod][实时跳蚤]：当前同步数据时间为：${priceJson.date[0]}年${priceJson.date[1]}月${priceJson.date[2]}日`, LogTextColor.BLUE);
     }
 
-    private getPriceFromWeb():MGPrices {
+    private getPriceFromWeb():void {
         const tokens:any = JSON.parse(this.FileControl.readFile(this.mod.modpath + PathTypes.PricePath + "tokens.json"));
         const token:string = tokens.token;
         const owner:string = tokens.owner;
         const repo:string = tokens.repo;
         const filePath:string = tokens.filePath; // 文件在仓库中的路径
-        let priceJson_:MGPrices = {} as MGPrices;
         fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -59,11 +60,10 @@ export class SyncMarketService {
                 const pricePath:string = this.mod.modpath + PathTypes.PricePath + "price.json";
                 this.FileControl.removeFile(pricePath);
                 this.FileControl.writeFile(pricePath, JSON.stringify(priceJson, null, 4));
-                priceJson_ = priceJson;
+                this.MGLoad.Output.log(`[MG-Mod][实时跳蚤]数据已同步至${priceJson.date[0]}年${priceJson.date[1]}月${priceJson.date[2]}日。跳蚤数据将在下次启动服务端时加载同步。`,LogTextColor.BLUE);
             })
             .catch((error:any):void => {
                 console.error('实时跳蚤获取错误:', error);
             });
-        return priceJson_;
     }
 }

@@ -6,7 +6,7 @@ export class ITimeUtils{
         const date = new Date();
         return {
             Year: date.getFullYear(),
-            Month: date.getMonth(),
+            Month: date.getMonth() + 1,
             Day: date.getDate()
         };
     }
@@ -33,9 +33,9 @@ export class ITimeUtils{
     }
 
     public getDateDiffence(oldDate:DefaultTime):number {
-        const date1:Date = new Date(oldDate.Year,oldDate.Month,oldDate.Day);
+        const date1:Date = new Date(oldDate.Year,oldDate.Month - 1,oldDate.Day);
         const nowDate:DefaultTime = this.getDateNow();
-        const timeDifference:number = new Date(nowDate.Year,nowDate.Month,nowDate.Day).getTime() - date1.getTime();
+        const timeDifference:number = new Date(nowDate.Year,nowDate.Month - 1,nowDate.Day).getTime() - date1.getTime();
         return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     }
 }
