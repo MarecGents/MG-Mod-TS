@@ -16,12 +16,14 @@ import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {ITraderGlobals} from "../globals/ITraderGlobals";
 import {IPreset} from "@spt/models/eft/common/IGlobals";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
+import {ILooseLoot} from "../location/ILooseLoot";
 
 export interface ICustomTrader{
     images?:CustomTraderImages;
     items?:Record<string, CustomTraderItems>;
     locales?:CustomTraderLocales;
     templates?:CustomTraderTemplates;
+    location?:CustomLooseLoot;
     traderData?:CustomTraderData;
     globals?:CustomTraderGlobals;
     traderInfo:CustomTraderInfo;
@@ -105,4 +107,10 @@ export interface ITraderAssort {
     items: IItem[];
     barter_scheme: Record<string, IBarterScheme[][]>;
     loyal_level_items: Record<string, number>;
+}
+
+export interface CustomLooseLoot{
+    looseLoot:{
+        [MapName:string]:ILooseLoot;
+    };
 }

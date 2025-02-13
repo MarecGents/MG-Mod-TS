@@ -21,6 +21,7 @@ import {MGLocales} from "../servers/MGLocales";
 import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {IFormatUtils} from "../utils/IFormatUtils";
 import {HashUtil} from "../../../types/utils/HashUtil";
+import {ItemsSpawnService} from "./ItemsSpawnService";
 
 
 export class CustomTraderService {
@@ -82,7 +83,9 @@ export class CustomTraderService {
             // 添加商人的独立物品
             this.addItemsToServer(TraderInfo, TraderData);
             //添加商人的物品和任务的文本信息
-            this.localesInfoToServer(TraderInfo, TraderData);
+            this.addLocalesInfoToServer(TraderInfo, TraderData);
+            //添加商人的自定义物品刷新信息
+            this.addLocationToServer(TraderInfo,TraderData);
             //添加商人的任务和物品跳蚤信息
             this.addTemplatesToServer(TraderInfo, TraderData);
             //添加商人的globals信息
@@ -208,7 +211,7 @@ export class CustomTraderService {
         }
     }
 
-    public localesInfoToServer(TraderInfo: CustomTraderInfo, traderData:ICustomTrader):void{
+    public addLocalesInfoToServer(TraderInfo: CustomTraderInfo, traderData:ICustomTrader):void{
         const itemsDesc:Record<string, ItemsDesc> = traderData.locales.itemsdescription;
         const mail:Record<string, QuestDesc> = traderData.locales.mail;
         for(let id in itemsDesc){
@@ -223,6 +226,11 @@ export class CustomTraderService {
                 desc:mail[id],
             });
         }
+    }
+
+    public addLocationToServer(TraderInfo: CustomTraderInfo, traderData:ICustomTrader):void{
+        const itemsSpawnService:ItemsSpawnService = new ItemsSpawnService(this.mod, this.MGLoad);
+        itemsSpawnService.start(traderData.location.looseLoot);
     }
 
     public addTemplatesToServer(TraderInfo:CustomTraderInfo, traderData:ICustomTrader):void{

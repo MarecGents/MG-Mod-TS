@@ -33,6 +33,7 @@ import {loadMod} from "../types/loadMod";
 import {KeysClassifyService} from "../types/services/KeysClassifyService";
 import {SyncMarketService} from "../types/services/SyncMarketService";
 import {CustomProfileService} from "../types/services/CustomProfileService";
+import {ItemsSpawnService} from "../types/services/ItemsSpawnService";
 
 export class Main{
 
@@ -900,6 +901,10 @@ export class Main{
             return;
         }
         (new CustomProfileService(this.mod, this.MGLoad));
+    }
+
+    private ItemsSpawnServices(ConfigJson:MGModConfig):void {
+        const itemsSpawnService:ItemsSpawnService = new ItemsSpawnService(this.mod, this.MGLoad)
     }
 
 }
