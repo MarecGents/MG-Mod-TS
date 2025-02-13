@@ -1,12 +1,7 @@
 import {IClone} from "../utils/IClone";
 import {PathTypes} from "../models/enums/PathTypes";
 import {IBundleManifest} from "@spt/loaders/BundleLoader";
-import {
-    CustomTraderData,
-    CustomTraderGlobals,
-    CustomTraderInfo,
-    ICustomTrader
-} from "../models/mg/traders/ITraderCustom";
+import {CustomTraderData, CustomTraderGlobals, CustomTraderInfo, ICustomTrader} from "../models/mg/traders/ITraderCustom";
 import {ITrader} from "@spt/models/eft/common/tables/ITrader";
 import {Traders} from "@spt/models/enums/Traders";
 import {ItemsDesc, QuestDesc, TraderInfo} from "../models/mg/locales/GlobalInfo";
@@ -18,10 +13,10 @@ import {IQuest} from "@spt/models/eft/common/tables/IQuest";
 import {loadMod} from "../loadMod";
 import {OutputService} from "./OutputService";
 import {MGLocales} from "../servers/MGLocales";
-import {IItem} from "@spt/models/eft/common/tables/IItem";
 import {IFormatUtils} from "../utils/IFormatUtils";
-import {HashUtil} from "../../../types/utils/HashUtil";
+import {HashUtil} from "@spt/utils/HashUtil";
 import {ItemsSpawnService} from "./ItemsSpawnService";
+import {LogTextColor} from "@spt/models/spt/logging/LogTextColor";
 
 
 export class CustomTraderService {
@@ -76,6 +71,8 @@ export class CustomTraderService {
             }
             // 添加商人本体信息
             this.addCustomTrader(TraderInfo, TraderData.traderData);
+            // 添加完毕
+            this.outPut.addCustomTraderSuccess(`${TraderInfo.name}`);
             // 修复商人出售预设文件预存信息
             this.fixCustomTraderAssorts(TraderId);
             // 添加商人的任务图片等信息
@@ -181,8 +178,6 @@ export class CustomTraderService {
         // 将商人等级初始化到预设存档中国
         this.MGLoad.MGTemplates.addTraderInitialLoyaltyLevel(traderId);
 
-        // 添加完毕
-        this.outPut.addCustomTraderSuccess(`${TraderInfo.name}`);
         return true;
     }
 
