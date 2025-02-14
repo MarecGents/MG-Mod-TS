@@ -197,13 +197,15 @@ export class MGTemplates {
         }
         itemTemplate = newItem.item;
         const itemId:string = itemTemplate._id;
-        if(!newItem.origin){
-            return this.MGLoad.Output.warning(`自定义商人独立物品缺少originId，物品id:${itemId}`);
-        }
+        // if(!newItem.origin){
+        //     return this.MGLoad.Output.warning(`自定义商人独立物品缺少originId，物品id:${itemId}`);
+        // }
         itemDB[itemId] = itemTemplate;
-        let filter :ItemFilterList = {};
-        filter[itemId] = {filterId:newItem.origin};
-        this.addFiltersToDB(filter);
+        if(!!newItem.origin){
+            let filter :ItemFilterList = {};
+            filter[itemId] = {filterId:newItem.origin};
+            this.addFiltersToDB(filter);
+        }
     }
 
     /**
