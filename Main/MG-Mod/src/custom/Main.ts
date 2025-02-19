@@ -42,7 +42,7 @@ export class Main{
     private Locales:MGLocales
     private outPut: OutputService;
 
-    constructor(mod:Mod,MGLoad:loadMod){
+    constructor(mod:Mod, MGLoad:loadMod){
         this.mod = mod;
         this.MGLoad = MGLoad;
         this.Locales = this.MGLoad.MGLocales;

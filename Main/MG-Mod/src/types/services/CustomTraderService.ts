@@ -141,7 +141,7 @@ export class CustomTraderService {
         // suits
         newTraderDB.questassort = traderData.suits ? traderData.suits : traderData.suits;
         // 商人头像
-        const traderImage: string = 'TraderPic.jpg';
+        const traderImage: string = `${traderId}.jpg`;
         const imagePath: string = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/${traderImage}`;
         if (this.mod.VFS.exists(imagePath)){
             newTraderDB.base.avatar = newTraderDB.base.avatar.replace("unKnown.jpg", traderImage);
