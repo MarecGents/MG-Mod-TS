@@ -184,11 +184,11 @@ export class CustomTraderService {
     public addQuestImage(TraderInfo: CustomTraderInfo, traderData: ICustomTrader):void{
         if(!("images" in traderData)){ return;}
         if(!("quests" in traderData.images)){ return;}
+        const ImageRouter:ImageRouter = this.mod.container.resolve<ImageRouter>("ImageRouter");
         const questImagesPath = `${this.mod.modpath + PathTypes.TraderPath}${TraderInfo.name}/images/quests/`;
         const iconList:any = this.mod.VFS.getFiles(questImagesPath);
-        for(let icon in iconList){
-            const filename:string = this.mod.VFS.stripExtension(icon);
-            const ImageRouter:ImageRouter = this.mod.container.resolve<ImageRouter>("ImageRouter");
+        for(let icon of iconList){
+            let filename:string = this.mod.VFS.stripExtension(icon);
             ImageRouter.addRoute(`/files/quest/icon/${filename}`, `${questImagesPath}${icon}`);
         }
     }

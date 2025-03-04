@@ -1,0 +1,169 @@
+{
+	"8ef5b2ef4000000000000000": {
+		"QuestName": "TestQuest1",
+		"_id": "8ef5b2ef4000000000000000",
+		"name": "8ef5b2ef4000000000000000 name",
+		"note": "8ef5b2ef4000000000000000 note",
+		"traderId": "8ef5b2eff000000000000000",
+		"image": "/files/quest/icon/MGQuest1.jpg",
+		"location": "Any",
+		"description": "8ef5b2ef4000000000000000 description",
+		"startedMessageText": "8ef5b2ef4000000000000000 startedMessageText",
+		"successMessageText": "8ef5b2ef4000000000000000 successMessageText",
+		"failMessageText": "8ef5b2ef4000000000000000 failMessageText",
+		"changeQuestMessageText":"8ef5b2ef4000000000000000 changeQuestMessageText",
+		"acceptPlayerMessage": "8ef5b2ef4000000000000000 acceptPlayerMessage",
+		"completePlayerMessage":"8ef5b2ef4000000000000000 completePlayerMessage",
+		"declinePlayerMessage": "8ef5b2ef4000000000000000 declinePlayerMessage",
+		"conditions": {
+			"AvailableForStart": [],
+			"AvailableForFinish": [
+				{
+					"completeInSeconds": 0,
+					"conditionType": "CounterCreator",
+					"doNotResetIfCounterCompleted": false,
+					"dynamicLocale": false,
+					"globalQuestCounterId": "",
+					"oneSessionOnly": false,
+					"value": "100",
+					"type": "Elimination",
+					"counter": {
+						"id": "8ef5b2ef5000000000000003",
+						"conditions": [
+							{
+								"bodyPart": [],
+								"compareMethod": ">=",
+								"conditionType": "Kills",
+								"daytime": {
+									"from": 0,
+									"to": 0
+								},
+								"distance": {
+									"compareMethod": ">=",
+									"value": 0
+								},
+								"dynamicLocale": false,
+								"enemyEquipmentExclusive": [],
+								"enemyEquipmentInclusive": [],
+								"enemyHealthEffects": [],
+								"id": "8ef5b2ef5000000000000004",
+								"resetOnSessionEnd": false,
+								"savageRole": [],
+								"target": "Any",
+								"value": 1,
+								"weapon": [],
+								"weaponCaliber": [],
+								"weaponModsExclusive": [],
+								"weaponModsInclusive": []
+							}
+						]
+					},
+					"index": 0,
+					"parentId": "",
+					"id": "8ef5b2ef5000000000000000",
+					"visibilityConditions": []
+				},
+				{
+					"conditionType": "HandoverItem",
+					"dynamicLocale": false,
+					"globalQuestCounterId": "",
+					"target": [ "6275303a9f372d6ea97f9ec7" ],
+					"value": "3",
+					"index": 1,
+					"isEncoded": false,
+					"parentId": "",
+					"id": "8ef5b2ef5000000000000001",
+					"minDurability": 0,
+					"visibilityConditions": [],
+					"onlyFoundInRaid": false,
+					"maxDurability": 0,
+					"dogtagLevel": 0
+				},
+				{
+					"conditionType": "HandoverItem",
+					"dynamicLocale": false,
+					"globalQuestCounterId": "",
+					"target": [ "5c0e874186f7745dc7616606" ],
+					"value": "10",
+					"index": 0,
+					"isEncoded": false,
+					"parentId": "",
+					"id": "8ef5b2ef5000000000000002",
+					"minDurability": 0,
+					"visibilityConditions": [],
+					"onlyFoundInRaid": false,
+					"maxDurability": 0,
+					"dogtagLevel": 0
+				}
+			],
+			"Fail": []
+		},
+		"rewards": {
+			"Started": [],
+			"Success": [
+				{
+					"findInRaid": true,
+					"target": "8ef5b2ef5000000000000009",
+					"value": "3",
+					"id": "8ef5b2ef5000000000000005",
+					"type": "Item",
+					"index": 0,
+					"items": [
+						{
+							"_id": "8ef5b2ef5000000000000009",
+							"_tpl": "5c1d0efb86f7744baf2e7b7b",
+							"upd": {
+								"StackObjectsCount": 3
+							}
+						}
+					]
+				},
+				{
+					"target": "8ef5b2ef5000000000000010",
+					"value": "1",
+					"id": "8ef5b2ef5000000000000006",
+					"type": "Item",
+					"index": 1,
+					"items": [
+						{
+							"_id": "8ef5b2ef5000000000000010",
+							"_tpl": "58ac60eb86f77401897560ff",
+							"upd": {
+								"StackObjectsCount": 1
+							}
+						}
+					]
+				},
+				{
+					"target": "8ef5b2eff000000000000000",
+					"value": "1",
+					"id": "8ef5b2ef5000000000000007",
+					"type": "TraderStanding",
+					"index": 2
+				},
+				{
+					"id": "8ef5b2ef5000000000000008",
+					"index": 3,
+					"target": "StressResistance",
+					"type": "Skill",
+					"unknown": false,
+					"value": "300"
+				}
+			],
+			"Fail": []
+		},
+		"side": "Pmc",
+		"type": "Elimination",
+		"acceptanceAndFinishingSource": "eft",
+		"arenaLocations": [],
+		"canShowNotificationsInGame": true,
+		"gameModes": [],
+		"instantComplete": false,
+		"isKey": false,
+		"progressSource": "eft",
+		"rankingModes": [],
+		"restartable": false,
+		"secretQuest": false,
+		"status": 0
+	}
+}

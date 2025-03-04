@@ -35,11 +35,13 @@ export interface TraderDesc {
 export interface QuestDesc {
     name: string;
     description: string;
-    failMessageText?: string;
+    startedMessageText?: string;
     successMessageText?: string;
+    failMessageText?: string;
+    changeQuestMessageText?: string;
     acceptPlayerMessage?: string;
-    declinePlayerMessage?: string;
     completePlayerMessage?: string;
+    declinePlayerMessage?: string;
     other?: {
         [key: string]: string;
     }
